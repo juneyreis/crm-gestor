@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gestão de Visitas Comerciais</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ADICIONAR SUPABASE SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 25px;
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .card h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h2 i {
+            color: #3498db;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .input-group input, .input-group select, .input-group textarea {
+            padding: 14px 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: white;
+            text-transform: uppercase; /* Força caixa alta */
+        }
+        
+        .input-group textarea {
+            text-transform: uppercase;
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .input-group input::placeholder, .input-group textarea::placeholder {
+            color: #aaa;
+            text-transform: none; /* Placeholder em normal case */
+        }
+        
+        .input-group input#telefone, .input-group input#telefone::placeholder {
+            text-transform: none; /* Telefone não precisa de caixa alta */
+        }
+        
+        .outro-container {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .outro-container.show {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+        
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #2ecc71;
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d68910;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-export {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .btn-export:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+        }
+        
+        .btn-clear {
+            background-color: #e67e22; /* Laranja */
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-clear:hover {
+            background-color: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+        
+        .btn-import { 
+            background-color: #34495e; /* Dark Blue/Gray */
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-import:hover {
+            background-color: #2c3e50;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.3);
+        }
+        
+        /* NOVO BOTÃO: Exportar JSON - Cor cinza */
+        .btn-export-json { 
+            background-color: #7f8c8d; /* Cinza */
+            color: white;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-export-json:hover {
+            background-color: #6c7a7d;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(127, 140, 141, 0.3);
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            min-width: auto;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            flex: 1;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 0.9rem;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            text-transform: uppercase; /* Filtros também em caixa alta */
+        }
+        
+        hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #e1e5eb, transparent);
+            margin: 30px 0;
+        }
+        
+        #lista {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .visita-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #2ecc71;
+            transition: transform 0.2s;
+            position: relative;
+        }
+        
+        .visita-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .visita-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .visita-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-right: 100px;
+        }
+        
+        .visita-data {
+            font-weight: bold;
+            color: #3498db;
+            background-color: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .visita-prospect {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            text-transform: uppercase; /* Prospect em caixa alta na exibição */
+        }
+        
+        .visita-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+        
+        .detail-value {
+            font-size: 1rem;
+            color: #2c3e50;
+            text-transform: uppercase; /* Valores em caixa alta na exibição */
+        }
+        
+        .detail-item-observacoes {
+            grid-column: span 2;
+        }
+        
+        .detail-value-observacoes {
+            font-size: 0.95rem;
+            color: #2c3e50;
+            text-transform: uppercase;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .empty-list {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .empty-list i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .close-modal:hover {
+            color: #e74c3c;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            max-width: 90%;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .notification.hidden {
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #e74c3c;
+        }
+        
+        .notification.warning {
+            background-color: #f39c12;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e1e5eb;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .visita-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-item-observacoes {
+                grid-column: span 1;
+            }
+            
+            .visita-header {
+                flex-direction: column;
+                gap: 10px;
+                padding-right: 0;
+            }
+            
+            .visita-actions {
+                position: static;
+                margin-top: 15px;
+                justify-content: flex-start;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 20px 15px;
+            }
+            
+            .notification {
+                left: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+            
+            .filter-section {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                margin: 10px;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-briefcase"></i> Controle de Visitas Comerciais</h1>
+            <p>Gerencie suas visitas a prospects com recursos completos de CRUD e relatórios</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2><i class="fas fa-calendar-plus"></i> Nova Visita</h2>
+            <form id="form">
+                <input type="hidden" id="visita-id" value="">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="data"><i class="fas fa-calendar-alt"></i> Data da Visita</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="prospect"><i class="fas fa-building"></i> Prospect/Empresa</label>
+                        <input type="text" id="prospect" placeholder="Nome da empresa ou prospect" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="endereco"><i class="fas fa-map-marker-alt"></i> Endereço</label>
+                        <input type="text" id="endereco" placeholder="Endereço completo" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="cidade"><i class="fas fa-city"></i> Cidade</label>
+                        <select id="cidade" required>
+                            <option value="" selected disabled>Selecione uma cidade</option>
+                            <option value="AGUDO">AGUDO</option>
+							<option value="ALEGRETE">ALEGRETE</option>
+							<option value="ALVORADA">ALVORADA</option>
+							<option value="ARROIO DO MEIO">ARROIO DO MEIO</option>
+							<option value="BAGÉ">BAGÉ</option>
+							<option value="BENTO GONÇALVES">BENTO GONÇALVES</option>
+							<option value="BOM RETIRO DO SUL">BOM RETIRO DO SUL</option>
+							<option value="CACHOEIRA DO SUL">CACHOEIRA DO SUL</option>
+							<option value="CACHOEIRINHA">CACHOEIRINHA</option>
+							<option value="CAMAQUÃ">CAMAQUÃ</option>
+							<option value="CAMPO BOM">CAMPO BOM</option>
+							<option value="CANDELÁRIA">CANDELÁRIA</option>
+							<option value="CANDIOTA">CANDIOTA</option>
+							<option value="CANELA">CANELA</option>
+							<option value="CANOAS">CANOAS</option>
+							<option value="CAPÃO DA CANOA">CAPÃO DA CANOA</option>
+							<option value="CARAZINHO">CARAZINHO</option>
+							<option value="CARLOS BARBOSA">CARLOS BARBOSA</option>
+							<option value="CAXIAS DO SUL">CAXIAS DO SUL</option>
+							<option value="CHARQUEADAS">CHARQUEADAS</option>
+							<option value="CRUZ ALTA">CRUZ ALTA</option>
+							<option value="DOM PEDRITO">DOM PEDRITO</option>
+							<option value="ELDORADO DO SUL">ELDORADO DO SUL</option>
+							<option value="ENCANTADO">ENCANTADO</option>
+							<option value="ERECHIM">ERECHIM</option>
+							<option value="ESTÂNCIA VELHA">ESTÂNCIA VELHA</option>
+							<option value="ESTEIO">ESTEIO</option>
+							<option value="ESTRELA">ESTRELA</option>
+							<option value="FARROUPILHA">FARROUPILHA</option>
+							<option value="FLORES DA CUNHA">FLORES DA CUNHA</option>
+							<option value="FREDERICO WESTPHALEN">FREDERICO WESTPHALEN</option>
+							<option value="GARIBALDI">GARIBALDI</option>
+							<option value="GIRUÁ">GIRUÁ</option>
+							<option value="GRAMADO">GRAMADO</option>
+							<option value="GRAVATAÍ">GRAVATAÍ</option>
+							<option value="GUAÍBA">GUAÍBA</option>
+							<option value="HORIZONTINA">HORIZONTINA</option>
+							<option value="IGREJINHA">IGREJINHA</option>
+							<option value="IJUÍ">IJUÍ</option>
+							<option value="IMBÉ">IMBÉ</option>
+							<option value="ITAQUI">ITAQUI</option>
+							<option value="IVOTI">IVOTI</option>
+							<option value="LAGOA VERMELHA">LAGOA VERMELHA</option>
+							<option value="LAJEADO">LAJEADO</option>
+							<option value="MARAU">MARAU</option>
+							<option value="MONTENEGRO">MONTENEGRO</option>
+							<option value="NÃO-ME-TOQUE">NÃO-ME-TOQUE</option>
+							<option value="NOVA PETRÓPOLIS">NOVA PETRÓPOLIS</option>
+							<option value="NOVA PRATA">NOVA PRATA</option>
+							<option value="NOVA SANTA RITA">NOVA SANTA RITA</option>
+							<option value="NOVO HAMBURGO">NOVO HAMBURGO</option>
+							<option value="OSÓRIO">OSÓRIO</option>
+							<option value="PALMEIRA DAS MISSÕES">PALMEIRA DAS MISSÕES</option>
+							<option value="PANAMBI">PANAMBI</option>
+							<option value="PAROBÉ">PAROBÉ</option>
+							<option value="PASSO FUNDO">PASSO FUNDO</option>
+							<option value="PELOTAS">PELOTAS</option>
+							<option value="PORTÃO">PORTÃO</option>
+							<option value="PORTO ALEGRE">PORTO ALEGRE</option>
+							<option value="RIO GRANDE">RIO GRANDE</option>
+							<option value="SANTA CRUZ DO SUL">SANTA CRUZ DO SUL</option>
+							<option value="SANTA MARIA">SANTA MARIA</option>
+							<option value="SANTA ROSA">SANTA ROSA</option>
+							<option value="SANTA VITÓRIA DO PALMAR">SANTA VITÓRIA DO PALMAR</option>
+							<option value="SANT'ANA DO LIVRAMENTO">SANT'ANA DO LIVRAMENTO</option>
+							<option value="SANTIAGO">SANTIAGO</option>
+							<option value="SANTO ÂNGELO">SANTO ÂNGELO</option>
+							<option value="SANTO ANTÔNIO DA PATRULHA">SANTO ANTÔNIO DA PATRULHA</option>
+							<option value="SÃO BORJA">SÃO BORJA</option>
+							<option value="SÃO GABRIEL">SÃO GABRIEL</option>
+							<option value="SÃO LEOPOLDO">SÃO LEOPOLDO</option>
+							<option value="SÃO LUIZ GONZAGA">SÃO LUIZ GONZAGA</option>
+							<option value="SÃO SEBASTIÃO DO CAÍ">SÃO SEBASTIÃO DO CAÍ</option>
+							<option value="SAPIRANGA">SAPIRANGA</option>
+							<option value="SAPUCAIA DO SUL">SAPUCAIA DO SUL</option>
+							<option value="TEUTÔNIA">TEUTÔNIA</option>
+							<option value="TORRES">TORRES</option>
+							<option value="TRAMANDAÍ">TRAMANDAÍ</option>
+							<option value="TRIUNFO">TRIUNFO</option>
+							<option value="URUGUAIANA">URUGUAIANA</option>
+							<option value="VACARIA">VACARIA</option>
+							<option value="VIAMÃO">VIAMÃO</option>
+							<option value="OUTRA">OUTRA</option>
+                        </select>
+                        <div id="outro-cidade-container" class="outro-container">
+                            <input type="text" id="outro-cidade" placeholder="Especifique a cidade">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bairro"><i class="fas fa-map-pin"></i> Bairro</label>
+                        <input type="text" id="bairro" placeholder="Bairro">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="contato"><i class="fas fa-user"></i> Contato</label>
+                        <input type="text" id="contato" placeholder="Nome do contato">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="telefone"><i class="fas fa-phone"></i> Telefone</label>
+                        <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="sistema"><i class="fas fa-laptop-code"></i> Sistema Atual</label>
+                        <select id="sistema">
+                            <option value="" selected disabled>Selecione o sistema atual</option>
+							<option value="INDEFINIDO">INDEFINIDO</option>							
+							<option value="ALTERDATA">ALTERDATA</option>
+							<option value="AUTOMAFOUR">AUTOMAFOUR</option>
+							<option value="BITCOM">BITCOM</option>
+							<option value="CISS">CISS</option>
+							<option value="CLOUDFY">CLOUDFY</option>
+							<option value="CONNECT PLUG">CONNECT PLUG</option>
+							<option value="INTELLICOMM">INTELLICOMM</option>
+							<option value="KW SISTEMAS">KW SISTEMAS</option>
+							<option value="LOGICBOX">LOGICBOX</option>
+							<option value="MKM AUTOMAÇÃO">MKM AUTOMAÇÃO</option>
+							<option value="MS INFOTECH">MS INFOTECH</option>
+							<option value="OPER">OPER</option>
+							<option value="PARCEIRO">PARCEIRO</option>
+							<option value="RECOMAQ">RECOMAQ</option>
+							<option value="SMALL SOFT">SMALL SOFT</option>
+							<option value="SNAPCONTROL">SNAPCONTROL</option>
+							<option value="SYSMO">SYSMO</option>
+							<option value="TAG">TAG</option>
+							<option value="TELECOM">TELECOM</option>
+							<option value="TNK">TNK</option>
+							<option value="TOTVS">TOTVS</option>
+							<option value="WEBER">WEBER</option>
+							<option value="WME SISTEMAS">WME SISTEMAS</option>							
+                        </select>
+                        <div id="outro-sistema-container" class="outro-container">
+                            <input type="text" id="outro-sistema" placeholder="Especifique o sistema">
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="regime"><i class="fas fa-file-invoice-dollar"></i> Regime Fiscal</label>
+                        <select id="regime" required>
+                            <option value="" selected disabled>Selecione o regime fiscal</option>
+                            <option value="LUCRO REAL">LUCRO REAL</option>
+							<option value="LUCRO PRESUMIDO">LUCRO PRESUMIDO</option>
+                            <option value="SIMPLES NACIONAL">SIMPLES NACIONAL</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="observacoes"><i class="fas fa-comment"></i> Observações</label>
+                        <textarea id="observacoes" placeholder="Digite observações adicionais (opcional)"></textarea>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <i class="fas fa-save"></i> Salvar Visita
+                    </button>
+                    <button type="button" class="btn-import" onclick="document.getElementById('file-input-import').click()">
+                        <i class="fas fa-file-import"></i> Importar Dados (JSON)
+                    </button>
+                    <!-- NOVO BOTÃO: Exportar Dados (JSON) -->
+                    <button type="button" class="btn-export-json" onclick="exportarDadosJSON()">
+                        <i class="fas fa-file-export"></i> Exportar Dados (JSON)
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="listar()">
+                        <i class="fas fa-list"></i> Listar Visitas
+                    </button>
+                    <button type="button" class="btn-clear" onclick="abrirModalLimparLista()">
+                        <i class="fas fa-trash-alt"></i> Limpar Lista
+                    </button>
+                    <button type="button" class="btn-export" onclick="abrirModalExportacao()">
+                        <i class="fas fa-file-export"></i> Gerar Relatório
+                    </button>
+                </div>
+            </form>
+            <input type="file" id="file-input-import" accept=".json" style="display: none;" onchange="importarDados(event)">
+        </div>
+        
+        <hr>
+        
+        <div class="card">
+            <h2><i class="fas fa-history"></i> Visitas Registradas</h2>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="filtro-data-inicio"><i class="fas fa-calendar"></i> Data Início</label>
+                    <input type="date" id="filtro-data-inicio">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filtro-data-fim"><i class="fas fa-calendar"></i> Data Fim</label>
+                    <input type="date" id="filtro-data-fim">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filtro-cidade"><i class="fas fa-city"></i> Cidade</label>
+                    <select id="filtro-cidade">
+                        <option value="">Todas as cidades</option>
+						<option value="AGUDO">AGUDO</option>
+						<option value="ALEGRETE">ALEGRETE</option>
+						<option value="ALVORADA">ALVORADA</option>
+						<option value="ARROIO DO MEIO">ARROIO DO MEIO</option>
+						<option value="BAGÉ">BAGÉ</option>
+						<option value="BENTO GONÇALVES">BENTO GONÇALVES</option>
+						<option value="BOM RETIRO DO SUL">BOM RETIRO DO SUL</option>
+						<option value="CACHOEIRA DO SUL">CACHOEIRA DO SUL</option>
+						<option value="CACHOEIRINHA">CACHOEIRINHA</option>
+						<option value="CAMAQUÃ">CAMAQUÃ</option>
+						<option value="CAMPO BOM">CAMPO BOM</option>
+						<option value="CANDELÁRIA">CANDELÁRIA</option>
+						<option value="CANDIOTA">CANDIOTA</option>
+						<option value="CANELA">CANELA</option>
+						<option value="CANOAS">CANOAS</option>
+						<option value="CAPÃO DA CANOA">CAPÃO DA CANOA</option>
+						<option value="CARAZINHO">CARAZINHO</option>
+						<option value="CARLOS BARBOSA">CARLOS BARBOSA</option>
+						<option value="CAXIAS DO SUL">CAXIAS DO SUL</option>
+						<option value="CHARQUEADAS">CHARQUEADAS</option>
+						<option value="CRUZ ALTA">CRUZ ALTA</option>
+						<option value="DOM PEDRITO">DOM PEDRITO</option>
+						<option value="ELDORADO DO SUL">ELDORADO DO SUL</option>
+						<option value="ENCANTADO">ENCANTADO</option>
+						<option value="ERECHIM">ERECHIM</option>
+						<option value="ESTÂNCIA VELHA">ESTÂNCIA VELHA</option>
+						<option value="ESTEIO">ESTEIO</option>
+						<option value="ESTRELA">ESTRELA</option>
+						<option value="FARROUPILHA">FARROUPILHA</option>
+						<option value="FLORES DA CUNHA">FLORES DA CUNHA</option>
+						<option value="FREDERICO WESTPHALEN">FREDERICO WESTPHALEN</option>
+						<option value="GARIBALDI">GARIBALDI</option>
+						<option value="GIRUÁ">GIRUÁ</option>
+						<option value="GRAMADO">GRAMADO</option>
+						<option value="GRAVATAÍ">GRAVATAÍ</option>
+						<option value="GUAÍBA">GUAÍBA</option>
+						<option value="HORIZONTINA">HORIZONTINA</option>
+						<option value="IGREJINHA">IGREJINHA</option>
+						<option value="IJUÍ">IJUÍ</option>
+						<option value="IMBÉ">IMBÉ</option>
+						<option value="ITAQUI">ITAQUI</option>
+						<option value="IVOTI">IVOTI</option>
+						<option value="LAGOA VERMELHA">LAGOA VERMELHA</option>
+						<option value="LAJEADO">LAJEADO</option>
+						<option value="MARAU">MARAU</option>
+						<option value="MONTENEGRO">MONTENEGRO</option>
+						<option value="NÃO-ME-TOQUE">NÃO-ME-TOQUE</option>
+						<option value="NOVA PETRÓPOLIS">NOVA PETRÓPOLIS</option>
+						<option value="NOVA PRATA">NOVA PRATA</option>
+						<option value="NOVA SANTA RITA">NOVA SANTA RITA</option>
+						<option value="NOVO HAMBURGO">NOVO HAMBURGO</option>
+						<option value="OSÓRIO">OSÓRIO</option>
+						<option value="PALMEIRA DAS MISSÕES">PALMEIRA DAS MISSÕES</option>
+						<option value="PANAMBI">PANAMBI</option>
+						<option value="PAROBÉ">PAROBÉ</option>
+						<option value="PASSO FUNDO">PASSO FUNDO</option>
+						<option value="PELOTAS">PELOTAS</option>
+						<option value="PORTÃO">PORTÃO</option>
+						<option value="PORTO ALEGRE">PORTO ALEGRE</option>
+						<option value="RIO GRANDE">RIO GRANDE</option>
+						<option value="SANTA CRUZ DO SUL">SANTA CRUZ DO SUL</option>
+						<option value="SANTA MARIA">SANTA MARIA</option>
+						<option value="SANTA ROSA">SANTA ROSA</option>
+						<option value="SANTA VITÓRIA DO PALMAR">SANTA VITÓRIA DO PALMAR</option>
+						<option value="SANT'ANA DO LIVRAMENTO">SANT'ANA DO LIVRAMENTO</option>
+						<option value="SANTIAGO">SANTIAGO</option>
+						<option value="SANTO ÂNGELO">SANTO ÂNGELO</option>
+						<option value="SANTO ANTÔNIO DA PATRULHA">SANTO ANTÔNIO DA PATRULHA</option>
+						<option value="SÃO BORJA">SÃO BORJA</option>
+						<option value="SÃO GABRIEL">SÃO GABRIEL</option>
+						<option value="SÃO LEOPOLDO">SÃO LEOPOLDO</option>
+						<option value="SÃO LUIZ GONZAGA">SÃO LUIZ GONZAGA</option>
+						<option value="SÃO SEBASTIÃO DO CAÍ">SÃO SEBASTIÃO DO CAÍ</option>
+						<option value="SAPIRANGA">SAPIRANGA</option>
+						<option value="SAPUCAIA DO SUL">SAPUCAIA DO SUL</option>
+						<option value="TEUTÔNIA">TEUTÔNIA</option>
+						<option value="TORRES">TORRES</option>
+						<option value="TRAMANDAÍ">TRAMANDAÍ</option>
+						<option value="TRIUNFO">TRIUNFO</option>
+						<option value="URUGUAIANA">URUGUAIANA</option>
+						<option value="VACARIA">VACARIA</option>
+						<option value="VIAMÃO">VIAMÃO</option>
+						<option value="OUTRA">OUTRA</option>	
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filtro-prospect"><i class="fas fa-building"></i> Prospect</label>
+                    <input type="text" id="filtro-prospect" placeholder="Filtrar por nome">
+                </div>
+                
+                <!-- NOVOS FILTROS ADICIONADOS -->
+                <div class="filter-group">
+                    <label for="filtro-endereco"><i class="fas fa-map-marker-alt"></i> Endereço</label>
+                    <input type="text" id="filtro-endereco" placeholder="Filtrar por endereço">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="filtro-bairro"><i class="fas fa-map-pin"></i> Bairro</label>
+                    <input type="text" id="filtro-bairro" placeholder="Filtrar por bairro">
+                </div>
+                <!-- FIM DOS NOVOS FILTROS -->
+                
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn-secondary btn-small" onclick="aplicarFiltros()">
+                        <i class="fas fa-filter"></i> Aplicar Filtros
+                    </button>
+                </div>
+                
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button type="button" class="btn-warning btn-small" onclick="limparFiltros()">
+                        <i class="fas fa-times"></i> Limpar Filtros
+                    </button>
+                </div>
+            </div>
+            
+            <ul id="lista">
+                <li class="empty-list" id="empty-message">
+                    <i class="fas fa-clipboard-list"></i>
+                    <p>Nenhuma visita registrada ainda. Use o formulário acima para adicionar sua primeira visita.</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="modal-exportacao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-export"></i> Gerar Relatório</h3>
+                <button class="close-modal" onclick="fecharModal('modal-exportacao')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="export-data-inicio"><i class="fas fa-calendar"></i> Data Início</label>
+                        <input type="date" id="export-data-inicio">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="export-data-fim"><i class="fas fa-calendar"></i> Data Fim</label>
+                        <input type="date" id="export-data-fim">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="export-cidade"><i class="fas fa-city"></i> Cidade</label>
+                        <select id="export-cidade">
+                            <option value="">Todas as cidades</option>
+                            <option value="ALEGRETE">ALEGRETE</option>
+							<option value="ALVORADA">ALVORADA</option>
+							<option value="ARROIO DO MEIO">ARROIO DO MEIO</option>
+							<option value="BAGÉ">BAGÉ</option>
+							<option value="BENTO GONÇALVES">BENTO GONÇALVES</option>
+							<option value="BOM RETIRO DO SUL">BOM RETIRO DO SUL</option>
+							<option value="CACHOEIRA DO SUL">CACHOEIRA DO SUL</option>
+							<option value="CACHOEIRINHA">CACHOEIRINHA</option>
+							<option value="CAMAQUÃ">CAMAQUÃ</option>
+							<option value="CAMPO BOM">CAMPO BOM</option>
+							<option value="CANDELÁRIA">CANDELÁRIA</option>
+							<option value="CANDIOTA">CANDIOTA</option>
+							<option value="CANELA">CANELA</option>
+							<option value="CANOAS">CANOAS</option>
+							<option value="CAPÃO DA CANOA">CAPÃO DA CANOA</option>
+							<option value="CARAZINHO">CARAZINHO</option>
+							<option value="CARLOS BARBOSA">CARLOS BARBOSA</option>
+							<option value="CAXIAS DO SUL">CAXIAS DO SUL</option>
+							<option value="CHARQUEADAS">CHARQUEADAS</option>
+							<option value="CRUZ ALTA">CRUZ ALTA</option>
+							<option value="DOM PEDRITO">DOM PEDRITO</option>
+							<option value="ELDORADO DO SUL">ELDORADO DO SUL</option>
+							<option value="ENCANTADO">ENCANTADO</option>
+							<option value="ERECHIM">ERECHIM</option>
+							<option value="ESTÂNCIA VELHA">ESTÂNCIA VELHA</option>
+							<option value="ESTEIO">ESTEIO</option>
+							<option value="ESTRELA">ESTRELA</option>
+							<option value="FARROUPILHA">FARROUPILHA</option>
+							<option value="FLORES DA CUNHA">FLORES DA CUNHA</option>
+							<option value="FREDERICO WESTPHALEN">FREDERICO WESTPHALEN</option>
+							<option value="GARIBALDI">GARIBALDI</option>
+							<option value="GIRUÁ">GIRUÁ</option>
+							<option value="GRAMADO">GRAMADO</option>
+							<option value="GRAVATAÍ">GRAVATAÍ</option>
+							<option value="GUAÍBA">GUAÍBA</option>
+							<option value="HORIZONTINA">HORIZONTINA</option>
+							<option value="IGREJINHA">IGREJINHA</option>
+							<option value="IJUÍ">IJUÍ</option>
+							<option value="IMBÉ">IMBÉ</option>
+							<option value="ITAQUI">ITAQUI</option>
+							<option value="IVOTI">IVOTI</option>
+							<option value="LAGOA VERMELHA">LAGOA VERMELHA</option>
+							<option value="LAJEADO">LAJEADO</option>
+							<option value="MARAU">MARAU</option>
+							<option value="MONTENEGRO">MONTENEGRO</option>
+							<option value="NÃO-ME-TOQUE">NÃO-ME-TOQUE</option>
+							<option value="NOVA PETRÓPOLIS">NOVA PETRÓPOLIS</option>
+							<option value="NOVA PRATA">NOVA PRATA</option>
+							<option value="NOVA SANTA RITA">NOVA SANTA RITA</option>
+							<option value="NOVO HAMBURGO">NOVO HAMBURGO</option>
+							<option value="OSÓRIO">OSÓRIO</option>
+							<option value="PALMEIRA DAS MISSÕES">PALMEIRA DAS MISSÕES</option>
+							<option value="PANAMBI">PANAMBI</option>
+							<option value="PAROBÉ">PAROBÉ</option>
+							<option value="PASSO FUNDO">PASSO FUNDO</option>
+							<option value="PELOTAS">PELOTAS</option>
+							<option value="PORTÃO">PORTÃO</option>
+							<option value="PORTO ALEGRE">PORTO ALEGRE</option>
+							<option value="RIO GRANDE">RIO GRANDE</option>
+							<option value="SANTA CRUZ DO SUL">SANTA CRUZ DO SUL</option>
+							<option value="SANTA MARIA">SANTA MARIA</option>
+							<option value="SANTA ROSA">SANTA ROSA</option>
+							<option value="SANTA VITÓRIA DO PALMAR">SANTA VITÓRIA DO PALMAR</option>
+							<option value="SANT'ANA DO LIVRAMENTO">SANT'ANA DO LIVRAMENTO</option>
+							<option value="SANTIAGO">SANTIAGO</option>
+							<option value="SANTO ÂNGELO">SANTO ÂNGELO</option>
+							<option value="SANTO ANTÔNIO DA PATRULHA">SANTO ANTÔNIO DA PATRULHA</option>
+							<option value="SÃO BORJA">SÃO BORJA</option>
+							<option value="SÃO GABRIEL">SÃO GABRIEL</option>
+							<option value="SÃO LEOPOLDO">SÃO LEOPOLDO</option>
+							<option value="SÃO LUIZ GONZAGA">SÃO LUIZ GONZAGA</option>
+							<option value="SÃO SEBASTIÃO DO CAÍ">SÃO SEBASTIÃO DO CAÍ</option>
+							<option value="SAPIRANGA">SAPIRANGA</option>
+							<option value="SAPUCAIA DO SUL">SAPUCAIA DO SUL</option>
+							<option value="TEUTÔNIA">TEUTÔNIA</option>
+							<option value="TORRES">TORRES</option>
+							<option value="TRAMANDAÍ">TRAMANDAÍ</option>
+							<option value="TRIUNFO">TRIUNFO</option>
+							<option value="URUGUAIANA">URUGUAIANA</option>
+							<option value="VACARIA">VACARIA</option>
+							<option value="VIAMÃO">VIAMÃO</option>
+							<option value="OUTRA">OUTRA</option>
+                        </select>
+                    </div>
+                    
+                    <!-- NOVOS FILTROS PARA EXPORTAÇÃO -->
+                    <div class="input-group">
+                        <label for="export-endereco"><i class="fas fa-map-marker-alt"></i> Endereço (filtro)</label>
+                        <input type="text" id="export-endereco" placeholder="Filtrar por endereço">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="export-bairro"><i class="fas fa-map-pin"></i> Bairro (filtro)</label>
+                        <input type="text" id="export-bairro" placeholder="Filtrar por bairro">
+                    </div>
+                    <!-- FIM DOS NOVOS FILTROS PARA EXPORTAÇÃO -->
+                    
+                    <div class="input-group">
+                        <label for="export-formato"><i class="fas fa-file"></i> Formato do Relatório</label>
+                        <select id="export-formato">
+                            <option value="html">HTML (Abrir no navegador)</option>
+                            <option value="html-download">HTML (Download)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px; color: #2c3e50;">Estatísticas do Período</h4>
+                    <div id="estatisticas-exportacao" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-warning" onclick="fecharModal('modal-exportacao')">Cancelar</button>
+                <button type="button" class="btn-export" onclick="gerarRelatorio()">Gerar Relatório</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text">Visita salva com sucesso!</span>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Sistema de Gestão de Visitas Comerciais &copy; <span id="current-year">2024</span></p>
+            <p>Dados armazenados na nuvem com Supabase | CRUD Completo + Exportação</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // CONFIGURAÇÃO INICIAL DO SUPABASE
+        // ============================================
+        
+        // SUBSTITUA ESTAS CREDENCIAIS COM AS SUAS DO SUPABASE
+        const SUPABASE_URL = 'https://hujtofmlumdleprkeiuw.supabase.co';            // SEU URL AQUI
+        const SUPABASE_ANON_KEY = 'sb_publishable_TOmGj-79DNrNzNcc7_DIrw_swQIPvi2'; // SUA CHAVE PÚBLICA AQUI
+        
+        // Inicializar cliente Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // ============================================
+        // VARIÁVEIS GLOBAIS
+        // ============================================
+        
+        let notificationTimeout;
+        let visitaParaExcluir = null;
+        
+        // Configuração inicial
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // FUNÇÃO CORRIGIDA: Obter data atual no formato YYYY-MM-DD
+        function getLocalDateString() {
+            const now = new Date();
+            // Ajusta para o fuso horário local
+            const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+            return localDate.toISOString().split('T')[0];
+        }
+        
+        // FUNÇÃO CORRIGIDA: Converter qualquer data para YYYY-MM-DD sem problemas de timezone
+        function formatDateForInput(dateString) {
+            if (!dateString) return '';
+            
+            // Se já estiver no formato YYYY-MM-DD, retorna como está
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+                return dateString;
+            }
+            
+            // Tenta converter de diferentes formatos
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return dateString; // Retorna original se não conseguir converter
+            }
+            
+            // Ajusta para o fuso horário local
+            const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+            return localDate.toISOString().split('T')[0];
+        }
+        
+        // FUNÇÃO CORRIGIDA: Criar data há 30 dias no formato YYYY-MM-DD
+        function getDateThirtyDaysAgo() {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(now.getDate() - 30);
+            
+            // Ajusta para o fuso horário local
+            const localDate = new Date(thirtyDaysAgo.getTime() - (thirtyDaysAgo.getTimezoneOffset() * 60000));
+            return localDate.toISOString().split('T')[0];
+        }
+        
+        // Definir data atual como padrão (corrigido)
+        const today = getLocalDateString();
+        document.getElementById('data').value = today;
+        
+        // Definir datas para filtros (últimos 30 dias) - CORRIGIDO
+        const thirtyDaysAgoStr = getDateThirtyDaysAgo();
+        document.getElementById('filtro-data-inicio').value = thirtyDaysAgoStr;
+        document.getElementById('filtro-data-fim').value = today;
+        document.getElementById('export-data-inicio').value = thirtyDaysAgoStr;
+        document.getElementById('export-data-fim').value = today;
+        
+        // ============================================
+        // 1. CONVERSÃO PARA CAIXA ALTA - IMPLEMENTAÇÃO
+        // ============================================
+        
+        function inicializarConversaoCaixaAlta() {
+            // Lista de IDs dos inputs que devem ser convertidos para caixa alta
+            const inputsParaConverter = [
+                'prospect', 'endereco', 'outro-cidade', 'bairro', 
+                'contato', 'outro-sistema', 'filtro-prospect', 'observacoes',
+                'filtro-endereco', 'filtro-bairro', // NOVOS FILTROS ADICIONADOS
+                'export-endereco', 'export-bairro' // FILTROS DE EXPORTAÇÃO
+            ];
+            
+            // Adicionar event listeners para conversão em tempo real
+            inputsParaConverter.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    // Para textarea
+                    if (input.tagName === 'TEXTAREA') {
+                        input.addEventListener('input', function(e) {
+                            // Salvar a posição do cursor
+                            const start = this.selectionStart;
+                            const end = this.selectionEnd;
+                            
+                            // Converter para caixa alta
+                            this.value = this.value.toUpperCase();
+                            
+                            // Restaurar a posição do cursor
+                            this.setSelectionRange(start, end);
+                        });
+                        
+                        input.addEventListener('blur', function(e) {
+                            this.value = this.value.toUpperCase();
+                        });
+                    } else {
+                        // Para inputs normais
+                        input.addEventListener('input', function(e) {
+                            // Salvar a posição do cursor
+                            const start = this.selectionStart;
+                            const end = this.selectionEnd;
+                            
+                            // Converter para caixa alta
+                            this.value = this.value.toUpperCase();
+                            
+                            // Restaurar a posição do cursor
+                            this.setSelectionRange(start, end);
+                        });
+                        
+                        input.addEventListener('blur', function(e) {
+                            this.value = this.value.toUpperCase();
+                        });
+                    }
+                }
+            });
+            
+            // Para o campo de filtro prospect
+            const filtroProspect = document.getElementById('filtro-prospect');
+            if (filtroProspect) {
+                filtroProspect.addEventListener('input', function(e) {
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.toUpperCase();
+                    this.setSelectionRange(start, end);
+                });
+            }
+        }
+        
+        // Função para converter string para caixa alta mantendo acentos
+        function converterParaCaixaAlta(texto) {
+            if (!texto || typeof texto !== 'string') return texto;
+            return texto.toUpperCase();
+        }
+        
+        // Modificar a função de salvar para garantir caixa alta
+        function salvarComCaixaAlta(visita) {
+            // Converter campos de texto para caixa alta
+            return {
+                ...visita,
+                prospect: converterParaCaixaAlta(visita.prospect),
+                endereco: converterParaCaixaAlta(visita.endereco),
+                cidade: converterParaCaixaAlta(visita.cidade),
+                bairro: converterParaCaixaAlta(visita.bairro),
+                contato: converterParaCaixaAlta(visita.contato),
+                sistema: converterParaCaixaAlta(visita.sistema),
+                observacoes: converterParaCaixaAlta(visita.observacoes || '')
+            };
+        }
+
+        // Configurar eventos para mostrar campos "Outro" quando selecionado
+        document.getElementById('cidade').addEventListener('change', function() {
+            const outroContainer = document.getElementById('outro-cidade-container');
+            if (this.value === 'OUTRA') {
+                outroContainer.classList.add('show');
+                document.getElementById('outro-cidade').required = true;
+            } else {
+                outroContainer.classList.remove('show');
+                document.getElementById('outro-cidade').required = false;
+            }
+        });
+
+        document.getElementById('sistema').addEventListener('change', function() {
+            const outroContainer = document.getElementById('outro-sistema-container');
+            if (this.value === 'OUTROS') {
+                outroContainer.classList.add('show');
+                document.getElementById('outro-sistema').required = true;
+            } else {
+                outroContainer.classList.remove('show');
+                document.getElementById('outro-sistema').required = false;
+            }
+        });
+
+        // ============================================
+        // 2. FUNÇÕES CRUD COM SUPABASE
+        // ============================================
+
+        // Manipulador do envio do formulário (CREATE/UPDATE)
+        document.getElementById("form").onsubmit = async function(e) {
+            e.preventDefault();
+
+            const visitaId = document.getElementById('visita-id').value;
+            
+            // Coletar dados do formulário
+            let cidadeValor = document.getElementById('cidade').value;
+            if (cidadeValor === 'OUTRA') {
+                const outroCidade = document.getElementById('outro-cidade').value.trim();
+                if (!outroCidade) {
+                    showNotification("Informe o nome da cidade", false);
+                    return;
+                }
+                cidadeValor = `OUTRA: ${outroCidade}`;
+            }
+
+            let sistemaValor = document.getElementById('sistema').value;
+            if (sistemaValor === 'OUTROS') {
+                const outroSistema = document.getElementById('outro-sistema').value.trim();
+                if (!outroSistema) {
+                    showNotification("Informe o sistema utilizado", false);
+                    return;
+                }
+                sistemaValor = `OUTROS: ${outroSistema}`;
+            }
+
+            // CORREÇÃO: Pega exatamente o valor do input date, sem conversões
+            const dataInput = document.getElementById('data').value;
+            
+            const visita = {
+                data: dataInput, // Valor direto do input
+                prospect: document.getElementById('prospect').value.trim(),
+                endereco: document.getElementById('endereco').value.trim(),
+                cidade: cidadeValor,
+                bairro: document.getElementById('bairro').value.trim(),
+                contato: document.getElementById('contato').value.trim(),
+                telefone: document.getElementById('telefone').value.trim(),
+                sistema: sistemaValor || 'INDEFINIDO',
+                regime: document.getElementById('regime').value,
+                observacoes: document.getElementById('observacoes').value.trim()
+            };
+
+            // Validar campos obrigatórios
+            if (!visita.prospect || !visita.endereco || !visita.cidade || !visita.regime) {
+                showNotification("Preencha todos os campos obrigatórios", false);
+                return;
+            }
+
+            // Validar data (formato básico)
+            if (!visita.data || !/^\d{4}-\d{2}-\d{2}$/.test(visita.data)) {
+                showNotification("Data inválida. Use o formato AAAA-MM-DD", false);
+                return;
+            }
+
+            // Aplicar caixa alta aos dados antes de salvar
+            const visitaCaixaAlta = salvarComCaixaAlta(visita);
+
+            try {
+                if (visitaId) {
+                    // UPDATE: Atualizar visita existente
+                    const { error } = await supabase
+                        .from('visitas')
+                        .update(visitaCaixaAlta)
+                        .eq('id', parseInt(visitaId));
+                    
+                    if (error) throw error;
+                    
+                    showNotification("Visita atualizada com sucesso!", true);
+                } else {
+                    // CREATE: Adicionar nova visita
+                    const { error } = await supabase
+                        .from('visitas')
+                        .insert([visitaCaixaAlta]);
+                    
+                    if (error) throw error;
+                    
+                    showNotification("Visita registrada com sucesso!", true);
+                }
+                
+                resetForm();
+                await listar();
+            } catch (error) {
+                console.error("Erro ao salvar visita:", error);
+                showNotification("Erro ao salvar a visita. Verifique sua conexão.", false);
+            }
+        };
+
+        // Função para listar visitas (READ)
+        async function listar() {
+            const lista = document.getElementById("lista");
+            const emptyMessage = document.getElementById("empty-message");
+            
+            // Limpar lista atual
+            lista.innerHTML = '';
+            lista.appendChild(emptyMessage);
+            emptyMessage.style.display = 'block';
+            
+            try {
+                // Buscar todas as visitas do Supabase
+                const { data: todasVisitas, error } = await supabase
+                    .from('visitas')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                const visitasFiltradas = aplicarFiltrosArray(todasVisitas || []);
+                
+                if (visitasFiltradas.length === 0) {
+                    emptyMessage.style.display = 'block';
+                    emptyMessage.innerHTML = `
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>Nenhuma visita encontrada com os filtros aplicados.</p>
+                    `;
+                } else {
+                    emptyMessage.style.display = 'none';
+                    
+                    // Ordenar por nome do prospect (ordem alfabética) e depois por data (mais recente primeiro)
+                    visitasFiltradas.sort((a, b) => {
+                        // Primeiro ordena por nome do prospect
+                        const nomeA = a.prospect.toUpperCase();
+                        const nomeB = b.prospect.toUpperCase();
+                        
+                        if (nomeA < nomeB) return -1;
+                        if (nomeA > nomeB) return 1;
+                        
+                        // Se nomes forem iguais, ordena por data (mais recente primeiro)
+                        if (a.data < b.data) return 1;
+                        if (a.data > b.data) return -1;
+                        return 0;
+                    });
+                    
+                    // Exibir cada visita
+                    visitasFiltradas.forEach(v => {
+                        const visitaItem = document.createElement("li");
+                        visitaItem.className = "visita-item";
+                        
+                        // Formatar data para exibição mais amigável
+                        const dataFormatada = formatarData(v.data);
+                        
+                        visitaItem.innerHTML = `
+                            <div class="visita-actions">
+                                <button class="btn-warning btn-small" onclick="editarVisita(${v.id})" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn-danger btn-small" onclick="confirmarExclusao(${v.id}, '${v.prospect.replace(/'/g, "\\'")}')" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="visita-header">
+                                <div>
+                                    <div class="visita-prospect">${v.prospect}</div>
+                                    <div class="visita-data"><i class="far fa-calendar"></i> ${dataFormatada}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="visita-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Endereço:</span>
+                                    <span class="detail-value">${v.endereco}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Cidade/Bairro:</span>
+                                    <span class="detail-value">${v.cidade} - ${v.bairro || ''}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Contato:</span>
+                                    <span class="detail-value">${v.contato || ''}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Telefone:</span>
+                                    <span class="detail-value">${v.telefone || ''}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Sistema Atual:</span>
+                                    <span class="detail-value">${v.sistema || 'INDEFINIDO'}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Regime Fiscal:</span>
+                                    <span class="detail-value">${v.regime || 'INDEFINIDO'}</span>
+                                </div>
+                                ${v.observacoes ? `
+                                <div class="detail-item detail-item-observacoes">
+                                    <span class="detail-label">Observações:</span>
+                                    <span class="detail-value detail-value-observacoes">${v.observacoes}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+                        
+                        lista.appendChild(visitaItem);
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao listar visitas:", error);
+                showNotification("Erro ao carregar visitas. Verifique sua conexão.", false);
+            }
+        }
+
+        // Função para aplicar filtros
+        function aplicarFiltros() {
+            listar();
+        }
+
+        // FUNÇÃO ATUALIZADA: Agora inclui filtros de endereço e bairro
+        function aplicarFiltrosArray(visitas) {
+            const dataInicio = document.getElementById('filtro-data-inicio').value;
+            const dataFim = document.getElementById('filtro-data-fim').value;
+            const cidadeFiltro = document.getElementById('filtro-cidade').value;
+            const prospectFiltro = document.getElementById('filtro-prospect').value.toUpperCase().trim();
+            const enderecoFiltro = document.getElementById('filtro-endereco').value.toUpperCase().trim(); // NOVO
+            const bairroFiltro = document.getElementById('filtro-bairro').value.toUpperCase().trim(); // NOVO
+            
+            return visitas.filter(v => {
+                // Filtrar por data (comparação de strings YYYY-MM-DD)
+                if (dataInicio && v.data < dataInicio) return false;
+                if (dataFim && v.data > dataFim) return false;
+                
+                // Filtrar por cidade
+                if (cidadeFiltro) {
+                    if (cidadeFiltro === 'OUTRA') {
+                        if (!v.cidade.startsWith('OUTRA:')) return false;
+                    } else if (v.cidade !== cidadeFiltro && !v.cidade.startsWith('OUTRA:')) {
+                        return false;
+                    }
+                }
+                
+                // Filtrar por prospect
+                if (prospectFiltro && !v.prospect.toUpperCase().includes(prospectFiltro)) {
+                    return false;
+                }
+                
+                // NOVO: Filtrar por endereço
+                if (enderecoFiltro && !v.endereco.toUpperCase().includes(enderecoFiltro)) {
+                    return false;
+                }
+                
+                // NOVO: Filtrar por bairro
+                if (bairroFiltro && !v.bairro.toUpperCase().includes(bairroFiltro)) {
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+
+        // FUNÇÃO ATUALIZADA: Agora limpa também os novos filtros
+        function limparFiltros() {
+            document.getElementById('filtro-data-inicio').value = thirtyDaysAgoStr;
+            document.getElementById('filtro-data-fim').value = today;
+            document.getElementById('filtro-cidade').value = '';
+            document.getElementById('filtro-prospect').value = '';
+            document.getElementById('filtro-endereco').value = ''; // NOVO
+            document.getElementById('filtro-bairro').value = ''; // NOVO
+            listar();
+        }
+
+        // Função para editar visita (UPDATE) - CORRIGIDA
+        async function editarVisita(id) {
+            try {
+                const { data: visita, error } = await supabase
+                    .from('visitas')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (visita) {
+                    // Preencher formulário com dados da visita
+                    document.getElementById('visita-id').value = visita.id;
+                    
+                    // CORREÇÃO: Usar formatDateForInput para garantir o formato correto
+                    document.getElementById('data').value = formatDateForInput(visita.data);
+                    
+                    document.getElementById('prospect').value = visita.prospect;
+                    document.getElementById('endereco').value = visita.endereco;
+                    
+                    // Configurar cidade
+                    if (visita.cidade.startsWith('OUTRA:')) {
+                        document.getElementById('cidade').value = 'OUTRA';
+                        document.getElementById('outro-cidade').value = visita.cidade.replace('OUTRA: ', '');
+                        document.getElementById('outro-cidade-container').classList.add('show');
+                    } else {
+                        document.getElementById('cidade').value = visita.cidade;
+                        document.getElementById('outro-cidade-container').classList.remove('show');
+                    }
+                    
+                    document.getElementById('bairro').value = visita.bairro || '';
+                    document.getElementById('contato').value = visita.contato || '';
+                    document.getElementById('telefone').value = visita.telefone || '';
+                    
+                    // Configurar sistema
+                    if (visita.sistema && visita.sistema.startsWith('OUTROS:')) {
+                        document.getElementById('sistema').value = 'OUTROS';
+                        document.getElementById('outro-sistema').value = visita.sistema.replace('OUTROS: ', '');
+                        document.getElementById('outro-sistema-container').classList.add('show');
+                    } else {
+                        document.getElementById('sistema').value = visita.sistema || 'INDEFINIDO';
+                        document.getElementById('outro-sistema-container').classList.remove('show');
+                    }
+                    
+                    document.getElementById('regime').value = visita.regime;
+                    document.getElementById('observacoes').value = visita.observacoes || '';
+                    
+                    // Alterar botão para "Atualizar"
+                    document.getElementById('submit-btn').innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Visita';
+                    
+                    // Rolagem suave até o formulário
+                    document.getElementById('form').scrollIntoView({ behavior: 'smooth' });
+                    
+                    showNotification("Preencha os campos e clique em 'Atualizar Visita' para salvar as alterações", true);
+                }
+            } catch (error) {
+                console.error("Erro ao editar visita:", error);
+                showNotification("Erro ao carregar visita para edição", false);
+            }
+        }
+
+        // Função para confirmar exclusão (DELETE)
+        function confirmarExclusao(id, prospect) {
+            visitaParaExcluir = id;
+            document.getElementById('mensagem-exclusao').textContent = `Tem certeza que deseja excluir a visita para "${prospect}"?`;
+            abrirModal('modal-exclusao');
+            
+            // Configurar botão de confirmação
+            document.getElementById('confirmar-exclusao-btn').onclick = excluirVisita;
+        }
+
+        // Função para excluir visita
+        async function excluirVisita() {
+            if (!visitaParaExcluir) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('visitas')
+                    .delete()
+                    .eq('id', visitaParaExcluir);
+                
+                if (error) throw error;
+                
+                showNotification("Visita excluída com sucesso!", true);
+                fecharModal('modal-exclusao');
+                visitaParaExcluir = null;
+                await listar();
+            } catch (error) {
+                console.error("Erro ao excluir visita:", error);
+                showNotification("Erro ao excluir a visita", false);
+                fecharModal('modal-exclusao');
+                visitaParaExcluir = null;
+            }
+        }
+        
+        // ============================================
+        // 3. NOVA FUNÇÃO: Exportar Dados para JSON
+        // ============================================
+        
+        async function exportarDadosJSON() {
+            try {
+                // Buscar todas as visitas do Supabase
+                const { data: todasVisitas, error } = await supabase
+                    .from('visitas')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                if (!todasVisitas || todasVisitas.length === 0) {
+                    showNotification("Não há dados para exportar. Adicione visitas primeiro.", false);
+                    return;
+                }
+                
+                // Aplicar filtros atuais aos dados para exportação
+                const dadosParaExportar = aplicarFiltrosArray(todasVisitas);
+                
+                if (dadosParaExportar.length === 0) {
+                    showNotification("Nenhum dado corresponde aos filtros aplicados. Tente ajustar os filtros.", false);
+                    return;
+                }
+                
+                // Preparar dados para exportação
+                const dadosFormatados = dadosParaExportar.map(visita => {
+                    // Criar cópia do objeto
+                    const visitaExportada = { ...visita };
+                    
+                    // Remover campos internos do Supabase se existirem
+                    delete visitaExportada.created_at;
+                    delete visitaExportada.updated_at;
+                    
+                    // Garantir que o campo observações existe
+                    if (visitaExportada.observacoes === undefined) {
+                        visitaExportada.observacoes = '';
+                    }
+                    
+                    return visitaExportada;
+                });
+                
+                // Criar objeto JSON formatado
+                const dadosJSON = JSON.stringify(dadosFormatados, null, 2);
+                
+                // Criar blob e link para download
+                const blob = new Blob([dadosJSON], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                
+                // Gerar nome do arquivo com data atual
+                const dataAtual = new Date().toISOString().split('T')[0];
+                const horaAtual = new Date().toTimeString().split(' ')[0].replace(/:/g, '-');
+                const nomeArquivo = `visitas-${dataAtual}_${horaAtual}.json`;
+                
+                a.href = url;
+                a.download = nomeArquivo;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Mostrar notificação de sucesso
+                showNotification(`${dadosParaExportar.length} visitas exportadas com sucesso para ${nomeArquivo}`, true);
+            } catch (error) {
+                console.error("Erro ao exportar dados:", error);
+                showNotification("Erro ao exportar dados. Verifique sua conexão.", false);
+            }
+        }
+        
+        // ============================================
+        // 4. BOTÃO LIMPAR LISTA - IMPLEMENTAÇÃO
+        // ============================================
+        
+        async function abrirModalLimparLista() {
+            try {
+                // Contar quantas visitas existem no Supabase
+                const { count, error } = await supabase
+                    .from('visitas')
+                    .select('*', { count: 'exact', head: true });
+                
+                if (error) throw error;
+                
+                const totalVisitas = count || 0;
+                
+                if (totalVisitas === 0) {
+                    showNotification("Não há visitas para limpar.", false);
+                    return;
+                }
+                
+                document.getElementById('mensagem-limpar-lista').textContent = 
+                    `Tem certeza que deseja excluir TODAS as ${totalVisitas} visitas registradas? Esta ação NÃO pode ser desfeita!`;
+                
+                // Atualizar contador no modal
+                document.getElementById('contador-visitas').textContent = totalVisitas;
+                
+                abrirModal('modal-limpar-lista');
+            } catch (error) {
+                console.error("Erro ao contar visitas:", error);
+                showNotification("Erro ao verificar o total de visitas", false);
+            }
+        }
+        
+        async function limparTodasVisitas() {
+            try {
+                // Excluir todas as visitas do Supabase
+                const { error } = await supabase
+                    .from('visitas')
+                    .delete()
+                    .neq('id', 0); // Exclui todos os registros
+                    
+                if (error) throw error;
+                
+                showNotification(`Todas as visitas foram excluídas com sucesso!`, true);
+                fecharModal('modal-limpar-lista');
+                await listar();
+            } catch (error) {
+                console.error("Erro ao limpar a lista:", error);
+                showNotification("Erro ao limpar todas as visitas", false);
+                fecharModal('modal-limpar-lista');
+            }
+        }
+
+        // Função para resetar formulário - CORRIGIDA
+        function resetForm() {
+            document.getElementById('form').reset();
+            document.getElementById('visita-id').value = '';
+            document.getElementById('data').value = today; // Usa a data atual corrigida
+            document.getElementById('cidade').selectedIndex = 0;
+            document.getElementById('sistema').selectedIndex = 0;
+            document.getElementById('regime').selectedIndex = 0;
+            document.getElementById('observacoes').value = '';
+            document.getElementById('outro-cidade-container').classList.remove('show');
+            document.getElementById('outro-sistema-container').classList.remove('show');
+            document.getElementById('submit-btn').innerHTML = '<i class="fas fa-save"></i> Salvar Visita';
+        }
+
+        // Função para abrir modal de exportação
+        function abrirModalExportacao() {
+            // Atualizar estatísticas antes de abrir o modal
+            atualizarEstatisticasExportacao();
+            abrirModal('modal-exportacao');
+        }
+
+        // FUNÇÃO ATUALIZADA: Agora considera os novos filtros de exportação
+        async function atualizarEstatisticasExportacao() {
+            try {
+                const { data: todasVisitas, error } = await supabase
+                    .from('visitas')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                const dataInicio = document.getElementById('export-data-inicio').value;
+                const dataFim = document.getElementById('export-data-fim').value;
+                const cidadeFiltro = document.getElementById('export-cidade').value;
+                const enderecoFiltro = document.getElementById('export-endereco').value.toUpperCase().trim(); // NOVO
+                const bairroFiltro = document.getElementById('export-bairro').value.toUpperCase().trim(); // NOVO
+                
+                // Filtrar visitas para o período selecionado
+                const visitasFiltradas = (todasVisitas || []).filter(v => {
+                    if (dataInicio && v.data < dataInicio) return false;
+                    if (dataFim && v.data > dataFim) return false;
+                    
+                    if (cidadeFiltro) {
+                        if (cidadeFiltro === 'OUTRA') {
+                            if (!v.cidade.startsWith('OUTRA:')) return false;
+                        } else if (v.cidade !== cidadeFiltro && !v.cidade.startsWith('OUTRA:')) {
+                            return false;
+                        }
+                    }
+                    
+                    // NOVO: Filtrar por endereço
+                    if (enderecoFiltro && !v.endereco.toUpperCase().includes(enderecoFiltro)) {
+                        return false;
+                    }
+                    
+                    // NOVO: Filtrar por bairro
+                    if (bairroFiltro && !v.bairro.toUpperCase().includes(bairroFiltro)) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Calcular estatísticas
+                const totalVisitas = visitasFiltradas.length;
+                
+                // Contar por cidade
+                const contagemCidades = {};
+                visitasFiltradas.forEach(v => {
+                    const cidade = v.cidade.startsWith('OUTRA:') ? 'OUTRA' : v.cidade;
+                    contagemCidades[cidade] = (contagemCidades[cidade] || 0) + 1;
+                });
+                
+                // Contar por regime fiscal
+                const contagemRegimes = {};
+                visitasFiltradas.forEach(v => {
+                    const regime = v.regime || 'INDEFINIDO';
+                    contagemRegimes[regime] = (contagemRegimes[regime] || 0) + 1;
+                });
+                
+                // Exibir estatísticas
+                const estatisticasDiv = document.getElementById('estatisticas-exportacao');
+                let html = `
+                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #3498db;">
+                        <div style="font-size: 0.9rem; color: #7f8c8d;">Total de Visitas</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2c3e50;">${totalVisitas}</div>
+                    </div>
+                `;
+                
+                // Adicionar cidade com mais visitas
+                if (Object.keys(contagemCidades).length > 0) {
+                    const cidadeMaisFrequente = Object.keys(contagemCidades).reduce((a, b) => 
+                        contagemCidades[a] > contagemCidades[b] ? a : b
+                    );
+                    html += `
+                        <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #2ecc71;">
+                            <div style="font-size: 0.9rem; color: #7f8c8d;">Cidade Mais Frequente</div>
+                            <div style="font-size: 1.2rem; font-weight: bold; color: #2c3e50;">${cidadeMaisFrequente}</div>
+                            <div style="font-size: 0.8rem; color: #95a5a6;">${contagemCidades[cidadeMaisFrequente]} visitas</div>
+                        </div>
+                    `;
+                }
+                
+                estatisticasDiv.innerHTML = html;
+            } catch (error) {
+                console.error("Erro ao atualizar estatísticas:", error);
+                const estatisticasDiv = document.getElementById('estatisticas-exportacao');
+                estatisticasDiv.innerHTML = `
+                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #e74c3c;">
+                        <div style="font-size: 0.9rem; color: #7f8c8d;">Erro ao carregar estatísticas</div>
+                        <div style="font-size: 1rem; color: #e74c3c;">Verifique a conexão</div>
+                    </div>
+                `;
+            }
+        }
+
+        // FUNÇÃO ATUALIZADA: Agora considera os novos filtros de exportação
+        async function gerarRelatorio() {
+            const dataInicio = document.getElementById('export-data-inicio').value;
+            const dataFim = document.getElementById('export-data-fim').value;
+            const cidadeFiltro = document.getElementById('export-cidade').value;
+            const enderecoFiltro = document.getElementById('export-endereco').value.toUpperCase().trim(); // NOVO
+            const bairroFiltro = document.getElementById('export-bairro').value.toUpperCase().trim(); // NOVO
+            const formato = document.getElementById('export-formato').value;
+            
+            try {
+                const { data: todasVisitas, error } = await supabase
+                    .from('visitas')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                // Filtrar visitas para o período selecionado
+                let visitasFiltradas = (todasVisitas || []).filter(v => {
+                    if (dataInicio && v.data < dataInicio) return false;
+                    if (dataFim && v.data > dataFim) return false;
+                    
+                    if (cidadeFiltro) {
+                        if (cidadeFiltro === 'OUTRA') {
+                            if (!v.cidade.startsWith('OUTRA:')) return false;
+                        } else if (v.cidade !== cidadeFiltro && !v.cidade.startsWith('OUTRA:')) {
+                            return false;
+                        }
+                    }
+                    
+                    // NOVO: Filtrar por endereço
+                    if (enderecoFiltro && !v.endereco.toUpperCase().includes(enderecoFiltro)) {
+                        return false;
+                    }
+                    
+                    // NOVO: Filtrar por bairro
+                    if (bairroFiltro && !v.bairro.toUpperCase().includes(bairroFiltro)) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Ordenar por nome do prospect (ordem alfabética) e depois por data (mais recente primeiro)
+                visitasFiltradas.sort((a, b) => {
+                    // Primeiro ordena por nome do prospect
+                    const nomeA = a.prospect.toUpperCase();
+                    const nomeB = b.prospect.toUpperCase();
+                    
+                    if (nomeA < nomeB) return -1;
+                    if (nomeA > nomeB) return 1;
+                    
+                    // Se nomes forem iguais, ordena por data (mais recente primeiro)
+                    if (a.data < b.data) return 1;
+                    if (a.data > b.data) return -1;
+                    return 0;
+                });
+                
+                // Calcular estatísticas para o relatório
+                const contagemCidades = {};
+                const contagemRegimes = {};
+                
+                visitasFiltradas.forEach(v => {
+                    const cidade = v.cidade.startsWith('OUTRA:') ? 'OUTRA' : v.cidade;
+                    contagemCidades[cidade] = (contagemCidades[cidade] || 0) + 1;
+                    
+                    const regime = v.regime || 'INDEFINIDO';
+                    contagemRegimes[regime] = (contagemRegimes[regime] || 0) + 1;
+                });
+                
+                let cidadeMaisFrequente = 'N/A';
+                if (Object.keys(contagemCidades).length > 0) {
+                    cidadeMaisFrequente = Object.keys(contagemCidades).reduce((a, b) => 
+                        contagemCidades[a] > contagemRegimes[b] ? a : b
+                    );
+                }
+                
+                let regimeMaisFrequente = 'N/A';
+                if (Object.keys(contagemRegimes).length > 0) {
+                    regimeMaisFrequente = Object.keys(contagemRegimes).reduce((a, b) => 
+                        contagemRegimes[a] > contagemRegimes[b] ? a : b
+                    );
+                }
+                
+                // ============================================
+                // AJUSTES NO RELATÓRIO - CABEÇALHO COMPACTO
+                // ============================================
+                
+                // Gerar linhas da tabela COM ENDEREÇO
+                let tabelaHTML = '';
+                if (visitasFiltradas.length > 0) {
+                    visitasFiltradas.forEach(v => {
+                        tabelaHTML += `
+                    <tr>
+                        <td>${formatarData(v.data)}</td>
+                        <td>
+                            <div style="font-weight: bold;">${v.prospect}</div>
+                            <div style="font-size: 0.85rem; color: #666; margin-top: 3px;">${v.endereco}</div>
+                        </td>
+                        <td>${v.cidade} - ${v.bairro || ''}</td>
+                        <td>${v.contato || ''}</td>
+                        <td>${v.sistema || 'INDEFINIDO'}</td>
+                        <td>${v.regime || 'INDEFINIDO'}</td>
+                        <td>${v.observacoes || ''}</td>
+                    </tr>
+                `;
+                    });
+                } else {
+                    tabelaHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #7f8c8d; font-style: italic;">
+                            Nenhuma visita encontrada no período selecionado.
+                        </td>
+                    </tr>
+                `;
+                }
+                
+                // Gerar conteúdo HTML completo do relatório COM CABEÇALHO COMPACTO
+                const relatorioHTML = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Visitas Comerciais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+        }
+        
+        .relatorio-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cabecalho {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e5eb;
+        }
+        
+        .cabecalho h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.5rem; /* REDUZIDO de ~1.8rem */
+        }
+        
+        .cabecalho .periodo {
+            color: #7f8c8d;
+            font-size: 0.95rem; /* REDUZIDO de 1.1rem */
+            margin-bottom: 15px;
+        }
+        
+        .info-geracao {
+            background-color: #f8f9fa;
+            padding: 10px 12px; /* REDUZIDO de 15px */
+            border-radius: 6px;
+            margin-bottom: 20px; /* REDUZIDO de 30px */
+            border-left: 3px solid #3498db; /* REDUZIDO de 4px */
+            font-size: 0.85rem; /* NOVO: fonte menor */
+        }
+        
+        .estatisticas {
+            display: flex; /* MUDADO: flex em vez de grid */
+            justify-content: space-between;
+            gap: 15px; /* REDUZIDO de 20px */
+            margin-bottom: 20px; /* REDUZIDO de 30px */
+            flex-wrap: wrap;
+        }
+        
+        .estatistica-item {
+            background: white;
+            padding: 12px 15px; /* REDUZIDO de 20px */
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            border-left: 3px solid #2ecc71; /* REDUZIDO de 4px */
+            flex: 1;
+            min-width: 180px;
+            text-align: center;
+        }
+        
+        .estatistica-titulo {
+            font-size: 0.8rem; /* REDUZIDO de 0.9rem */
+            color: #7f8c8d;
+            margin-bottom: 4px; /* REDUZIDO de 5px */
+            white-space: nowrap; /* IMPEDE QUEBRA DE LINHA */
+        }
+        
+        .estatistica-valor {
+            font-size: 1.2rem; /* REDUZIDO drasticamente de 1.8rem */
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: nowrap; /* IMPEDE QUEBRA DE LINHA */
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .estatistica-subtitulo {
+            font-size: 0.7rem; /* REDUZIDO de 0.8rem */
+            color: #95a5a6;
+            margin-top: 3px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px; /* REDUZIDO de 20px */
+        }
+        
+        th {
+            background-color: #0078D7; /* Azul Windows 10 */
+            color: white;
+            text-align: left;
+            padding: 12px; /* REDUZIDO de 15px */
+            font-weight: 600;
+            font-size: 0.9rem; /* NOVO: fonte menor */
+        }
+        
+        td {
+            padding: 10px 12px; /* REDUZIDO de 12px 15px */
+            border-bottom: 1px solid #e1e5eb;
+            font-size: 0.9rem; /* NOVO: fonte menor */
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .rodape {
+            margin-top: 25px; /* REDUZIDO de 30px */
+            padding-top: 15px; /* REDUZIDO de 20px */
+            border-top: 1px solid #e1e5eb;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.85rem; /* REDUZIDO de 0.9rem */
+        }
+        
+        @media print {
+            body {
+                padding: 5px; /* REDUZIDO de 0 */
+            }
+            
+            .relatorio-container {
+                box-shadow: none;
+                padding: 10px; /* REDUZIDO de 10px */
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .estatisticas {
+                flex-direction: column; /* Empilha verticalmente em mobile */
+                gap: 10px;
+            }
+            
+            .estatistica-item {
+                min-width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .cabecalho h1 {
+                font-size: 1.3rem; /* Ainda menor em mobile */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cabecalho h1 {
+                font-size: 1.2rem;
+            }
+            
+            .estatistica-valor {
+                font-size: 1.1rem;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="relatorio-container">
+        <div class="cabecalho">
+            <h1>Relatório de Visitas Comerciais</h1>
+            <div class="periodo">
+                Período: ${dataInicio ? formatarData(dataInicio) : 'Início'} até ${dataFim ? formatarData(dataFim) : 'Fim'}
+                ${cidadeFiltro ? ` | Cidade: ${cidadeFiltro}` : ''}
+                ${enderecoFiltro ? ` | Endereço contém: ${enderecoFiltro}` : ''}
+                ${bairroFiltro ? ` | Bairro contém: ${bairroFiltro}` : ''}
+            </div>
+            <div class="info-geracao">
+                Gerado em: ${new Date().toLocaleDateString('pt-BR', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })}
+            </div>
+        </div>
+        
+        <div class="estatisticas">
+            <div class="estatistica-item">
+                <div class="estatistica-titulo">Total de Visitas</div>
+                <div class="estatistica-valor">${visitasFiltradas.length}</div>
+            </div>
+            
+            <div class="estatistica-item">
+                <div class="estatistica-titulo">Cidade Mais Frequente</div>
+                <div class="estatistica-valor">${cidadeMaisFrequente}</div>
+                <div class="estatistica-subtitulo">${contagemCidades[cidadeMaisFrequente] || 0} visitas</div>
+            </div>
+            
+            <div class="estatistica-item">
+                <div class="estatistica-titulo">Regime Mais Frequente</div>
+                <div class="estatistica-valor">${regimeMaisFrequente}</div>
+                <div class="estatistica-subtitulo">${contagemRegimes[regimeMaisFrequente] || 0} visitas</div>
+            </div>
+        </div>
+        
+        <h2 style="margin-top: 15px; margin-bottom: 10px; color: #2c3e50; font-size: 1.1rem;">Detalhamento das Visitas</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Prospect (Endereço)</th>
+                    <th>Cidade/Bairro</th>
+                    <th>Contato</th>
+                    <th>Sistema</th>
+                    <th>Regime Fiscal</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tabelaHTML}
+            </tbody>
+        </table>
+        
+        <div class="rodape">
+            <p>Sistema de Gestão de Visitas Comerciais &copy; ${new Date().getFullYear()}</p>
+            <p>Relatório gerado automaticamente. Dados atualizados até a geração deste relatório.</p>
+            <button class="no-print" onclick="window.print()" style="margin-top: 10px; padding: 8px 15px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85rem;">Imprimir Relatório</button>
+        </div>
+    </div>
+    
+    <script>
+        function formatarData(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+	    </' + 'script>
+	</body>
+	</html>
+	`;
+                
+                // Abrir ou baixar o relatório conforme o formato selecionado
+                if (formato === 'html') {
+                    // Abrir em nova aba
+                    const novaAba = window.open();
+                    novaAba.document.write(relatorioHTML);
+                    novaAba.document.close();
+                    showNotification("Relatório aberto em nova aba", true);
+                } else if (formato === 'html-download') {
+                    // Baixar como arquivo
+                    const blob = new Blob([relatorioHTML], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `relatorio-visitas-${new Date().toISOString().split('T')[0]}.html`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    showNotification("Relatório baixado com sucesso", true);
+                }
+                
+                fecharModal('modal-exportacao');
+            } catch (error) {
+                console.error("Erro ao gerar relatório:", error);
+                showNotification("Erro ao gerar relatório. Verifique sua conexão.", false);
+            }
+        }
+        
+        // ============================================
+        // 5. FUNÇÃO PARA IMPORTAR DADOS DO ARQUIVO JSON
+        // ============================================
+        
+        async function importarDados(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. Verificar se é um arquivo JSON
+            if (!file.name.endsWith('.json')) {
+                showNotification("O arquivo deve ser no formato JSON (.json)", false);
+                // Limpar o input para permitir nova seleção
+                event.target.value = ''; 
+                return;
+            }
+
+            showNotification(`Lendo arquivo "${file.name}"...`, true);
+            
+            const reader = new FileReader();
+
+            reader.onload = async function(e) {
+                let visitasParaImportar;
+                let importadosComSucesso = 0;
+
+                try {
+                    // 2. Conversão (Parse)
+                    visitasParaImportar = JSON.parse(e.target.result);
+                } catch (error) {
+                    showNotification("Erro ao processar o arquivo. Verifique se o JSON está formatado corretamente.", false);
+                    // Limpar o input
+                    event.target.value = '';
+                    return;
+                }
+
+                // 3. Validação inicial
+                if (!Array.isArray(visitasParaImportar)) {
+                    showNotification("O arquivo JSON deve conter um array (lista) de visitas.", false);
+                    // Limpar o input
+                    event.target.value = '';
+                    return;
+                }
+                
+                if (visitasParaImportar.length === 0) {
+                    showNotification("O arquivo JSON está vazio, nenhuma visita importada.", false);
+                    // Limpar o input
+                    event.target.value = '';
+                    return;
+                }
+
+                // 4. Processar cada visita
+                for (const visita of visitasParaImportar) {
+                    try {
+                        // Preparar objeto para inserção
+                        const novaVisita = { ...visita };
+                        delete novaVisita.id; // Remover id se existir
+                        
+                        // CORREÇÃO: Garantir que a data está no formato YYYY-MM-DD
+                        if (novaVisita.data) {
+                            novaVisita.data = formatDateForInput(novaVisita.data);
+                        }
+                        
+                        // Garantir que o campo observações existe
+                        if (novaVisita.observacoes === undefined) {
+                            novaVisita.observacoes = '';
+                        }
+                        
+                        // Aplicar caixa alta aos dados importados
+                        const visitaCaixaAlta = salvarComCaixaAlta(novaVisita);
+                        
+                        // Validação de campos obrigatórios
+                        if (!visitaCaixaAlta.prospect || !visitaCaixaAlta.data || !visitaCaixaAlta.regime) {
+                            console.warn(`Visita ignorada por falta de campos obrigatórios:`, visita);
+                            continue;
+                        }
+                        
+                        // Inserir no Supabase
+                        const { error } = await supabase
+                            .from('visitas')
+                            .insert([visitaCaixaAlta]);
+                        
+                        if (error) throw error;
+                        
+                        importadosComSucesso++;
+                        
+                    } catch (error) {
+                        console.error(`Erro ao importar a visita:`, error);
+                    }
+                }
+
+                // 5. Atualização da Interface e Feedback Final
+                showNotification(`${importadosComSucesso} visitas importadas com sucesso!`, true);
+                await listar(); // Recarrega a lista
+                // Limpar o input para permitir nova seleção
+                event.target.value = '';
+            };
+
+            reader.onerror = function(e) {
+                console.error("Erro ao ler o arquivo:", e);
+                showNotification("Falha na leitura do arquivo.", false);
+            };
+
+            reader.readAsText(file);
+        }
+
+        // ============================================
+        // 6. FUNÇÕES AUXILIARES
+        // ============================================
+
+        // Funções auxiliares para modais
+        function abrirModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function fecharModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Função para mostrar notificações
+        function showNotification(message, isSuccess) {
+            const notification = document.getElementById("notification");
+            const notificationText = document.getElementById("notification-text");
+            const notificationIcon = notification.querySelector("i");
+            
+            notificationText.textContent = message;
+            
+            // Alterar cor conforme o tipo de notificação
+            if (isSuccess) {
+                notification.style.backgroundColor = "#2ecc71";
+                notificationIcon.className = "fas fa-check-circle";
+                notification.classList.remove("error", "warning");
+            } else {
+                notification.style.backgroundColor = "#e74c3c";
+                notificationIcon.className = "fas fa-exclamation-circle";
+                notification.classList.add("error");
+            }
+            
+            // Mostrar notificação
+            notification.classList.remove("hidden");
+            
+            // Esconder notificação após 3 segundos
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
+                notification.classList.add("hidden");
+            }, 3000);
+        }
+
+        // Função para formatar data no padrão brasileiro (apenas para exibição)
+        function formatarData(dataString) {
+            if (!dataString) return 'Data inválida';
+            
+            // Se já estiver no formato YYYY-MM-DD, converte para objeto Date
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dataString)) {
+                // Adiciona timezone para evitar problemas
+                const date = new Date(dataString + 'T12:00:00');
+                if (isNaN(date.getTime())) {
+                    return dataString; // Retorna original se não conseguir converter
+                }
+                return date.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            }
+            
+            // Tenta converter outros formatos
+            const date = new Date(dataString);
+            if (isNaN(date.getTime())) {
+                return dataString; // Retorna original se não conseguir converter
+            }
+            
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // Adicionar máscara para telefone
+        document.getElementById('telefone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length > 10) {
+                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
+            } else if (value.length > 6) {
+                value = value.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3');
+            } else if (value.length > 2) {
+                value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+            } else if (value.length > 0) {
+                value = value.replace(/^(\d*)/, '($1');
+            }
+            
+            e.target.value = value;
+        });
+
+        // Atualizar estatísticas quando alterar filtros de exportação
+        document.getElementById('export-data-inicio').addEventListener('change', atualizarEstatisticasExportacao);
+        document.getElementById('export-data-fim').addEventListener('change', atualizarEstatisticasExportacao);
+        document.getElementById('export-cidade').addEventListener('change', atualizarEstatisticasExportacao);
+        document.getElementById('export-endereco').addEventListener('input', atualizarEstatisticasExportacao); // NOVO
+        document.getElementById('export-bairro').addEventListener('input', atualizarEstatisticasExportacao); // NOVO
+
+        // ============================================
+        // 7. INICIALIZAÇÃO
+        // ============================================
+        
+        // Inicializar conversão para caixa alta nos inputs
+        inicializarConversaoCaixaAlta();
+        
+        // Carregar visitas automaticamente ao abrir a página
+        document.addEventListener('DOMContentLoaded', function() {
+            listar();
+            
+            // Configurar botão de limpar lista
+            const confirmarLimparBtn = document.getElementById('confirmar-limpar-lista-btn');
+            if (confirmarLimparBtn) {
+                confirmarLimparBtn.addEventListener('click', limparTodasVisitas);
+            }
+        });
+
+        // ============================================
+        // 8. MODAIS DINÂMICOS
+        // ============================================
+
+        // Modal de Confirmação de Exclusão (adicionado dinamicamente)
+        const modalExclusaoHTML = `
+        <div id="modal-exclusao" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Confirmar Exclusão</h3>
+                    <button class="close-modal" onclick="fecharModal('modal-exclusao')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensagem-exclusao">Tem certeza que deseja excluir esta visita?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-warning" onclick="fecharModal('modal-exclusao')">Cancelar</button>
+                    <button type="button" class="btn-danger" id="confirmar-exclusao-btn">Excluir</button>
+                </div>
+            </div>
+        </div>
+`;
+        
+        document.body.insertAdjacentHTML('beforeend', modalExclusaoHTML);
+        
+        // Modal de Limpar Lista (adicionado dinamicamente)
+        const modalLimparListaHTML = `
+        <div id="modal-limpar-lista" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-radiation-alt"></i> Limpar Todas as Visitas</h3>
+                    <button class="close-modal" onclick="fecharModal('modal-limpar-lista')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #e67e22; margin-right: 10px;"></i>
+                        <strong>Atenção:</strong> Esta ação é IRREVERSÍVEL!
+                    </div>
+                    <p id="mensagem-limpar-lista">Tem certeza que deseja excluir todas as visitas?</p>
+                    <div style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                        <p><strong>Total de visitas que serão excluídas:</strong> <span id="contador-visitas" style="font-weight: bold; color: #e74c3c;">0</span></p>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: #7f8c8d;">Esta ação não pode ser desfeita. Recomendamos exportar um backup antes de prosseguir.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-warning" onclick="fecharModal('modal-limpar-lista')">Cancelar</button>
+                    <button type="button" class="btn-clear" id="confirmar-limpar-lista-btn">Limpar Tudo</button>
+                </div>
+            </div>
+        </div>
+`;
+        
+        document.body.insertAdjacentHTML('beforeend', modalLimparListaHTML);
+    </script>
+</body>
+</html>

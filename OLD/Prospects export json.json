@@ -1,0 +1,46 @@
+[
+  {
+    "data": "2026-01-21",
+    "prospect": "GALLI MERCADO REDEFORT",
+    "endereco": "RUA FELIPE CAMARÃO, 247.",
+    "cidade": "CANOAS",
+    "bairro": "RIO BRANCO",
+    "contato": "",
+    "telefone": "",
+    "sistema": "INDEFINIDO",
+    "regime": "LUCRO REAL"
+  },
+  {
+    "data": "2026-01-21",
+    "prospect": "JR CONTABILIDADE",
+    "endereco": "RUA SALDANHA DA GAMA, 586.",
+    "cidade": "CANOAS",
+    "bairro": "HARMONIA",
+    "contato": "",
+    "telefone": "(51) 3465-3639",
+    "sistema": "PARCEIRO",
+    "regime": "LUCRO REAL"
+  },
+  {
+    "data": "2026-01-21",
+    "prospect": "SAKSER & GOMES MERCADO REDEFORT",
+    "endereco": "RUA BAGÉ, 164.",
+    "cidade": "CANOAS",
+    "bairro": "NITERÓI",
+    "contato": "",
+    "telefone": "(51) 3031-5554",
+    "sistema": "INDEFINIDO",
+    "regime": "LUCRO REAL"
+  },
+  {
+    "data": "2026-01-21",
+    "prospect": "TRIPLEA CONTABILIDADE",
+    "endereco": "RUA REGENTE FEIJÓ, 71.",
+    "cidade": "CANOAS",
+    "bairro": "CENTRO",
+    "contato": "",
+    "telefone": "(51) 3031-7171",
+    "sistema": "PARCEIRO",
+    "regime": "LUCRO REAL"
+  }
+]
