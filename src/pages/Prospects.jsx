@@ -1,6 +1,7 @@
 // src/pages/Prospects.jsx
 import { useState, useEffect } from 'react';
-import { Plus, Filter, Upload, Download, Users } from 'lucide-react';
+import { Plus, Users, Search, X, RefreshCw } from 'lucide-react'; // Updated imports
+import Button from '../components/Button'; // Added Button
 import ProspectForm from '../components/prospects/ProspectForm';
 import ProspectFilters from '../components/prospects/ProspectFilters';
 import ProspectAdvancedTable from '../components/prospects/ProspectAdvancedTable';
@@ -20,6 +21,9 @@ export default function Prospects() {
     const [editingProspect, setEditingProspect] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+
+    // N.O.V.O: State para controle do Modal
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { user } = useAuth();
 
@@ -65,13 +69,6 @@ export default function Prospects() {
 
     useEffect(() => {
         loadData();
-        // Polling opcional para atualizações em tempo real (WebSocket seria ideal, mas polling é simples)
-        const interval = setInterval(() => {
-            // Simple polling sem recarregar tudo para não perder estado de form, 
-            // mas idealmente só recarregaríamos se não estivesse editando.
-            // Vou deixar manual refresh por enquanto para evitar conflitos de UX.
-        }, 30000);
-        return () => clearInterval(interval);
     }, []);
 
     // Re-aplicar filtros quando prospects mudam
@@ -79,68 +76,84 @@ export default function Prospects() {
         if (prospects.length > 0) {
             applyFilters(prospects);
         }
-    }, [prospects, filters]); // Dependência filters importante para reatividade do hook, mas loop cuidado. Hook gerencia.
+    }, [prospects, filters]); // Hook gerencia loop
+
+    // N.O.V.O: Handlers de Modal
+    const openModal = (prospect = null) => {
+        setEditingProspect(prospect);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingProspect(null);
+    };
 
     const handleEditProspect = (prospect) => {
-        setEditingProspect(prospect);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Agora abre o modal em vez de scrollar
+        openModal(prospect);
     };
 
     const handleFormSuccess = () => {
-        setEditingProspect(null);
-        loadData(); // Recarrega para pegar o novo ID e ordenação correta
+        closeModal();
+        loadData();
         setIsSaving(false);
-        // Scroll para tabela após sucesso
-        setTimeout(() => {
-            document.getElementById('prospects-table')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
     };
 
     const handleCancelEdit = () => {
-        setEditingProspect(null);
+        closeModal();
+    };
+
+    // Handler para busca rápida no header
+    const handleSearch = (value) => {
+        handleFilterChange('nome', value);
     };
 
     const filterStats = getFilterStats(prospects);
 
     return (
-        <div className="space-y-8">
-            {/* SEÇÃO 1: Formulário Principal */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                <div className={`p-1 ${editingProspect ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : 'bg-gradient-to-r from-green-50 to-emerald-50'}`}>
-                    <div className="bg-white rounded-xl p-6 md:p-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg ${editingProspect ? 'bg-blue-100' : 'bg-green-100'}`}>
-                                    {editingProspect ? <Users className="h-6 w-6 text-blue-600" /> : <Plus className="h-6 w-6 text-green-600" />}
-                                </div>
-                                <div>
-                                    <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                                        {editingProspect ? 'Editar Prospect' : 'Novo Prospect'}
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        {editingProspect
-                                            ? `Editando prospect: ${editingProspect.nome}`
-                                            : 'Preencha os dados abaixo para cadastrar um novo prospect'
-                                        }
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+        <div className="space-y-6 animate-fade-in">
+            {/* CABEÇALHO - Igual Segmentos */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Prospects</h1>
+                    <p className="text-gray-600 dark:text-gray-400 mt-2">Gerencie seus potenciais clientes e oportunidades de negócio.</p>
+                </div>
 
-                        <ProspectForm
-                            prospect={editingProspect}
-                            onSuccess={handleFormSuccess}
-                            onCancel={handleCancelEdit}
-                            isLoading={isSaving}
-                            segmentos={segmentos}
-                            concorrentes={concorrentes}
-                            vendedores={vendedores}
-                        />
-                    </div>
+                <Button onClick={() => openModal()} className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Novo Prospect
+                </Button>
+            </div>
+
+            {/* BARRA DE FERRAMENTAS - Igual Segmentos */}
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center">
+                <div className="relative w-full md:w-96">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por nome..."
+                        value={filters.nome || ''}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+                    />
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={loadData}
+                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Atualizar lista"
+                    >
+                        <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    </button>
+                    {/* Botões extras como Exportar poderiam vir aqui */}
                 </div>
             </div>
 
-            {/* SEÇÃO 2: Filtros */}
+            {/* ÁREA DE CONTEÚDO */}
+
+            {/* Filtros Avançados (Mantido, mas abaixo do header principal) */}
             <ProspectFilters
                 filters={filters}
                 onFilterChange={handleFilterChange}
@@ -154,34 +167,8 @@ export default function Prospects() {
                 vendedores={vendedores}
             />
 
-            {/* SEÇÃO 3: Lista */}
-            <div id="prospects-table" className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <div className="p-6 border-b border-gray-200">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-gray-100 rounded-lg">
-                                <Users className="h-6 w-6 text-gray-700" />
-                            </div>
-                            <div>
-                                <h2 className="text-xl font-bold text-gray-900">Prospects Cadastrados</h2>
-                                <p className="text-gray-600">
-                                    {isLoading ? 'Carregando...' : (
-                                        <>
-                                            Mostrando <span className="font-semibold text-blue-600">{filteredProspects.length}</span> de <span className="font-semibold">{prospects.length}</span> prospects
-                                        </>
-                                    )}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <button onClick={loadData} className="text-sm text-gray-600 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors">
-                                Atualizar Lista
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
+            {/* Tabela */}
+            <div id="prospects-table" className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                 <div className="p-1">
                     {isLoading ? (
                         <div className="p-4">
@@ -189,11 +176,11 @@ export default function Prospects() {
                         </div>
                     ) : filteredProspects.length === 0 ? (
                         <div className="p-12 text-center">
-                            <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                            <div className="mx-auto w-20 h-20 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-6">
                                 <Users className="h-10 w-10 text-gray-400" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-3">Nenhum prospect encontrado</h3>
-                            <p className="text-gray-600 mb-6">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Nenhum prospect encontrado</h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
                                 {hasActiveFilters ? "Tente ajustar os filtros." : "Cadastre o primeiro prospect acima."}
                             </p>
                         </div>
@@ -206,6 +193,49 @@ export default function Prospects() {
                     )}
                 </div>
             </div>
+
+            {/* MODAL DE CADASTRO - Estilo Segmentos */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
+                    <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl my-8">
+                        {/* Header do Modal */}
+                        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-700/50 rounded-t-2xl">
+                            <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${editingProspect ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                                    {editingProspect ? <Users className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                                        {editingProspect ? 'Editar Prospect' : 'Novo Prospect'}
+                                    </h3>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        {editingProspect ? 'Atualize as informações do prospect' : 'Preencha os dados para cadastro'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={closeModal}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Corpo do Modal (Formulário) */}
+                        <div className="p-6 md:p-8 max-h-[80vh] overflow-y-auto">
+                            <ProspectForm
+                                prospect={editingProspect}
+                                onSuccess={handleFormSuccess}
+                                onCancel={handleCancelEdit}
+                                isLoading={isSaving}
+                                segmentos={segmentos}
+                                concorrentes={concorrentes}
+                                vendedores={vendedores}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

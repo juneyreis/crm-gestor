@@ -38,6 +38,7 @@ export default function useProspectFilters() {
     }, [filters]);
 
     const handleFilterChange = useCallback((key, value) => {
+        // Aceita o valor como veio - sem conversões automáticas
         setFilters(prev => ({ ...prev, [key]: value }));
     }, []);
 
@@ -52,46 +53,46 @@ export default function useProspectFilters() {
         const filtered = prospects.filter(p => {
             let passes = true;
 
-            // Nome
+            // Nome - busca case insensitive
             if (filters.nome) {
                 newActiveFilters.nome = filters.nome;
-                if (!p.nome || !p.nome.includes(filters.nome)) passes = false;
+                if (!p.nome || !p.nome.toLowerCase().includes(filters.nome.toLowerCase())) passes = false;
             }
 
-            // Cidade
+            // Cidade - busca case insensitive (CORRIGIDO)
             if (filters.cidade) {
                 newActiveFilters.cidade = filters.cidade;
-                if (!p.cidade || !p.cidade.includes(filters.cidade)) passes = false;
+                if (!p.cidade || !p.cidade.toLowerCase().includes(filters.cidade.toLowerCase())) passes = false;
             }
 
-            // UF
+            // UF - busca exata mas case insensitive
             if (filters.uf) {
                 newActiveFilters.uf = filters.uf;
-                if (p.uf !== filters.uf) passes = false;
+                if (!p.uf || p.uf.toLowerCase() !== filters.uf.toLowerCase()) passes = false;
             }
 
-            // Bairro
+            // Bairro - busca case insensitive
             if (filters.bairro) {
                 newActiveFilters.bairro = filters.bairro;
-                if (!p.bairro || !p.bairro.includes(filters.bairro)) passes = false;
+                if (!p.bairro || !p.bairro.toLowerCase().includes(filters.bairro.toLowerCase())) passes = false;
             }
 
-            // Status
+            // Status - busca exata mas case insensitive
             if (filters.status) {
                 newActiveFilters.status = filters.status;
-                if (p.status !== filters.status) passes = false;
+                if (!p.status || p.status.toLowerCase() !== filters.status.toLowerCase()) passes = false;
             }
 
-            // Classificação
+            // Classificação - busca exata mas case insensitive
             if (filters.classificacao) {
                 newActiveFilters.classificacao = filters.classificacao;
-                if (p.classificacao !== filters.classificacao) passes = false;
+                if (!p.classificacao || p.classificacao.toLowerCase() !== filters.classificacao.toLowerCase()) passes = false;
             }
 
-            // Vendedor (Nome)
+            // Vendedor (Nome) - busca case insensitive
             if (filters.vendedor) {
                 newActiveFilters.vendedor = filters.vendedor;
-                if (p.vendedor !== filters.vendedor) passes = false;
+                if (!p.vendedor || !p.vendedor.toLowerCase().includes(filters.vendedor.toLowerCase())) passes = false;
             }
 
             // Segmento (ID)

@@ -40,7 +40,7 @@ const CLASSIFICATION_COLORS = {
 };
 
 export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) {
-    const [sorting, setSorting] = useState([{ id: 'data_cadastro', desc: true }]);
+    const [sorting, setSorting] = useState([{ id: 'nome', desc: true }]);
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const saved = localStorage.getItem('prospects_table_visibility');
         return saved ? JSON.parse(saved) : {

@@ -78,7 +78,7 @@ export default function ProspectForm({
                 email: prospect.email || '',
                 observacoes: prospect.observacoes || ''
             };
-
+            
             // Atualiza apenas se realmente mudou
             setForm(prospectData);
         }
@@ -128,11 +128,11 @@ export default function ProspectForm({
     // Handle Change simples e eficaz
     const handleChange = (e) => {
         const { name, value } = e.target;
-
+        
         if (name === 'cep') {
             const formattedCEP = formatarCEP(value);
             setForm(prev => ({ ...prev, [name]: formattedCEP }));
-
+            
             // Buscar CEP se completo
             if (formattedCEP.length === 9) {
                 fetchCEP(formattedCEP);
@@ -221,12 +221,13 @@ export default function ProspectForm({
             if (!prospect) setForm(initialForm);
 
         } catch (error) {
+            console.error('Erro ao salvar prospect:', error);
             alert(`Erro ao salvar prospect: ${error.message}`);
         }
     };
 
     const handleCancel = () => {
-        if (onCancel) {
+        if (prospect && onCancel) {
             onCancel();
         } else {
             setForm(initialForm);
@@ -238,7 +239,7 @@ export default function ProspectForm({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Nome */}
                 <div className="space-y-2 lg:col-span-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <Building className="h-4 w-4" /> Nome / Empresa *
                     </label>
                     <input
@@ -246,7 +247,7 @@ export default function ProspectForm({
                         name="nome"
                         value={form.nome}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.nome ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.nome ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         required
                         placeholder="Nome da Empresa"
                     />
@@ -255,14 +256,14 @@ export default function ProspectForm({
 
                 {/* Vendedor */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <User className="h-4 w-4" /> Vendedor *
                     </label>
                     <select
                         name="vendedor"
                         value={form.vendedor}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.vendedor ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.vendedor ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -275,14 +276,14 @@ export default function ProspectForm({
 
                 {/* Segmento */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <Hash className="h-4 w-4" /> Segmento *
                     </label>
                     <select
                         name="segmento_id"
                         value={form.segmento_id}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.segmento_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.segmento_id ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -295,14 +296,14 @@ export default function ProspectForm({
 
                 {/* Concorrente */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <Building className="h-4 w-4" /> Concorrente *
                     </label>
                     <select
                         name="concorrente_id"
                         value={form.concorrente_id}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.concorrente_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.concorrente_id ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -315,14 +316,14 @@ export default function ProspectForm({
 
                 {/* Status */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <FileText className="h-4 w-4" /> Status *
                     </label>
                     <select
                         name="status"
                         value={form.status}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         required
                     >
                         {['Novo', 'Em contato', 'Visitado', 'Convertido', 'Perdido', 'Descartado'].map(s => (
@@ -333,7 +334,7 @@ export default function ProspectForm({
 
                 {/* Classificação */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <FileText className="h-4 w-4" /> Classificação *
                     </label>
                     <div className="flex gap-2">
@@ -343,8 +344,8 @@ export default function ProspectForm({
                                 type="button"
                                 onClick={() => setForm(prev => ({ ...prev, classificacao: c }))}
                                 className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all ${form.classificacao === c
-                                    ? `${CLASSIFICATION_COLORS[c]} ring-2 ring-offset-1 ring-blue-300 dark:ring-offset-slate-800`
-                                    : 'bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600'
+                                    ? `${CLASSIFICATION_COLORS[c]} ring-2 ring-offset-1 ring-blue-300`
+                                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
                                 {c}
@@ -361,7 +362,7 @@ export default function ProspectForm({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* CEP */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <MapPin className="h-4 w-4" /> CEP
                     </label>
                     <div className="relative">
@@ -371,8 +372,8 @@ export default function ProspectForm({
                             value={form.cep}
                             onChange={handleChange}
                             className={`w-full px-4 py-3 rounded-lg border ${cepStatus === 'error' ? 'border-red-500' :
-                                cepStatus === 'success' ? 'border-green-500' : 'border-gray-300 dark:border-slate-600'
-                                } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                                cepStatus === 'success' ? 'border-green-500' : 'border-gray-300'
+                                } focus:ring-2 focus:ring-blue-500`}
                             placeholder="00000-000"
                             maxLength={9}
                         />
@@ -385,7 +386,7 @@ export default function ProspectForm({
 
                 {/* Endereço */}
                 <div className="space-y-2 lg:col-span-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         Endereço
                     </label>
                     <input
@@ -393,14 +394,14 @@ export default function ProspectForm({
                         name="endereco"
                         value={form.endereco}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="Endereço completo"
                     />
                 </div>
 
                 {/* Bairro */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         Bairro
                     </label>
                     <input
@@ -408,14 +409,14 @@ export default function ProspectForm({
                         name="bairro"
                         value={form.bairro}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="Bairro"
                     />
                 </div>
 
                 {/* Cidade */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <MapPin className="h-4 w-4" /> Cidade *
                     </label>
                     <input
@@ -423,7 +424,7 @@ export default function ProspectForm({
                         name="cidade"
                         value={form.cidade}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         placeholder="Digite a cidade..."
                         required
                     />
@@ -432,14 +433,14 @@ export default function ProspectForm({
 
                 {/* UF */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         UF *
                     </label>
                     <select
                         name="uf"
                         value={form.uf}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 rounded-lg border ${errors.uf ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.uf ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">UF</option>
@@ -452,7 +453,7 @@ export default function ProspectForm({
 
                 {/* Telefone */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <Phone className="h-4 w-4" /> Telefone
                     </label>
                     <input
@@ -460,14 +461,14 @@ export default function ProspectForm({
                         name="telefone"
                         value={form.telefone}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="(XX) XXXX-XXXX"
                     />
                 </div>
 
                 {/* Celular */}
                 <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <Phone className="h-4 w-4" /> Celular
                     </label>
                     <input
@@ -475,14 +476,14 @@ export default function ProspectForm({
                         name="celular"
                         value={form.celular}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="(XX) XXXXX-XXXX"
                     />
                 </div>
 
                 {/* Email */}
                 <div className="space-y-2 lg:col-span-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         Email
                     </label>
                     <input
@@ -490,14 +491,14 @@ export default function ProspectForm({
                         name="email"
                         value={form.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="email@exemplo.com"
                     />
                 </div>
 
                 {/* Contato (Pessoa) */}
                 <div className="space-y-2 lg:col-span-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                         <User className="h-4 w-4" /> Contato (Pessoa)
                     </label>
                     <input
@@ -505,7 +506,7 @@ export default function ProspectForm({
                         name="contato"
                         value={form.contato}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500"
                         placeholder="Nome do contato"
                     />
                 </div>
@@ -513,7 +514,7 @@ export default function ProspectForm({
 
             {/* Observações */}
             <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                     <FileText className="h-4 w-4" /> Observações
                 </label>
                 <textarea
@@ -521,7 +522,7 @@ export default function ProspectForm({
                     value={form.observacoes}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 resize-none"
                     placeholder="Observações adicionais"
                 />
             </div>
@@ -533,7 +534,7 @@ export default function ProspectForm({
                 </Button>
 
                 <Button type="button" variant="secondary" onClick={handleCancel} className="flex items-center gap-2 px-6">
-                    <X className="h-4 w-4" /> Cancelar
+                    <X className="h-4 w-4" /> {prospect ? 'Cancelar Edição' : 'Limpar Formulário'}
                 </Button>
             </div>
         </form>
