@@ -114,7 +114,7 @@ export default function Prospects() {
     return (
         <div className="space-y-6 animate-fade-in">
             {/* CABEÇALHO - Igual Segmentos */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
                 <div>
                     <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Prospects</h1>
                     <p className="text-gray-600 dark:text-gray-400 mt-2">Gerencie seus potenciais clientes e oportunidades de negócio.</p>
@@ -196,8 +196,8 @@ export default function Prospects() {
 
             {/* MODAL DE CADASTRO - Estilo Segmentos */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
-                    <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl my-8">
+                <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center pt-4 px-4 pb-4 md:p-4 bg-black/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
+                    <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl md:my-8 mx-auto">
                         {/* Header do Modal */}
                         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-700/50 rounded-t-2xl">
                             <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ export default function Prospects() {
                         </div>
 
                         {/* Corpo do Modal (Formulário) */}
-                        <div className="p-6 md:p-8 max-h-[80vh] overflow-y-auto">
+                        <div className="p-4 md:p-6 lg:p-8 max-h-[calc(100vh-12rem)] md:max-h-[80vh] overflow-y-auto">
                             <ProspectForm
                                 prospect={editingProspect}
                                 onSuccess={handleFormSuccess}

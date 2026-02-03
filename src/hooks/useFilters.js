@@ -1,22 +1,25 @@
-// src/hooks/useFilters.js - ATUALIZADO
+// src/hooks/useFilters.js - MODERNIZADO
 import { useState, useCallback, useEffect } from 'react';
 
 const initialFilters = {
   dataInicio: '',
   dataFim: '',
   cidade: '',
-  prospect: '',
+  prospectId: '', // Alterado de 'prospect' para 'prospectId'
+  tipo: '',       // Novo
+  turno: '',      // Novo
+  status: '',     // Novo
+  prioridade: '', // Novo
+  concorrenteId: '', // Novo (substitui 'sistema')
+  // Mantemos legacy para compatibilidade se necessário, mas idealmente removemos
   endereco: '',
-  bairro: '',
-  sistema: '',
-  regime: '',
+  bairro: ''
 };
 
 export default function useFilters() {
   const [filters, setFilters] = useState(() => {
-    // Tentar carregar do localStorage
     try {
-      const saved = localStorage.getItem('visits_filters');
+      const saved = localStorage.getItem('visits_filters_v2'); // Versão atualizada
       if (saved) {
         return { ...initialFilters, ...JSON.parse(saved) };
       }
@@ -25,14 +28,13 @@ export default function useFilters() {
     }
     return initialFilters;
   });
-  
+
   const [filteredVisits, setFilteredVisits] = useState([]);
   const [activeFilters, setActiveFilters] = useState({});
 
-  // Salvar filtros no localStorage quando mudarem
   useEffect(() => {
     try {
-      localStorage.setItem('visits_filters', JSON.stringify(filters));
+      localStorage.setItem('visits_filters_v2', JSON.stringify(filters));
     } catch (error) {
       console.error('Erro ao salvar filtros:', error);
     }
@@ -53,68 +55,34 @@ export default function useFilters() {
     const filtered = visits.filter(visit => {
       let passes = true;
 
-      // Filtro por data início
+      // Filtro por Prospect (ID)
+      if (filters.prospectId) {
+        newActiveFilters.prospectId = filters.prospectId;
+        if (String(visit.prospect_id) !== String(filters.prospectId)) passes = false;
+      }
+
+      // Filtro por Concorrente (ID)
+      if (filters.concorrenteId) {
+        newActiveFilters.concorrenteId = filters.concorrenteId;
+        if (String(visit.concorrente_id) !== String(filters.concorrenteId)) passes = false;
+      }
+
+      // Novos Filtros (Exact Match)
+      ['tipo', 'turno', 'status', 'prioridade', 'cidade'].forEach(field => {
+        if (filters[field]) {
+          newActiveFilters[field] = filters[field];
+          if (visit[field] !== filters[field]) passes = false;
+        }
+      });
+
+      // Data Range
       if (filters.dataInicio) {
         newActiveFilters.dataInicio = filters.dataInicio;
         if (visit.data < filters.dataInicio) passes = false;
       }
-
-      // Filtro por data fim
       if (filters.dataFim) {
         newActiveFilters.dataFim = filters.dataFim;
         if (visit.data > filters.dataFim) passes = false;
-      }
-
-      // Filtro por cidade
-      if (filters.cidade) {
-        newActiveFilters.cidade = filters.cidade;
-        if (filters.cidade === 'OUTRA') {
-          if (!visit.cidade || !visit.cidade.startsWith('OUTRA:')) passes = false;
-        } else if (visit.cidade !== filters.cidade && (!visit.cidade || !visit.cidade.startsWith('OUTRA:'))) {
-          passes = false;
-        }
-      }
-
-      // Filtro por prospect (case insensitive)
-      if (filters.prospect) {
-        newActiveFilters.prospect = filters.prospect;
-        if (!visit.prospect || !visit.prospect.toUpperCase().includes(filters.prospect.toUpperCase())) {
-          passes = false;
-        }
-      }
-
-      // Filtro por endereço (case insensitive)
-      if (filters.endereco) {
-        newActiveFilters.endereco = filters.endereco;
-        if (!visit.endereco || !visit.endereco.toUpperCase().includes(filters.endereco.toUpperCase())) {
-          passes = false;
-        }
-      }
-
-      // Filtro por bairro (case insensitive)
-      if (filters.bairro) {
-        newActiveFilters.bairro = filters.bairro;
-        if (!visit.bairro || !visit.bairro.toUpperCase().includes(filters.bairro.toUpperCase())) {
-          passes = false;
-        }
-      }
-
-      // Filtro por sistema
-      if (filters.sistema) {
-        newActiveFilters.sistema = filters.sistema;
-        if (filters.sistema === 'OUTROS') {
-          if (!visit.sistema || !visit.sistema.startsWith('OUTROS:')) passes = false;
-        } else if (visit.sistema !== filters.sistema && (!visit.sistema || !visit.sistema.startsWith('OUTROS:'))) {
-          passes = false;
-        }
-      }
-
-      // Filtro por regime
-      if (filters.regime) {
-        newActiveFilters.regime = filters.regime;
-        if (visit.regime !== filters.regime) {
-          passes = false;
-        }
       }
 
       return passes;
@@ -133,11 +101,11 @@ export default function useFilters() {
 
   const getFilterStats = useCallback((visits) => {
     if (!visits) return { total: 0, filtered: 0 };
-    
+
     const total = visits.length;
     const filtered = filteredVisits.length;
     const activeCount = Object.keys(activeFilters).length;
-    
+
     return {
       total,
       filtered,
@@ -146,7 +114,6 @@ export default function useFilters() {
     };
   }, [filteredVisits, activeFilters]);
 
-  // Função para limpar um filtro específico
   const clearSpecificFilter = useCallback((key) => {
     setFilters(prev => ({ ...prev, [key]: initialFilters[key] }));
   }, []);

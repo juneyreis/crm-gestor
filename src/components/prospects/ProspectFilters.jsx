@@ -92,11 +92,11 @@ export default function ProspectFilters({
                                     Limpar todos
                                 </button>
                             </div>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600">
                                 {Object.entries(activeFilters).map(([key, value]) => (
                                     <div
                                         key={key}
-                                        className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 text-sm"
+                                        className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 text-sm flex-shrink-0 snap-start"
                                     >
                                         <span className="font-medium text-blue-700 dark:text-blue-400 capitalize">{key}:</span>
                                         <span className="text-gray-700 dark:text-gray-300">{value}</span>
@@ -263,7 +263,7 @@ export default function ProspectFilters({
                     {/* Botões de Ação */}
                     <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700">
                         <div className="flex flex-wrap items-center justify-between gap-4">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                 {filterStats && (
                                     <>
                                         <span className="font-medium">{filterStats.filtered || 0}</span> de{' '}
@@ -272,7 +272,7 @@ export default function ProspectFilters({
                                 )}
                             </div>
 
-                            <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={() => setIsExpanded(false)}
                                     className="px-5 py-2.5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg border border-gray-300 dark:border-slate-600 transition-colors"

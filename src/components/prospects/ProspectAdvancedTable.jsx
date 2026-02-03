@@ -29,6 +29,8 @@ import {
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import * as prospectsService from '../../services/prospectsService';
+import useIsMobile from '../../hooks/useIsMobile';
+import ProspectMobileCard from './ProspectMobileCard';
 
 const columnHelper = createColumnHelper();
 
@@ -57,6 +59,7 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
     });
     const [deletingId, setDeletingId] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const isMobile = useIsMobile();
 
     // Persistência
     useEffect(() => {
@@ -90,6 +93,35 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
     };
 
     const columns = useMemo(() => [
+        // Ações - Movido para primeira coluna (esquerda)
+        columnHelper.display({
+            id: 'actions',
+            header: '',
+            cell: info => (
+                <div className="flex items-center justify-start gap-1 pl-1">
+                    <button
+                        onClick={() => onEdit(info.row.original)}
+                        className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                        title="Editar"
+                    >
+                        <Edit2 className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                        onClick={() => handleDelete(info.row.original.id, info.row.original.nome)}
+                        disabled={deletingId === info.row.original.id}
+                        className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                        title="Excluir"
+                    >
+                        {deletingId === info.row.original.id ? (
+                            <div className="h-3.5 w-3.5 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
+                        ) : (
+                            <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                    </button>
+                </div>
+            ),
+            size: 80
+        }),
         columnHelper.accessor('id', {
             header: 'ID',
             cell: info => <span className="text-gray-400 font-mono text-xs">#{info.getValue()}</span>,
@@ -238,34 +270,6 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
             ),
             size: 150
         }),
-        columnHelper.display({
-            id: 'actions',
-            header: '',
-            cell: info => (
-                <div className="flex items-center justify-end gap-1 pr-1">
-                    <button
-                        onClick={() => onEdit(info.row.original)}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
-                        title="Editar"
-                    >
-                        <Edit2 className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                        onClick={() => handleDelete(info.row.original.id, info.row.original.nome)}
-                        disabled={deletingId === info.row.original.id}
-                        className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
-                        title="Excluir"
-                    >
-                        {deletingId === info.row.original.id ? (
-                            <div className="h-3.5 w-3.5 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
-                        ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                        )}
-                    </button>
-                </div>
-            ),
-            size: 80
-        }),
     ], [deletingId, onEdit]);
 
     const table = useReactTable({
@@ -297,130 +301,148 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
 
     return (
         <div className="space-y-4">
-            {/* Toolbar da Tabela */}
-            <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-2">
-                    <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-100 dark:border-blue-800 flex items-center gap-2">
-                        <CheckCircle2 className="h-3 w-3" />
-                        {prospects.length} Registros
+            {/* Toolbar da Tabela - Oculto em Mobile */}
+            {!isMobile && (
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-2">
+                        <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-lg border border-blue-100 dark:border-blue-800 flex items-center gap-2">
+                            <CheckCircle2 className="h-3 w-3" />
+                            {prospects.length} Registros
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={() => {
-                            table.resetColumnVisibility();
-                            setColumnOrder([]);
-                            localStorage.removeItem('prospects_table_visibility');
-                            localStorage.removeItem('prospects_table_order');
-                        }}
-                        className="flex items-center gap-2 px-3 py-2 text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all uppercase shadow-sm"
-                        title="Resetar Layout da Tabela"
-                    >
-                        <RefreshCcw className="h-3 w-3" />
-                        Resetar
-                    </button>
-
-                    <div className="relative">
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                            onClick={() => {
+                                table.resetColumnVisibility();
+                                setColumnOrder([]);
+                                localStorage.removeItem('prospects_table_visibility');
+                                localStorage.removeItem('prospects_table_order');
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 text-[10px] font-black text-blue-600 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all uppercase shadow-sm"
+                            title="Resetar Layout da Tabela"
                         >
-                            <Settings2 className="h-4 w-4" />
-                            Colunas
+                            <RefreshCcw className="h-3 w-3" />
+                            Resetar
                         </button>
 
-                        {isMenuOpen && (
-                            <>
-                                <div className="fixed inset-0 z-10" onClick={() => setIsMenuOpen(false)}></div>
-                                <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl z-20 py-2 animate-in fade-in zoom-in duration-200 origin-top-right">
-                                    <div className="px-4 py-2 border-b border-gray-100 dark:border-slate-700 mb-2">
-                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Visibilidade</span>
-                                    </div>
-                                    <div className="max-h-64 overflow-y-auto px-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
-                                        {table.getAllLeafColumns().map((column, index) => {
-                                            if (column.id === 'actions') return null;
-                                            return (
-                                                <div key={column.id} className="flex items-center group/col">
-                                                    <label
-                                                        className="flex-1 flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700/50 rounded-lg cursor-pointer transition-colors"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={column.getIsVisible()}
-                                                            onChange={column.getToggleVisibilityHandler()}
-                                                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                        />
-                                                        <span className="text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight truncate">
-                                                            {typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
-                                                        </span>
-                                                    </label>
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                            >
+                                <Settings2 className="h-4 w-4" />
+                                Colunas
+                            </button>
 
-                                                    <div className="flex opacity-0 group-hover/col:opacity-100 transition-opacity pr-2">
-                                                        <button
-                                                            disabled={index === 0}
-                                                            onClick={() => moveColumn(index, -1)}
-                                                            className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30"
+                            {isMenuOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-10" onClick={() => setIsMenuOpen(false)}></div>
+                                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl z-20 py-2 animate-in fade-in zoom-in duration-200 origin-top-right">
+                                        <div className="px-4 py-2 border-b border-gray-100 dark:border-slate-700 mb-2">
+                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Visibilidade</span>
+                                        </div>
+                                        <div className="max-h-64 overflow-y-auto px-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
+                                            {table.getAllLeafColumns().map((column, index) => {
+                                                if (column.id === 'actions') return null;
+                                                return (
+                                                    <div key={column.id} className="flex items-center group/col">
+                                                        <label
+                                                            className="flex-1 flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-slate-700/50 rounded-lg cursor-pointer transition-colors"
                                                         >
-                                                            <ChevronUp className="h-4 w-4" />
-                                                        </button>
-                                                        <button
-                                                            disabled={index === table.getAllLeafColumns().length - 2} // -2 because of actions
-                                                            onClick={() => moveColumn(index, 1)}
-                                                            className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30"
-                                                        >
-                                                            <ChevronDown className="h-4 w-4" />
-                                                        </button>
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={column.getIsVisible()}
+                                                                onChange={column.getToggleVisibilityHandler()}
+                                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                            <span className="text-[11px] font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight truncate">
+                                                                {typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
+                                                            </span>
+                                                        </label>
+
+                                                        <div className="flex opacity-0 group-hover/col:opacity-100 transition-opacity pr-2">
+                                                            <button
+                                                                disabled={index === 0}
+                                                                onClick={() => moveColumn(index, -1)}
+                                                                className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30"
+                                                            >
+                                                                <ChevronUp className="h-4 w-4" />
+                                                            </button>
+                                                            <button
+                                                                disabled={index === table.getAllLeafColumns().length - 2} // -2 because of actions
+                                                                onClick={() => moveColumn(index, 1)}
+                                                                className="p-1 text-gray-400 hover:text-blue-600 disabled:opacity-30"
+                                                            >
+                                                                <ChevronDown className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* Container da Tabela com Dual Scroll */}
-            <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
-                    <table className="w-full text-left border-collapse min-w-[1200px]">
-                        <thead className="bg-gray-50/50 dark:bg-slate-700/30 sticky top-0 z-[5] backdrop-blur-sm border-b border-gray-200 dark:border-slate-700">
-                            {table.getHeaderGroups().map(headerGroup => (
-                                <tr key={headerGroup.id}>
-                                    {headerGroup.headers.map(header => (
-                                        <th
-                                            key={header.id}
-                                            className="px-6 py-4 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider"
-                                            style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
-                                        >
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(header.column.columnDef.header, header.getContext())}
-                                        </th>
-                                    ))}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
-                            {table.getRowModel().rows.map(row => (
-                                <tr
-                                    key={row.id}
-                                    className="hover:bg-blue-50/30 dark:hover:bg-blue-900/5 transition-colors group"
-                                >
-                                    {row.getVisibleCells().map(cell => (
-                                        <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            {/* Mobile: Card View | Desktop: Table View */}
+            {isMobile ? (
+                <div className="grid grid-cols-1 gap-4 p-4">
+                    {prospects.map(prospect => (
+                        <ProspectMobileCard
+                            key={prospect.id}
+                            prospect={prospect}
+                            onEdit={onEdit}
+                            onDelete={handleDelete}
+                            isDeleting={deletingId === prospect.id}
+                        />
+                    ))}
                 </div>
-            </div>
+            ) : (
+                <div className="relative bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <div className="overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
+                        <table className="w-full text-left border-collapse min-w-[1200px]">
+                            <thead className="bg-gray-50/50 dark:bg-slate-700/30 sticky top-0 z-[5] backdrop-blur-sm border-b border-gray-200 dark:border-slate-700">
+                                {table.getHeaderGroups().map(headerGroup => (
+                                    <tr key={headerGroup.id}>
+                                        {headerGroup.headers.map(header => (
+                                            <th
+                                                key={header.id}
+                                                className="px-6 py-4 text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider"
+                                                style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }}
+                                            >
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(header.column.columnDef.header, header.getContext())}
+                                            </th>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
+                                {table.getRowModel().rows.map(row => (
+                                    <tr
+                                        key={row.id}
+                                        className="hover:bg-blue-50/30 dark:hover:bg-blue-900/5 transition-colors group cursor-pointer select-none"
+                                        onDoubleClick={() => onEdit(row.original)}
+                                        title="Duplo clique para editar"
+                                    >
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

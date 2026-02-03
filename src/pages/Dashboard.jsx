@@ -149,7 +149,7 @@ export default function Dashboard() {
       {/* Cabeçalho */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">Bem-vindo ao sistema de controle de visitas comerciais</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Bem-vindo ao sistema de controle de prospects</p>
       </div>
 
       {/* Estatísticas de Visitas */}
@@ -174,7 +174,7 @@ export default function Dashboard() {
 
       {/* Estatísticas de Cadastros */}
       <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider ml-1">Totais de Cadastros</h2>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider ml-1">Estatísticas de Tabelas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           {statsNovos.map((stat, index) => (
             <div key={index} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-shadow">
