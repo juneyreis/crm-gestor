@@ -235,7 +235,7 @@ export default function ProspectForm({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {/* Nome */}
                 <div className="space-y-2 lg:col-span-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -246,7 +246,7 @@ export default function ProspectForm({
                         name="nome"
                         value={form.nome}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.nome ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.nome ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         required
                         placeholder="Nome da Empresa"
                     />
@@ -262,7 +262,7 @@ export default function ProspectForm({
                         name="vendedor"
                         value={form.vendedor}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.vendedor ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.vendedor ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -282,7 +282,7 @@ export default function ProspectForm({
                         name="segmento_id"
                         value={form.segmento_id}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.segmento_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.segmento_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -302,7 +302,7 @@ export default function ProspectForm({
                         name="concorrente_id"
                         value={form.concorrente_id}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.concorrente_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.concorrente_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">Selecione...</option>
@@ -322,7 +322,7 @@ export default function ProspectForm({
                         name="status"
                         value={form.status}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         required
                     >
                         {['Novo', 'Em contato', 'Visitado', 'Convertido', 'Perdido', 'Descartado'].map(s => (
@@ -336,13 +336,13 @@ export default function ProspectForm({
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <FileText className="h-4 w-4" /> Classificação *
                     </label>
-                    <div className="grid grid-cols-2 sm:flex gap-2">
+                    <div className="grid grid-cols-2 md:flex gap-2">
                         {['Ice', 'Cold', 'Warm', 'Hot'].map(c => (
                             <button
                                 key={c}
                                 type="button"
                                 onClick={() => setForm(prev => ({ ...prev, classificacao: c }))}
-                                className={`flex-1 min-h-[44px] py-2 rounded-lg border text-sm font-medium transition-all ${form.classificacao === c
+                                className={`flex-1 min-h-[44px] py-3 rounded-lg border text-sm font-medium transition-all ${form.classificacao === c
                                     ? `${CLASSIFICATION_COLORS[c]} ring-2 ring-offset-1 ring-blue-300 dark:ring-offset-slate-800`
                                     : 'bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600'
                                     }`}
@@ -358,7 +358,7 @@ export default function ProspectForm({
             <div className="border-t border-gray-100 my-4"></div>
             <h3 className="text-sm font-semibold text-gray-500 mb-4">Endereço e Contato</h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* CEP */}
                 <div className="space-y-2">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -370,7 +370,7 @@ export default function ProspectForm({
                             name="cep"
                             value={form.cep}
                             onChange={handleChange}
-                            className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${cepStatus === 'error' ? 'border-red-500' :
+                            className={`w-full px-4 py-3 rounded-lg border ${cepStatus === 'error' ? 'border-red-500' :
                                 cepStatus === 'success' ? 'border-green-500' : 'border-gray-300 dark:border-slate-600'
                                 } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                             placeholder="00000-000"
@@ -393,7 +393,7 @@ export default function ProspectForm({
                         name="endereco"
                         value={form.endereco}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="Endereço completo"
                     />
                 </div>
@@ -408,7 +408,7 @@ export default function ProspectForm({
                         name="bairro"
                         value={form.bairro}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="Bairro"
                     />
                 </div>
@@ -423,7 +423,7 @@ export default function ProspectForm({
                         name="cidade"
                         value={form.cidade}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.cidade ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.cidade ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         placeholder="Digite a cidade..."
                         required
                     />
@@ -439,7 +439,7 @@ export default function ProspectForm({
                         name="uf"
                         value={form.uf}
                         onChange={handleChange}
-                        className={`w-full px-4 py-2.5 md:py-3 rounded-lg border ${errors.uf ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
+                        className={`w-full px-4 py-3 rounded-lg border ${errors.uf ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500`}
                         required
                     >
                         <option value="">UF</option>
@@ -460,7 +460,7 @@ export default function ProspectForm({
                         name="telefone"
                         value={form.telefone}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="(XX) XXXX-XXXX"
                     />
                 </div>
@@ -475,7 +475,7 @@ export default function ProspectForm({
                         name="celular"
                         value={form.celular}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="(XX) XXXXX-XXXX"
                     />
                 </div>
@@ -490,7 +490,7 @@ export default function ProspectForm({
                         name="email"
                         value={form.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="email@exemplo.com"
                     />
                 </div>
@@ -505,7 +505,7 @@ export default function ProspectForm({
                         name="contato"
                         value={form.contato}
                         onChange={handleChange}
-                        className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
                         placeholder="Nome do contato"
                     />
                 </div>
@@ -521,19 +521,38 @@ export default function ProspectForm({
                     value={form.observacoes}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full px-4 py-2.5 md:py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 resize-none"
                     placeholder="Observações adicionais"
                 />
             </div>
 
             {/* Botões */}
-            <div className="flex flex-wrap gap-4 pt-6 border-t border-gray-200">
-                <Button type="submit" variant="primary" disabled={isSaving || cepLoading} className="flex items-center gap-2 px-6">
-                    {isSaving ? 'Salvando...' : <><Save className="h-4 w-4" /> {prospect ? 'Atualizar Prospect' : 'Salvar Prospect'}</>}
+            <div className="flex flex-col md:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-slate-700">
+                <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    type="button"
+                    className="w-full md:w-auto order-2 md:order-1"
+                >
+                    <X className="h-4 w-4 mr-2" />
+                    Cancelar
                 </Button>
-
-                <Button type="button" variant="secondary" onClick={handleCancel} className="flex items-center gap-2 px-6">
-                    <X className="h-4 w-4" /> Cancelar
+                <Button
+                    type="submit"
+                    disabled={isSaving || cepLoading}
+                    className="w-full md:w-auto order-1 md:order-2"
+                >
+                    {isSaving ? (
+                        <div className="flex items-center gap-2">
+                            <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            Salvando...
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            <Save className="h-4 w-4" />
+                            {prospect ? 'Salvar Alterações' : 'Cadastrar Prospect'}
+                        </div>
+                    )}
                 </Button>
             </div>
         </form>

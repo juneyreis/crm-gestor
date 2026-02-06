@@ -1,7 +1,7 @@
-// src/pages/Visitas.jsx - REORGANIZADO
+// src/pages/Visitas.jsx - PADRONIZADO
 import { useState, useEffect } from "react";
-import { supabaseClient as supabase } from "../lib/supabaseClient";
-import { Plus, Filter, X, Upload, Download } from 'lucide-react';
+import { Plus, Filter, X, Search, FileText, CheckCircle, Clock, Upload, Download, RefreshCw } from 'lucide-react';
+import Button from "../components/Button";
 import VisitForm from "../components/visits/VisitForm";
 import CollapsibleFilters from "../components/visits/CollapsibleFilters";
 import VisitTable from "../components/visits/VisitTable";
@@ -16,11 +16,15 @@ export default function Visitas() {
   const [editingVisit, setEditingVisit] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  // States para Modais
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
   const { user } = useAuth();
   const { setImportSuccessCallback, openImportModal } = useImportModal();
-  
-  // Usar o hook de filtros
+
+  // Hook de filtros
   const {
     filters,
     filteredVisits,
@@ -32,15 +36,12 @@ export default function Visitas() {
     hasActiveFilters
   } = useFilters();
 
-  // Carregar visitas do Supabase
+  // Carregar dados
   const loadVisits = async () => {
     setIsLoading(true);
     try {
-      // Usar o serviço que já filtra por user_id
       const data = await visitasService.listarVisitas(user?.id);
-
       setVisits(data || []);
-      // Aplicar filtros iniciais
       applyFilters(data || []);
     } catch (error) {
       console.error("Erro ao carregar visitas:", error);
@@ -49,196 +50,120 @@ export default function Visitas() {
     }
   };
 
-  // Carregar visitas na inicialização
   useEffect(() => {
     loadVisits();
-    // Configurar callback de sucesso da importação
-    setImportSuccessCallback(() => {
-      loadVisits();
-    });
+    setImportSuccessCallback(() => loadVisits());
   }, []);
 
-  // Aplicar filtros quando visitas ou filtros mudam
   useEffect(() => {
     if (visits.length > 0) {
       applyFilters(visits);
     }
-  }, [visits, filters]);
+  }, [visits, filters]); // Reaplicar filtros quando dados ou critérios mudam
 
-  // Função para lidar com edição de visita
-  const handleEditVisit = (visit) => {
+  // Handlers de Modal
+  const openModal = (visit = null) => {
     setEditingVisit(visit);
-    // Scroll suave para o topo do formulário
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsModalOpen(true);
   };
 
-  // Função para lidar com sucesso do formulário
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingVisit(null);
+  };
+
+  const handleEditVisit = (visit) => {
+    openModal(visit);
+  };
+
   const handleFormSuccess = () => {
-    setEditingVisit(null);
+    closeModal();
     loadVisits();
-    // Scroll suave para a tabela
-    setTimeout(() => {
-      document.getElementById('visits-table')?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
   };
 
-  // Função para cancelar edição
-  const handleCancelEdit = () => {
-    setEditingVisit(null);
+  // Busca rápida (filtra pelo nome do prospect)
+  const handleSearch = (value) => {
+    // Uppercase para padronizar busca se necessário, mas o hook já trata
+    handleFilterChange('prospect', value);
   };
 
-  // Função para aplicar filtros
-  const handleApplyFilters = () => {
-    applyFilters(visits);
-  };
-
-  // Função para limpar filtros
-  const handleClearFilters = () => {
-    clearFilters();
-  };
-
-  // Obter estatísticas
+  // Stats
   const filterStats = getFilterStats(visits);
 
-  // Abrir modal de exportação
-  const handleOpenExportModal = () => {
-    setIsExportModalOpen(true);
-  };
-
-  // Fechar modal de exportação
-  const handleCloseExportModal = () => {
-    setIsExportModalOpen(false);
-  };
-
-  // Abrir modal de importação
-  const handleOpenImportModal = () => {
-    openImportModal(() => {
-      loadVisits(); // Recarregar visitas após importar
-    });
-  };
-
   return (
-    <div className="space-y-8">
-      {/* SEÇÃO 1: Formulário Principal - DESTAQUE MÁXIMO */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className={`p-1 ${editingVisit ? 'bg-gradient-to-r from-blue-50 to-indigo-50' : 'bg-gradient-to-r from-green-50 to-emerald-50'}`}>
-          <div className="bg-white rounded-xl p-6 md:p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${editingVisit ? 'bg-blue-100' : 'bg-green-100'}`}>
-                  <Plus className={`h-6 w-6 ${editingVisit ? 'text-blue-600' : 'text-green-600'}`} />
-                </div>
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                    {editingVisit ? 'Editar Visita' : 'Nova Visita'}
-                  </h2>
-                  <p className="text-gray-600">
-                    {editingVisit 
-                      ? `Editando visita #${editingVisit.id} - ${editingVisit.prospect}`
-                      : 'Preencha os dados abaixo para registrar uma nova visita comercial'
-                    }
-                  </p>
-                </div>
-              </div>
-              
-              {editingVisit && (
-                <button
-                  onClick={handleCancelEdit}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <X className="h-4 w-4" />
-                  Cancelar Edição
-                </button>
-              )}
-            </div>
+    <div className="space-y-6 animate-fade-in">
+      {/* 1. CABEÇALHO PADRÃO */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Visitas</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
+            Gerencie o agendamento e histórico de visitas comerciais.
+          </p>
+        </div>
 
-            {/* Formulário */}
-            <VisitForm
-              visit={editingVisit}
-              onSuccess={handleFormSuccess}
-              onCancel={handleCancelEdit}
-              isLoading={isSaving}
-            />
-          </div>
+        <Button onClick={() => openModal()} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Nova Visita
+        </Button>
+      </div>
+
+      {/* 2. BARRA DE FERRAMENTAS + BUSCA */}
+      <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 flex flex-col md:flex-row gap-4 justify-between items-center">
+        {/* Busca Rápida */}
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar por prospect..."
+            value={filters.prospect || ''} // Conectado ao filtro 'prospect' (texto)
+            onChange={(e) => handleSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
+          />
+        </div>
+
+        {/* Botões de Ação */}
+        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+          <button
+            onClick={openImportModal}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Importar Visitas"
+          >
+            <Upload className="h-4 w-4" />
+          </button>
+
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+            title="Exportar Visitas"
+          >
+            <Download className="h-4 w-4" />
+          </button>
+
+          <div className="h-6 w-px bg-gray-300 mx-1"></div>
+
+          <button
+            onClick={loadVisits}
+            className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Atualizar lista"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
 
-      {/* SEÇÃO 2: Filtros Recolhíveis */}
+      {/* 3. FILTROS RECOLHÍVEIS (Secundário) */}
       <CollapsibleFilters
         filters={filters}
         onFilterChange={handleFilterChange}
-        onApply={handleApplyFilters}
-        onClear={handleClearFilters}
+        onApply={() => applyFilters(visits)}
+        onClear={clearFilters}
         activeFilters={activeFilters}
         filterStats={filterStats}
         hasActiveFilters={hasActiveFilters}
       />
 
-      {/* SEÇÃO 3: Lista/Consulta */}
-      <div id="visits-table" className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <Filter className="h-6 w-6 text-gray-700" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Visitas Registradas</h2>
-                <p className="text-gray-600">
-                  {isLoading ? (
-                    "Carregando..."
-                  ) : hasActiveFilters ? (
-                    <>
-                      Mostrando <span className="font-semibold text-blue-600">{filteredVisits.length}</span> de{' '}
-                      <span className="font-semibold">{visits.length}</span> visitas
-                      <span className="ml-2 text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                        {Object.keys(activeFilters).length} filtro(s) ativo(s)
-                      </span>
-                    </>
-                  ) : (
-                    `Total de ${visits.length} visitas registradas`
-                  )}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              <button
-                onClick={handleOpenImportModal}
-                className="text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-                title="Importar visitas de arquivo JSON"
-              >
-                <Upload className="h-4 w-4" />
-                Importar
-              </button>
-              <button
-                onClick={handleOpenExportModal}
-                className="text-sm text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
-                title="Exportar visitas para arquivo JSON"
-              >
-                <Download className="h-4 w-4" />
-                Exportar
-              </button>
-              <div className="hidden md:block h-6 w-px bg-gray-300"></div>
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearFilters}
-                  className="text-sm text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
-                >
-                  Limpar filtros
-                </button>
-              )}
-              <button
-                onClick={() => {/* TODO: Implementar refresh */}}
-                className="text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                Atualizar lista
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Conteúdo da Tabela */}
+      {/* 4. TABELA DE DADOS */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
         <div className="p-1">
           {isLoading ? (
             <div className="p-12 text-center">
@@ -247,36 +172,26 @@ export default function Visitas() {
             </div>
           ) : filteredVisits.length === 0 ? (
             <div className="p-12 text-center">
-              <div className="mx-auto w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                <Filter className="h-10 w-10 text-gray-400" />
+              <div className="mx-auto w-20 h-20 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center mb-6">
+                <FileText className="h-10 w-10 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 {hasActiveFilters ? "Nenhuma visita encontrada" : "Nenhuma visita registrada"}
               </h3>
-              <p className="text-gray-600 max-w-md mx-auto mb-6">
+              <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-6">
                 {hasActiveFilters
-                  ? "Tente ajustar os critérios de filtro ou limpe os filtros para ver todas as visitas."
-                  : "Comece registrando sua primeira visita usando o formulário acima."}
+                  ? "Tente ajustar os filtros para encontrar o que procura."
+                  : "Comece registrando sua primeira visita comercial."}
               </p>
-              {hasActiveFilters ? (
-                <button
-                  onClick={handleClearFilters}
-                  className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-md hover:shadow-lg transition-all"
-                >
-                  Limpar todos os filtros
-                </button>
-              ) : (
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="px-5 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 shadow-md hover:shadow-lg transition-all"
-                >
+              {!hasActiveFilters && (
+                <Button onClick={() => openModal()}>
                   Registrar Primeira Visita
-                </button>
+                </Button>
               )}
             </div>
           ) : (
-            <VisitTable 
-              visits={filteredVisits} 
+            <VisitTable
+              visits={filteredVisits}
               onEdit={handleEditVisit}
               onRefresh={loadVisits}
             />
@@ -284,10 +199,50 @@ export default function Visitas() {
         </div>
       </div>
 
-      {/* ExportModal Local */}
+      {/* 5. MODAL DE CADASTRO/EDIÇÃO */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center pt-4 px-4 pb-4 md:p-4 bg-black/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-4xl md:my-8 mx-auto">
+            {/* Header do Modal */}
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-700/50 rounded-t-2xl">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${editingVisit ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'}`}>
+                  {editingVisit ? <FileText className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                    {editingVisit ? 'Editar Visita' : 'Nova Visita'}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {editingVisit ? `Editando registro #${editingVisit.id}` : 'Agende ou registre uma visita realizada'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Corpo do Modal */}
+            <div className="p-4 md:p-6 lg:p-8 max-h-[calc(100vh-12rem)] md:max-h-[80vh] overflow-y-auto scrollbar-thin">
+              <VisitForm
+                visit={editingVisit}
+                onSuccess={handleFormSuccess}
+                onCancel={closeModal}
+                isLoading={isSaving}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Exportação */}
       <ExportModal
         isOpen={isExportModalOpen}
-        onClose={handleCloseExportModal}
+        onClose={() => setIsExportModalOpen(false)}
         visits={filteredVisits}
       />
     </div>

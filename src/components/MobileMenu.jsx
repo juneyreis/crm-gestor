@@ -24,8 +24,8 @@ export default function MobileMenu() {
         { label: "Concorrentes", to: "/tabelas/concorrentes" },
         { label: "Vendedores", to: "/tabelas/vendedores" },
         { label: "Prospects", to: "/prospects" },
-        { label: "Clientes", to: "/clientes" },
         { label: "Visitas", to: "/visitas" },
+        { label: "Clientes", to: "/clientes" },
       ]
     },
     { icon: <FileText size={18} />, label: "Relatórios", to: "/relatorios" },

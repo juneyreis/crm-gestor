@@ -583,7 +583,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
           className="flex items-center gap-2 px-6"
         >
           <X className="h-4 w-4" />
-          {visit ? 'Cancelar Edição' : 'Limpar Formulário'}
+          Cancelar
         </Button>
 
         {visit && (

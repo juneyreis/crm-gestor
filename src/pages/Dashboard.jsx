@@ -76,7 +76,7 @@ export default function Dashboard() {
           concorrentesService.listarConcorrentes(user.id),
           vendedoresService.listarVendedores(user.id),
           prospectsService.listar(user.id),
-          clientesService.listarClientes(user.id)
+          clientesService.listar(user.id)
         ]);
 
 

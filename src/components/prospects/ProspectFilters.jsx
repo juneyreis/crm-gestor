@@ -82,14 +82,14 @@ export default function ProspectFilters({
                     {/* Chips de Filtros Ativos */}
                     {hasActiveFilters && (
                         <div className="mb-6">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros Ativos:</span>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Filtros Ativos:</span>
                                 <button
                                     onClick={handleClearAll}
-                                    className="text-sm text-red-600 hover:text-red-800 flex items-center gap-1"
+                                    className="text-sm font-bold text-red-600 hover:text-red-700 flex items-center gap-1 self-start sm:self-auto"
                                 >
-                                    <X className="h-3 w-3" />
-                                    Limpar todos
+                                    <X className="h-4 w-4" />
+                                    Limpar Filtros
                                 </button>
                             </div>
                             <div className="flex gap-2 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600">
@@ -123,7 +123,7 @@ export default function ProspectFilters({
                             <div className="relative">
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                     placeholder="Nome"
                                     value={filters.nome || ''}
                                     onChange={(e) => handleInputChange('nome', e.target.value)}
@@ -141,7 +141,7 @@ export default function ProspectFilters({
                             <div className="relative">
                                 <input
                                     type="text"
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                     placeholder="Filtrar cidade..."
                                     value={filters.cidade || ''}
                                     onChange={(e) => handleInputChange('cidade', e.target.value)}
@@ -157,7 +157,7 @@ export default function ProspectFilters({
                                 UF
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.uf || ''}
                                 onChange={(e) => handleInputChange('uf', e.target.value)}
                             >
@@ -175,7 +175,7 @@ export default function ProspectFilters({
                                 Status
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.status || ''}
                                 onChange={(e) => handleInputChange('status', e.target.value)}
                             >
@@ -193,7 +193,7 @@ export default function ProspectFilters({
                                 Classificação
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.classificacao || ''}
                                 onChange={(e) => handleInputChange('classificacao', e.target.value)}
                             >
@@ -211,7 +211,7 @@ export default function ProspectFilters({
                                 Vendedor
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.vendedor || ''}
                                 onChange={(e) => handleInputChange('vendedor', e.target.value)}
                             >
@@ -229,7 +229,7 @@ export default function ProspectFilters({
                                 Segmento
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.segmento_id || ''} // Assumindo filtro por ID para relacionamentos
                                 onChange={(e) => handleInputChange('segmento_id', e.target.value)}
                             >
@@ -247,7 +247,7 @@ export default function ProspectFilters({
                                 Concorrente
                             </label>
                             <select
-                                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 text-gray-900 dark:text-white"
                                 value={filters.concorrente_id || ''}
                                 onChange={(e) => handleInputChange('concorrente_id', e.target.value)}
                             >

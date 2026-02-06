@@ -10,11 +10,11 @@ const CLASSIFICATION_COLORS = {
 
 export default function ProspectMobileCard({ prospect, onEdit, onDelete, isDeleting }) {
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.99]">
             {/* Header: Nome + Classificação */}
-            <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-start justify-between gap-3 mb-4">
                 <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 dark:text-white text-base uppercase truncate">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight uppercase truncate">
                         {prospect.nome}
                     </h3>
                     <div className="flex items-center gap-2 mt-1">

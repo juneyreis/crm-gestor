@@ -18,6 +18,7 @@ import Vendedores from './pages/Vendedores';
 import NotFound from './pages/NotFound';
 import ComingSoon from './pages/ComingSoon';
 import Prospects from './pages/Prospects';
+import Clientes from './pages/Clientes';
 import useTheme from './hooks/useTheme';
 import useAuth from './hooks/useAuth';
 
@@ -68,7 +69,7 @@ function AppContent() {
                           <Route path="tabelas/segmentos" element={<Segmentos />} />
                           <Route path="tabelas/concorrentes" element={<Concorrentes />} />
                           <Route path="prospects" element={<Prospects />} />
-                          <Route path="clientes" element={<ComingSoon title="Clientes" />} />
+                          <Route path="clientes" element={<Clientes />} />
                           <Route path="/visitas" element={<Visitas />} />
                           <Route path="/relatorios" element={<Relatorios />} />
                           <Route path="/estatisticas" element={<Estatisticas />} />

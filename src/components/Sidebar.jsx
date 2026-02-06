@@ -30,8 +30,8 @@ export default function Sidebar() {
         { label: "Concorrentes", to: "/tabelas/concorrentes" },
         { label: "Vendedores", to: "/tabelas/vendedores" },
         { label: "Prospects", to: "/prospects" },
+        { label: "Visitas", to: "/visitas" },
         { label: "Clientes", to: "/clientes" },
-        { label: "Visitas", to: "/visitas" }, // Vindo do menu principal
       ]
     },
     { icon: <FileText size={20} />, label: "Relatórios", to: "/relatorios" },
