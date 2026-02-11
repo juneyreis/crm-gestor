@@ -35,12 +35,16 @@ export default function ComboboxCliente({
         }
     }, [value, clientes]);
 
-    // Filtrar clientes com base na busca (apenas por nome)
+    // Filtrar clientes com base na busca (agora só por nome)
     const filteredClientes = clientes.filter(cliente => {
         const nome = cliente.prospects?.nome?.toLowerCase() || '';
         const term = searchTerm.toLowerCase();
         return nome.includes(term);
     });
+
+    // Limitar a 5 resultados
+    const hasMoreResults = filteredClientes.length > 5;
+    const displayedClientes = hasMoreResults ? filteredClientes.slice(0, 5) : filteredClientes;
 
     const handleSelectCliente = (cliente) => {
         setSelectedCliente(cliente);
@@ -62,14 +66,14 @@ export default function ComboboxCliente({
 
     return (
         <div ref={containerRef} className="relative w-full">
-            {/* Campo falso que abre a busca - MESMO PADRÃO DO VENDEDOR */}
+            {/* Campo falso que abre a busca */}
             {!isOpen && selectedCliente ? (
                 <div 
                     onClick={() => setIsOpen(true)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 >
                     <div className="flex items-center gap-3 min-w-0">
-                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                        <User className="h-5 w-5 text-gray-400 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">
                                 {getClienteDisplayName(selectedCliente)}
@@ -92,18 +96,18 @@ export default function ComboboxCliente({
             ) : !isOpen && !selectedCliente ? (
                 <div 
                     onClick={() => setIsOpen(true)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 >
                     <div className="flex items-center gap-3">
-                        <User className="h-4 w-4 text-gray-400" />
+                        <User className="h-5 w-5 text-gray-400" />
                         <span className="text-sm">{placeholder}</span>
                     </div>
                     <ChevronDown className="h-4 w-4 text-gray-400" />
                 </div>
             ) : (
                 /* Painel de busca aberto */
-                <div className="w-full border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 shadow-lg overflow-hidden">
-                    {/* Input de busca - MESMO PADRÃO */}
+                <div className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 shadow-lg overflow-hidden">
+                    {/* Input de busca */}
                     <div className="relative border-b border-gray-200 dark:border-slate-600">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
@@ -111,7 +115,7 @@ export default function ComboboxCliente({
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Buscar cliente por nome..."
-                            className="w-full pl-10 pr-9 py-2 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-t-lg"
+                            className="w-full pl-9 pr-9 py-3 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none"
                             autoFocus
                         />
                         {searchTerm && (
@@ -124,27 +128,37 @@ export default function ComboboxCliente({
                         )}
                     </div>
 
-                    {/* Lista de resultados - TODOS OS CLIENTES, SCROLL, SEM MENSAGEM "E MAIS" */}
-                    <div className="max-h-72 overflow-y-auto">
-                        {filteredClientes.length > 0 ? (
-                            filteredClientes.map((cliente) => (
-                                <button
-                                    key={cliente.id}
-                                    onClick={() => handleSelectCliente(cliente)}
-                                    className="w-full px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-slate-600 last:border-0"
-                                >
-                                    <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                                    <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                        {getClienteDisplayName(cliente)}
-                                    </span>
-                                </button>
-                            ))
+                    {/* Lista de resultados - APENAS NOME */}
+                    <div className="max-h-64 overflow-y-auto">
+                        {displayedClientes.length > 0 ? (
+                            <>
+                                {displayedClientes.map((cliente) => (
+                                    <button
+                                        key={cliente.id}
+                                        onClick={() => handleSelectCliente(cliente)}
+                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-slate-600 last:border-0"
+                                    >
+                                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                        <span className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                            {getClienteDisplayName(cliente)}
+                                        </span>
+                                    </button>
+                                ))}
+                                
+                                {hasMoreResults && (
+                                    <div className="px-4 py-3 bg-gray-50 dark:bg-slate-800 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            E mais {filteredClientes.length - 5} cliente(s). Digite para refinar a busca.
+                                        </p>
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 {searchTerm ? (
                                     <p className="text-sm">Nenhum cliente encontrado para "{searchTerm}"</p>
                                 ) : (
-                                    <p className="text-sm">Digite para refinar a busca</p>
+                                    <p className="text-sm">Digite para buscar clientes</p>
                                 )}
                             </div>
                         )}

@@ -21,7 +21,8 @@ npm run deploy:github
 
 :: 3. Deploy Vercel
 echo --- Fazendo deploy na Vercel...
-npm run deploy:vercel
+:: npm run deploy:vercel
+npm run build:vercel
 vercel --prod
 
 echo === TODOS OS DEPLOYS CONCLUIDOS! ===
