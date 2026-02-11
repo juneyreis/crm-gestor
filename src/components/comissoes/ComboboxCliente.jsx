@@ -13,7 +13,6 @@ export default function ComboboxCliente({
     const [selectedCliente, setSelectedCliente] = useState(null);
     const containerRef = useRef(null);
 
-    // Fechar ao clicar fora
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -25,7 +24,6 @@ export default function ComboboxCliente({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    // Atualizar cliente selecionado quando value mudar
     useEffect(() => {
         if (value && clientes.length > 0) {
             const cliente = clientes.find(c => c.id === parseInt(value));
@@ -35,7 +33,6 @@ export default function ComboboxCliente({
         }
     }, [value, clientes]);
 
-    // Filtrar clientes com base na busca (apenas por nome)
     const filteredClientes = clientes.filter(cliente => {
         const nome = cliente.prospects?.nome?.toLowerCase() || '';
         const term = searchTerm.toLowerCase();
@@ -62,9 +59,8 @@ export default function ComboboxCliente({
 
     return (
         <div ref={containerRef} className="relative w-full">
-            {/* CAMPO PREENCHIDO - FONTE NORMAL 14px, ALINHADO À ESQUERDA (IGUAL VENDEDOR) */}
             {!isOpen && selectedCliente ? (
-                <div 
+                <div
                     onClick={() => setIsOpen(true)}
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 >
@@ -88,8 +84,7 @@ export default function ComboboxCliente({
                     </div>
                 </div>
             ) : !isOpen && !selectedCliente ? (
-                {/* CAMPO VAZIO - MESMO PADRÃO */}
-                <div 
+                <div
                     onClick={() => setIsOpen(true)}
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 >
@@ -102,9 +97,7 @@ export default function ComboboxCliente({
                     <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
                 </div>
             ) : (
-                /* PAINEL DE BUSCA ABERTO */
                 <div className="w-full border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 shadow-lg overflow-hidden">
-                    {/* Input de busca */}
                     <div className="relative border-b border-gray-200 dark:border-slate-600">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
@@ -125,7 +118,6 @@ export default function ComboboxCliente({
                         )}
                     </div>
 
-                    {/* Lista de resultados - FONTE NORMAL 14px */}
                     <div className="max-h-72 overflow-y-auto">
                         {filteredClientes.length > 0 ? (
                             filteredClientes.map((cliente) => (
