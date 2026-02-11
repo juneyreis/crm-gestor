@@ -72,7 +72,7 @@ export default function Comissoes() {
     };
 
     return (
-        <div className="space-y-6 animate-fade-in w-full max-w-full overflow-hidden">
+        <div className="space-y-6 animate-fade-in">
             {/* HEADER */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
                 <div>
@@ -90,10 +90,10 @@ export default function Comissoes() {
                 </div>
             </div>
 
-            {/* ===== FILTROS OTIMIZADOS - SEM ESTOURO ===== */}
+            {/* ===== FILTROS OTIMIZADOS - SOMENTE MOBILE ===== */}
             <div className="bg-white dark:bg-slate-800 p-3 md:p-4 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
                 <div className="flex flex-col gap-2">
-                    {/* LINHA 1: Busca - OCUPA 100% */}
+                    {/* LINHA 1: Busca */}
                     <div className="relative w-full">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
                         <input
@@ -105,9 +105,8 @@ export default function Comissoes() {
                         />
                     </div>
 
-                    {/* LINHA 2: Status + Vendedor + Refresh - LADO A LADO COM TAMANHOS CONTROLADOS */}
+                    {/* LINHA 2: Status + Vendedor + Refresh */}
                     <div className="flex items-center gap-2 w-full">
-                        {/* Status - 40% */}
                         <select
                             value={filters.status || ''}
                             onChange={(e) => handleFilterChange('status', e.target.value)}
@@ -119,7 +118,6 @@ export default function Comissoes() {
                             <option value="CANCELADA">CANCELADA</option>
                         </select>
 
-                        {/* Vendedor - 40% */}
                         <select
                             value={filters.vendedor || ''}
                             onChange={(e) => handleFilterChange('vendedor', e.target.value)}
@@ -131,7 +129,6 @@ export default function Comissoes() {
                             ))}
                         </select>
 
-                        {/* Refresh - 20% */}
                         <button
                             onClick={loadData}
                             className="w-1/5 p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center justify-center"
@@ -143,7 +140,7 @@ export default function Comissoes() {
                 </div>
             </div>
 
-            {/* TABELA/CARDS */}
+            {/* TABELA/CARDS - CONTAINER ORIGINAL RESTAURADO */}
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
                 <ComissaoTable
                     comissoes={filteredComissoes}

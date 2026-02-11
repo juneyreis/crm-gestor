@@ -127,9 +127,9 @@ export default function ComissaoTable({
     };
 
     return (
-        <div className="overflow-hidden w-full">
-            {/* 🖥️ Desktop Table View - a partir de md (768px) */}
-            <div className="hidden md:block overflow-x-auto">
+        <div className="overflow-hidden">
+            {/* 🖥️ Desktop Table View - BREAKPOINT ORIGINAL LG (1024px) */}
+            <div className="hidden lg:block">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
                     <thead className="bg-gray-50 dark:bg-slate-700/50">
                         <tr className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">
@@ -185,8 +185,8 @@ export default function ComissaoTable({
                 </table>
             </div>
 
-            {/* 📱 Mobile Cards View - abaixo de md (768px) */}
-            <div className="md:hidden px-0 py-4 space-y-4">
+            {/* 📱 Mobile Cards View - BREAKPOINT ORIGINAL LG (1024px) */}
+            <div className="lg:hidden space-y-4 p-4">
                 {sortedComissoes.map(com => (
                     <ComissaoMobileCard
                         key={com.id}

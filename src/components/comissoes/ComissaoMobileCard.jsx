@@ -30,8 +30,17 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
         return <div className="w-2 h-2 rounded-full bg-current flex-shrink-0" />;
     }
 
+    // CORREÇÃO: Acessa o nome do cliente através de clientes.prospects.nome
+    const getClienteNome = () => {
+        try {
+            return comissao?.clientes?.prospects?.nome || 'Cliente não encontrado';
+        } catch {
+            return 'Cliente não encontrado';
+        }
+    };
+
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform space-y-4 w-full max-w-full">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform space-y-4">
             {/* Header do Card */}
             <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
@@ -39,8 +48,8 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                         {getStatusIcon(comissao.status)}
                         <span className="truncate">{comissao.status}</span>
                     </span>
-                    <h3 className="mt-3 font-bold text-gray-900 dark:text-white text-lg leading-tight truncate" title={comissao.clientes?.nome}>
-                        {comissao.clientes?.nome || 'Cliente N/A'}
+                    <h3 className="mt-3 font-bold text-gray-900 dark:text-white text-lg leading-tight truncate" title={getClienteNome()}>
+                        {getClienteNome()}
                     </h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-medium flex items-center gap-1">
                         <User className="h-3 w-3 flex-shrink-0" />
@@ -67,9 +76,8 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                 </div>
             </div>
 
-            {/* Grid de Detalhes - 1 coluna no mobile, 2 colunas em telas maiores */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-                {/* Vigência */}
+            {/* Grid de Detalhes */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
                         <Calendar className="h-3 w-3 flex-shrink-0" />
@@ -79,8 +87,6 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                         {comissao.vigencia}
                     </p>
                 </div>
-
-                {/* Vencimento */}
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
                         <Calendar className="h-3 w-3 flex-shrink-0" />
@@ -90,8 +96,6 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                         {formatDate(comissao.vencimento)}
                     </p>
                 </div>
-
-                {/* Comissão */}
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
                         <DollarSign className="h-3 w-3 flex-shrink-0" />
@@ -101,8 +105,6 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                         {formatCurrency(comissao.valor_comissao)}
                     </p>
                 </div>
-
-                {/* Contrato */}
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
                         <Briefcase className="h-3 w-3 flex-shrink-0" />
