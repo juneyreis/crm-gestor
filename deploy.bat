@@ -24,8 +24,8 @@ echo --- Fim do deploy no GitHub Pages...
 echo --- Fazendo deploy na Vercel...
 :: De acordo com seu guia, a Vercel faz o build sozinha, 
 :: mas vamos manter seu fluxo de build manual se preferir
-call npm run build:vercel
-call vercel --prod
+call npm run deploy:vercel
+:: call vercel --prod
 
 echo === TODOS OS DEPLOYS CONCLUIDOS! ===
 

@@ -10,8 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "deploy:github": "npm run build:github && gh-pages -d dist",
-    "deploy:vercel": "vercel --prod",
-    "deploy:vercel-now": "npm run build:vercel && vercel --prod",
+    "deploy:vercel": "npx vercel --prod",
     "build:github": "cross-env VITE_DEPLOY_TARGET=github vite build",
     "build:vercel": "cross-env VITE_DEPLOY_TARGET=vercel vite build"
   },
