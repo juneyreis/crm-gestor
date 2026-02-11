@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit2, Trash2, CheckCircle, XCircle, Calendar, User, DollarSign, Briefcase } from 'lucide-react';
+import { Edit2, Trash2, CheckCircle, XCircle, Wallet, Calendar, User, DollarSign } from 'lucide-react';
 
 const formatCurrency = (val) => val?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -25,31 +25,29 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
     }
 
     function getStatusIcon(status) {
-        if (status === 'PAGA') return <CheckCircle className="h-3.5 w-3.5 flex-shrink-0" />;
-        if (status === 'CANCELADA') return <XCircle className="h-3.5 w-3.5 flex-shrink-0" />;
-        return <div className="w-2 h-2 rounded-full bg-current flex-shrink-0" />;
+        if (status === 'PAGA') return <CheckCircle className="h-3.5 w-3.5" />;
+        if (status === 'CANCELADA') return <XCircle className="h-3.5 w-3.5" />;
+        return <div className="w-2 h-2 rounded-full bg-current" />;
     }
 
     return (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform space-y-4 w-full max-w-full">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform space-y-4">
             {/* Header do Card */}
-            <div className="flex justify-between items-start gap-2">
-                <div className="flex-1 min-w-0">
+            <div className="flex justify-between items-start">
+                <div className="flex-1 min-w-0 pr-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wide ${getStatusStyle(comissao.status)}`}>
                         {getStatusIcon(comissao.status)}
-                        <span className="truncate">{comissao.status}</span>
+                        {comissao.status}
                     </span>
-                    <h3 className="mt-3 font-bold text-gray-900 dark:text-white text-lg leading-tight truncate" title={comissao.clientes?.nome}>
+                    <h3 className="mt-3 font-bold text-gray-900 dark:text-white text-lg leading-tight truncate">
                         {comissao.clientes?.nome || 'Cliente N/A'}
                     </h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider font-medium flex items-center gap-1">
-                        <User className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate" title={comissao.vendedores?.nome}>
-                            {comissao.vendedores?.nome || 'Vendedor N/A'}
-                        </span>
+                        <User className="h-3 w-3" />
+                        {comissao.vendedores?.nome || 'Vendedor N/A'}
                     </p>
                 </div>
-                <div className="flex gap-1 flex-shrink-0">
+                <div className="flex gap-1 -mr-2 -mt-2">
                     <button
                         onClick={() => onEdit(comissao)}
                         className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -67,48 +65,39 @@ export default function ComissaoMobileCard({ comissao, onEdit, onDelete }) {
                 </div>
             </div>
 
-            {/* Grid de Detalhes - 1 coluna no mobile, 2 colunas em telas maiores */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
-                {/* Vigência */}
+            {/* Grid de Detalhes */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700">
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        <Calendar className="h-3 w-3" />
                         Vigência
                     </p>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate" title={comissao.vigencia}>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                         {comissao.vigencia}
                     </p>
                 </div>
-
-                {/* Vencimento */}
-                <div className="space-y-1 min-w-0">
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                <div className="space-y-1 text-right min-w-0">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
                         Vencimento
                     </p>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate" title={formatDate(comissao.vencimento)}>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                         {formatDate(comissao.vencimento)}
                     </p>
                 </div>
-
-                {/* Comissão */}
                 <div className="space-y-1 min-w-0">
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                        <DollarSign className="h-3 w-3 flex-shrink-0" />
+                        <Wallet className="h-3 w-3" />
                         Comissão
                     </p>
-                    <p className="text-sm font-bold text-orange-600 dark:text-orange-500 truncate" title={formatCurrency(comissao.valor_comissao)}>
+                    <p className="text-sm font-bold text-orange-600 dark:text-orange-500 truncate">
                         {formatCurrency(comissao.valor_comissao)}
                     </p>
                 </div>
-
-                {/* Contrato */}
-                <div className="space-y-1 min-w-0">
-                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider flex items-center gap-1">
-                        <Briefcase className="h-3 w-3 flex-shrink-0" />
+                <div className="space-y-1 text-right min-w-0">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
                         Contrato
                     </p>
-                    <p className="text-xs text-gray-500 font-medium truncate" title={formatCurrency(comissao.valor_contrato)}>
+                    <p className="text-xs text-gray-500 font-medium truncate">
                         {formatCurrency(comissao.valor_contrato)}
                     </p>
                 </div>
