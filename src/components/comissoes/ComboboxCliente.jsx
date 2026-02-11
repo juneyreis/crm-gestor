@@ -1,0 +1,201 @@
+import { useState, useEffect, useRef } from 'react';
+import { Search, X, User, ChevronDown } from 'lucide-react';
+
+export default function ComboboxCliente({
+    clientes = [],
+    value,
+    onChange,
+    placeholder = "Selecione um cliente",
+    error
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCliente, setSelectedCliente] = useState(null);
+    const containerRef = useRef(null);
+
+    // Fechar ao clicar fora
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setIsOpen(false);
+                setSearchTerm('');
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Atualizar cliente selecionado quando value mudar
+    useEffect(() => {
+        if (value && clientes.length > 0) {
+            const cliente = clientes.find(c => c.id === parseInt(value));
+            setSelectedCliente(cliente || null);
+        } else {
+            setSelectedCliente(null);
+        }
+    }, [value, clientes]);
+
+    // Filtrar clientes com base na busca
+    const filteredClientes = clientes.filter(cliente => {
+        const nome = cliente.prospects?.nome?.toLowerCase() || '';
+        const email = cliente.prospects?.email?.toLowerCase() || '';
+        const telefone = cliente.telefone || '';
+        const term = searchTerm.toLowerCase();
+        return nome.includes(term) || email.includes(term) || telefone.includes(term);
+    });
+
+    // Limitar a 5 resultados, mostrar "Ver mais" se houver mais
+    const hasMoreResults = filteredClientes.length > 5;
+    const displayedClientes = hasMoreResults ? filteredClientes.slice(0, 5) : filteredClientes;
+
+    const handleSelectCliente = (cliente) => {
+        setSelectedCliente(cliente);
+        onChange({ target: { name: 'cliente_id', value: String(cliente.id) } });
+        setIsOpen(false);
+        setSearchTerm('');
+    };
+
+    const handleClear = () => {
+        setSelectedCliente(null);
+        onChange({ target: { name: 'cliente_id', value: '' } });
+        setSearchTerm('');
+        setIsOpen(true);
+    };
+
+    const getClienteDisplayName = (cliente) => {
+        return cliente.prospects?.nome || 'Cliente sem nome';
+    };
+
+    const getClienteEmail = (cliente) => {
+        return cliente.prospects?.email || cliente.email_financeiro;
+    };
+
+    const getClienteTelefone = (cliente) => {
+        return cliente.celular || cliente.telefone;
+    };
+
+    return (
+        <div ref={containerRef} className="relative w-full">
+            {/* Campo falso que abre a busca */}
+            {!isOpen && selectedCliente ? (
+                <div 
+                    onClick={() => setIsOpen(true)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                >
+                    <div className="flex items-center gap-3 min-w-0">
+                        <User className="h-5 w-5 text-gray-400 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">
+                                {getClienteDisplayName(selectedCliente)}
+                            </p>
+                            {getClienteEmail(selectedCliente) && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                    {getClienteEmail(selectedCliente)}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleClear();
+                            }}
+                            className="p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-full"
+                        >
+                            <X className="h-4 w-4 text-gray-400" />
+                        </button>
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                    </div>
+                </div>
+            ) : !isOpen && !selectedCliente ? (
+                <div 
+                    onClick={() => setIsOpen(true)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center justify-between cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <User className="h-5 w-5 text-gray-400" />
+                        <span className="text-sm">{placeholder}</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                </div>
+            ) : (
+                /* Painel de busca aberto */
+                <div className="w-full border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 shadow-lg overflow-hidden">
+                    {/* Input de busca */}
+                    <div className="relative border-b border-gray-200 dark:border-slate-600">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Buscar cliente por nome, email ou telefone..."
+                            className="w-full pl-9 pr-9 py-3 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none"
+                            autoFocus
+                        />
+                        {searchTerm && (
+                            <button
+                                onClick={() => setSearchTerm('')}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-full"
+                            >
+                                <X className="h-3.5 w-3.5 text-gray-400" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Lista de resultados */}
+                    <div className="max-h-64 overflow-y-auto">
+                        {displayedClientes.length > 0 ? (
+                            <>
+                                {displayedClientes.map((cliente) => (
+                                    <button
+                                        key={cliente.id}
+                                        onClick={() => handleSelectCliente(cliente)}
+                                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors flex items-start gap-3 border-b border-gray-100 dark:border-slate-600 last:border-0"
+                                    >
+                                        <User className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                                {getClienteDisplayName(cliente)}
+                                            </p>
+                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
+                                                {getClienteEmail(cliente) && (
+                                                    <span className="text-gray-500 dark:text-gray-400 truncate">
+                                                        {getClienteEmail(cliente)}
+                                                    </span>
+                                                )}
+                                                {getClienteTelefone(cliente) && (
+                                                    <span className="text-gray-500 dark:text-gray-400">
+                                                        • {getClienteTelefone(cliente)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))}
+                                
+                                {hasMoreResults && (
+                                    <div className="px-4 py-3 bg-gray-50 dark:bg-slate-800 text-center">
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            E mais {filteredClientes.length - 5} cliente(s). Digite para refinar a busca.
+                                        </p>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                {searchTerm ? (
+                                    <p className="text-sm">Nenhum cliente encontrado para "{searchTerm}"</p>
+                                ) : (
+                                    <p className="text-sm">Digite para buscar clientes</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+            
+            {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+        </div>
+    );
+}

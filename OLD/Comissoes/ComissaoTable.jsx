@@ -128,7 +128,7 @@ export default function ComissaoTable({
 
     return (
         <div className="overflow-hidden">
-            {/* Desktop Table View */}
+            {/* 🖥️ Desktop Table View - BREAKPOINT ORIGINAL LG (1024px) */}
             <div className="hidden lg:block">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
                     <thead className="bg-gray-50 dark:bg-slate-700/50">
@@ -163,13 +163,21 @@ export default function ComissaoTable({
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-200">{com.vigencia}</td>
-                                <td className="px-6 py-4 text-gray-600 dark:text-gray-400">{getClienteNome(com)}</td>
-                                <td className="px-6 py-4 text-gray-600 dark:text-gray-400">{getVendedorNome(com)}</td>
+                                <td className="px-6 py-4 text-gray-600 dark:text-gray-400 max-w-[200px] truncate" title={getClienteNome(com)}>
+                                    {getClienteNome(com)}
+                                </td>
+                                <td className="px-6 py-4 text-gray-600 dark:text-gray-400 max-w-[150px] truncate" title={getVendedorNome(com)}>
+                                    {getVendedorNome(com)}
+                                </td>
                                 <td className="px-6 py-4 text-gray-600 dark:text-gray-400">{formatDate(com.vencimento)}</td>
                                 <td className="px-6 py-4 text-right font-bold text-orange-600">{formatCurrency(com.valor_comissao)}</td>
                                 <td className="px-6 py-4 text-right space-x-2">
-                                    <button onClick={() => onEdit(com)} className="p-1 px-2 text-blue-600 hover:bg-blue-50 rounded" title="Editar"><Edit2 size={16} /></button>
-                                    <button onClick={() => confirmDelete(com.id)} className="p-1 px-2 text-red-600 hover:bg-red-50 rounded" title="Excluir"><Trash2 size={16} /></button>
+                                    <button onClick={() => onEdit(com)} className="p-1 px-2 text-blue-600 hover:bg-blue-50 rounded" title="Editar">
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button onClick={() => confirmDelete(com.id)} className="p-1 px-2 text-red-600 hover:bg-red-50 rounded" title="Excluir">
+                                        <Trash2 size={16} />
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -177,7 +185,7 @@ export default function ComissaoTable({
                 </table>
             </div>
 
-            {/* Mobile Cards View */}
+            {/* 📱 Mobile Cards View - BREAKPOINT ORIGINAL LG (1024px) */}
             <div className="lg:hidden space-y-4 p-4">
                 {sortedComissoes.map(com => (
                     <ComissaoMobileCard

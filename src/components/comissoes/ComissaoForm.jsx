@@ -4,6 +4,7 @@ import Button from '../Button';
 import useAuth from '../../hooks/useAuth';
 import * as comissoesService from '../../services/comissoesService';
 import ConfirmationModal from '../modals/ConfirmationModal';
+import ComboboxCliente from './ComboboxCliente'; // NOVO COMPONENTE
 
 const months = [
     { value: '01', label: 'JAN' },
@@ -36,7 +37,7 @@ const initialForm = {
     observacoes: ''
 };
 
-// Utilitários de Formatação (Padrão CRM)
+// Utilitários de Formatação
 const formatCurrency = (value) => {
     if (!value) return '';
     const cleanValue = String(value).replace(/\D/g, '');
@@ -57,47 +58,9 @@ const formatPercent = (value) => {
     return result;
 };
 
-// Funções de apoio Sensorial (UX)
-const playErrorSound = () => {
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const playBeep = (startTime, frequency) => {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(frequency, startTime);
-            gainNode.gain.setValueAtTime(0, startTime);
-            gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.1);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.start(startTime);
-            oscillator.stop(startTime + 0.1);
-        };
-        const now = audioContext.currentTime;
-        playBeep(now, 880);
-        playBeep(now + 0.15, 880);
-    } catch (e) {
-        console.warn("Audio Context not supported or blocked:", e);
-    }
-};
-
-const focusFirstError = (errors) => {
-    const firstErrorKey = Object.keys(errors)[0];
-    if (firstErrorKey) {
-        const element = document.getElementsByName(firstErrorKey)[0];
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => element.focus(), 300);
-        }
-    }
-};
-
-// Função para formatar a data mantendo o dia selecionado (evita volta de dia por fuso)
+// Função para formatar a data mantendo o dia selecionado
 const toISOStringLocal = (dateInput) => {
     if (!dateInput) return null;
-    // O input type="date" retorna YYYY-MM-DD
-    // Adicionamos T12:00:00 para garantir que fique no meio do dia e evite problemas de fuso
     const [year, month, day] = dateInput.split('-');
     return `${year}-${month}-${day}T12:00:00`;
 };
@@ -109,6 +72,7 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [pendingPayload, setPendingPayload] = useState(null);
+
     // Preencher formulário se estiver editando
     useEffect(() => {
         if (comissao) {
@@ -144,6 +108,7 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
         const clienteId = e.target.value;
         setForm(prev => ({ ...prev, cliente_id: clienteId }));
 
+        // Auto-preenchimento do vendedor, valor e percentual
         if (clienteId && clientes) {
             const cliente = clientes.find(c => c.id === parseInt(clienteId));
             if (cliente) {
@@ -151,7 +116,7 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                     ...prev,
                     vendedor_id: cliente.vendedor_id || '',
                     valor_contrato: cliente.valor_contrato ? formatCurrency(cliente.valor_contrato * 100) : '',
-                    percentual_comissao: cliente.comissao_percentual ? formatPercent(cliente.comissao_percentual * 100) : ''
+                    percentual_comissao: cliente.comissao ? formatPercent(cliente.comissao * 100) : ''
                 }));
             }
         }
@@ -195,7 +160,6 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 observacoes: form.observacoes
             };
 
-            // Verificar duplicidade (Avisar mas permitir)
             const isDuplicated = await comissoesService.verificarDuplicado(form.cliente_id, vigencia, comissao?.id);
             if (isDuplicated) {
                 setPendingPayload(payload);
@@ -234,36 +198,34 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Cliente */}
-                <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cliente *</label>
-                    <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <select
-                            name="cliente_id"
-                            value={form.cliente_id}
-                            onChange={handleClienteChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white ${errors.cliente_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
-                        >
-                            <option value="">Selecione um cliente</option>
-                            {clientes.map(c => (
-                                <option key={c.id} value={c.id}>{c.prospects?.nome}</option>
-                            ))}
-                        </select>
-                        {errors.cliente_id && <p className="text-xs text-red-500 mt-1">{errors.cliente_id}</p>}
-                    </div>
+                {/* Cliente - AGORA USA O COMBOBOX */}
+                <div className="space-y-1 md:col-span-2 lg:col-span-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Cliente <span className="text-red-500">*</span>
+                    </label>
+                    <ComboboxCliente
+                        clientes={clientes}
+                        value={form.cliente_id}
+                        onChange={handleClienteChange}
+                        placeholder="Buscar cliente por nome, email ou telefone"
+                        error={errors.cliente_id}
+                    />
                 </div>
 
                 {/* Vendedor */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vendedor *</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Vendedor <span className="text-red-500">*</span>
+                    </label>
                     <div className="relative">
                         <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <select
                             name="vendedor_id"
                             value={form.vendedor_id}
                             onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white ${errors.vendedor_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
+                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white appearance-none ${
+                                errors.vendedor_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
+                            }`}
                         >
                             <option value="">Selecione um vendedor</option>
                             {vendedores.map(v => (
@@ -275,8 +237,10 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 </div>
 
                 {/* Vigência */}
-                <div className="space-y-1 md:col-span-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vigência (Mês/Ano) *</label>
+                <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Vigência (Mês/Ano) <span className="text-red-500">*</span>
+                    </label>
                     <div className="grid grid-cols-2 gap-2">
                         <select
                             name="vigencia_mes"
@@ -295,12 +259,13 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                             {years.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
                     </div>
-                    {errors.vigencia && <p className="text-xs text-red-500 mt-1">{errors.vigencia}</p>}
                 </div>
 
                 {/* Vencimento */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Vencimento *</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Vencimento <span className="text-red-500">*</span>
+                    </label>
                     <div className="relative">
                         <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <input
@@ -308,9 +273,12 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                             name="vencimento"
                             value={form.vencimento}
                             onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${errors.vencimento ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
+                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${
+                                errors.vencimento ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
+                            }`}
                         />
                     </div>
+                    {errors.vencimento && <p className="text-xs text-red-500 mt-1">{errors.vencimento}</p>}
                 </div>
 
                 {/* Valor Contrato */}
@@ -323,7 +291,8 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                             name="valor_contrato"
                             value={form.valor_contrato}
                             onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${errors.valor_contrato ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+                            placeholder="0,00"
                         />
                     </div>
                 </div>
@@ -338,12 +307,13 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                             name="percentual_comissao"
                             value={form.percentual_comissao}
                             onChange={handleChange}
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500"
+                            placeholder="0,00"
                         />
                     </div>
                 </div>
 
-                {/* Valor Comissão (Auto-calculado) */}
+                {/* Valor Comissão */}
                 <div className="space-y-1">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
                         Valor da Comissão
@@ -389,6 +359,7 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 />
             </div>
 
+            {/* Botões */}
             <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
                 <Button
                     type="submit"
@@ -407,6 +378,7 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 </Button>
             </div>
 
+            {/* Modal de Duplicidade */}
             <ConfirmationModal
                 isOpen={showConfirmModal}
                 title="Lançamento Duplicado"
