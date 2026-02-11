@@ -1,6 +1,6 @@
 // src/pages/Visitas.jsx - PADRONIZADO
 import { useState, useEffect } from "react";
-import { Plus, Filter, X, Search, FileText, CheckCircle, Clock, Upload, Download, RefreshCw } from 'lucide-react';
+import { Plus, Filter, X, Search, FileText, CheckCircle, Clock, Upload, Download, RefreshCw, TrendingUp } from 'lucide-react';
 import Button from "../components/Button";
 import VisitForm from "../components/visits/VisitForm";
 import CollapsibleFilters from "../components/visits/CollapsibleFilters";
@@ -10,6 +10,7 @@ import useFilters from "../hooks/useFilters";
 import useAuth from "../hooks/useAuth";
 import useImportModal from "../hooks/useImportModal";
 import * as visitasService from "../services/visitasService";
+import ConfirmationModal from "../components/modals/ConfirmationModal";
 
 export default function Visitas() {
   const [visits, setVisits] = useState([]);
@@ -20,6 +21,16 @@ export default function Visitas() {
   // States para Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  // State para controle do Modal de Confirmação
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmModalConfig, setConfirmModalConfig] = useState({
+    title: '',
+    message: '',
+    confirmLabel: 'Confirmar',
+    variant: 'warning',
+    onConfirm: () => { }
+  });
 
   const { user } = useAuth();
   const { setImportSuccessCallback, openImportModal } = useImportModal();
@@ -87,8 +98,40 @@ export default function Visitas() {
     handleFilterChange('prospect', value);
   };
 
-  // Stats
   const filterStats = getFilterStats(visits);
+
+  // Handler genérico para abrir modal de confirmação
+  const requestConfirmation = ({ title, message, variant, onConfirm, confirmLabel = 'Sim, confirmar' }) => {
+    setConfirmModalConfig({
+      title,
+      message,
+      variant,
+      confirmLabel,
+      onConfirm: async () => {
+        await onConfirm();
+        setConfirmModalOpen(false);
+      }
+    });
+    setConfirmModalOpen(true);
+  };
+
+  // Nova função handleDelete que usa o modal
+  const handleDelete = (id, prospectName) => {
+    requestConfirmation({
+      title: 'Excluir Visita',
+      message: `Tem certeza que deseja excluir a visita para "${prospectName}"?`,
+      variant: 'danger',
+      confirmLabel: 'Sim, excluir',
+      onConfirm: async () => {
+        try {
+          await visitasService.excluirVisita(id, user.id);
+          await loadVisits();
+        } catch (error) {
+          alert('Erro ao excluir visita: ' + error.message);
+        }
+      }
+    });
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -101,10 +144,20 @@ export default function Visitas() {
           </p>
         </div>
 
-        <Button onClick={() => openModal()} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Visita
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => window.location.href = '/relatorios/visitas'}
+            className="flex items-center gap-2"
+          >
+            <TrendingUp className="h-4 w-4 text-slate-500" />
+            Ver Relatório
+          </Button>
+          <Button onClick={() => openModal()} className="flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none shadow-md">
+            <Plus className="h-4 w-4" />
+            Nova Visita
+          </Button>
+        </div>
       </div>
 
       {/* 2. BARRA DE FERRAMENTAS + BUSCA */}
@@ -194,6 +247,7 @@ export default function Visitas() {
               visits={filteredVisits}
               onEdit={handleEditVisit}
               onRefresh={loadVisits}
+              onDelete={handleDelete}
             />
           )}
         </div>
@@ -244,6 +298,17 @@ export default function Visitas() {
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         visits={filteredVisits}
+      />
+
+      {/* Modal de Confirmação Genérico */}
+      <ConfirmationModal
+        isOpen={confirmModalOpen}
+        title={confirmModalConfig.title}
+        message={confirmModalConfig.message}
+        confirmLabel={confirmModalConfig.confirmLabel}
+        variant={confirmModalConfig.variant}
+        onConfirm={confirmModalConfig.onConfirm}
+        onCancel={() => setConfirmModalOpen(false)}
       />
     </div>
   );

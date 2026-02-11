@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { Edit2, Trash2, Calendar, MapPin, ChevronUp, ChevronDown, CheckCircle, AlertTriangle, User, DollarSign, FileText, Star } from 'lucide-react';
+import { Edit2, Trash2, Calendar, MapPin, ChevronUp, ChevronDown, CheckCircle, AlertTriangle, User, DollarSign, FileText, Star, Hash, Percent } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import useAuth from '../../hooks/useAuth';
 import * as clientesService from '../../services/clientesService';
 
-export default function ClienteTable({ clientes, onEdit, onRefresh }) {
+export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) {
     const { user } = useAuth();
     const [sortColumn, setSortColumn] = useState('data_inicio_contrato');
     const [sortDirection, setSortDirection] = useState('desc');
-    const [deletingId, setDeletingId] = useState(null);
 
     // Formatar data
     const formatDate = (dateString) => {
@@ -28,9 +27,14 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
     };
 
+    // Formatar Percentual
+    const formatPercent = (value) => {
+        if (value === undefined || value === null) return '0,00%';
+        return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(value) + '%';
+    };
+
     // Badges
     const getSatisfacaoBadge = (nivel) => {
-        // Nivel é string de estrelas ou texto, vamos assumir estrelas do form
         return "text-yellow-500 font-bold tracking-widest";
     }
 
@@ -50,13 +54,12 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
         let aValue = a[sortColumn];
         let bValue = b[sortColumn];
 
-        // Mapeamentos
         if (sortColumn === 'nome') {
             aValue = a.prospects?.nome || '';
             bValue = b.prospects?.nome || '';
         }
 
-        if (sortColumn === 'valor_contrato') {
+        if (sortColumn === 'valor_contrato' || sortColumn === 'comissao') {
             aValue = parseFloat(aValue || 0);
             bValue = parseFloat(bValue || 0);
         }
@@ -78,21 +81,6 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
         }
     };
 
-    const handleDelete = async (id, nome) => {
-        if (!confirm(`Tem certeza que deseja excluir o cliente "${nome}"?`)) return;
-
-        setDeletingId(id);
-        try {
-            await clientesService.remover(id);
-            if (onRefresh) onRefresh();
-        } catch (error) {
-            console.error('Erro ao excluir cliente:', error);
-            alert('Erro ao excluir cliente.');
-        } finally {
-            setDeletingId(null);
-        }
-    };
-
     const SortIcon = ({ column }) => {
         if (sortColumn !== column) return null;
         return sortDirection === 'asc' ? <ChevronUp className="h-4 w-4 ml-1" /> : <ChevronDown className="h-4 w-4 ml-1" />;
@@ -111,7 +99,10 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
                                 <div className="flex items-center">Cliente <SortIcon column="nome" /></div>
                             </th>
                             <th onClick={() => handleSort('valor_contrato')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
-                                <div className="flex items-center">Valor <SortIcon column="valor_contrato" /></div>
+                                <div className="flex items-center">Valor / Comis. <SortIcon column="valor_contrato" /></div>
+                            </th>
+                            <th onClick={() => handleSort('data_renovacao_contrato')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+                                <div className="flex items-center">Renovação <SortIcon column="data_renovacao_contrato" /></div>
                             </th>
                             <th onClick={() => handleSort('tipo_contrato')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
                                 <div className="flex items-center">Contrato <SortIcon column="tipo_contrato" /></div>
@@ -140,11 +131,18 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
                                         <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                                             {cliente.prospects?.nome || 'Sem Nome'}
                                         </span>
-                                        {cliente.segmentos?.descricao && (
-                                            <span className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
-                                                {cliente.segmentos.descricao}
-                                            </span>
-                                        )}
+                                        <div className="flex items-center gap-2 mt-0.5">
+                                            {cliente.segmentos?.descricao && (
+                                                <span className="text-xs text-gray-500">
+                                                    {cliente.segmentos.descricao}
+                                                </span>
+                                            )}
+                                            {cliente.contato_principal && (
+                                                <span className="text-[10px] text-blue-500 font-medium px-1.5 py-0.5 bg-blue-50 rounded border border-blue-100">
+                                                    👤 {cliente.contato_principal}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                 </td>
 
@@ -154,7 +152,21 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
                                         <span className="text-sm font-bold text-emerald-600">
                                             {formatCurrency(cliente.valor_contrato)}
                                         </span>
-                                        <span className="text-xs text-gray-500">
+                                        {cliente.comissao > 0 && (
+                                            <span className="text-[10px] text-orange-600 font-bold flex items-center gap-1">
+                                                <Percent className="h-2.5 w-2.5" /> {formatPercent(cliente.comissao)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </td>
+
+                                {/* Renovação */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <div className="flex flex-col">
+                                        <span className="text-sm text-gray-900 font-medium">
+                                            {formatDate(cliente.data_renovacao_contrato)}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400">
                                             Início: {formatDate(cliente.data_inicio_contrato)}
                                         </span>
                                     </div>
@@ -186,16 +198,20 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
 
                                 {/* Ações */}
                                 <td className="px-6 py-4 whitespace-nowrap text-right">
-                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => onEdit(cliente)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                            <Edit2 className="h-4 w-4" />
+                                    <div className="flex items-center justify-start gap-1 pl-1">
+                                        <button
+                                            onClick={() => onEdit(cliente)}
+                                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                                            title="Editar"
+                                        >
+                                            <Edit2 className="h-3.5 w-3.5" />
                                         </button>
                                         <button
-                                            onClick={() => handleDelete(cliente.id, cliente.prospects?.nome)}
-                                            disabled={deletingId === cliente.id}
-                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
+                                            onClick={() => onDelete(cliente.id, cliente.prospects?.nome)}
+                                            className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                            title="Excluir"
                                         >
-                                            {deletingId === cliente.id ? <div className="h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div> : <Trash2 className="h-4 w-4" />}
+                                            <Trash2 className="h-3.5 w-3.5" />
                                         </button>
                                     </div>
                                 </td>
@@ -221,22 +237,37 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
                                 <h3 className="font-bold text-gray-900 text-lg leading-tight">
                                     {cliente.prospects?.nome || 'Sem Nome'}
                                 </h3>
+                                {cliente.contato_principal && (
+                                    <p className="text-xs text-blue-600 mt-1 font-medium italic">
+                                        {cliente.contato_principal}
+                                    </p>
+                                )}
                             </div>
                             <div className="flex gap-1 -mr-2 -mt-2">
                                 <button onClick={() => onEdit(cliente)} className="p-2 text-gray-400 hover:text-blue-600"><Edit2 className="h-5 w-5" /></button>
-                                <button onClick={() => handleDelete(cliente.id, cliente.prospects?.nome)} className="p-2 text-gray-400 hover:text-red-600"><Trash2 className="h-5 w-5" /></button>
+                                <button onClick={() => onDelete(cliente.id, cliente.prospects?.nome)} className="p-2 text-gray-400 hover:text-red-600"><Trash2 className="h-5 w-5" /></button>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm mb-4">
                             <div className="col-span-2 flex items-center justify-between">
-                                <span className="font-bold text-emerald-600 text-lg">{formatCurrency(cliente.valor_contrato)}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-emerald-600 text-lg">{formatCurrency(cliente.valor_contrato)}</span>
+                                    {cliente.comissao > 0 && (
+                                        <span className="text-[10px] text-orange-600 font-bold -mt-1">
+                                            Comis: {formatPercent(cliente.comissao)}
+                                        </span>
+                                    )}
+                                </div>
                                 <span className="text-yellow-500 tracking-widest text-sm">{cliente.nivel_satisfacao}</span>
                             </div>
 
                             <div className="flex items-center gap-2 text-gray-600">
                                 <Calendar className="h-4 w-4 text-blue-500" />
-                                <span className="font-medium text-gray-900">{formatDate(cliente.data_inicio_contrato)}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-medium text-gray-900">{formatDate(cliente.data_renovacao_contrato)}</span>
+                                    <span className="text-[10px]">Renovação</span>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-2 text-gray-600">
@@ -248,7 +279,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
                         {cliente.segmentos?.descricao && (
                             <div className="pt-3 border-t border-gray-100 mt-2">
                                 <span className="text-xs text-gray-500 flex items-center gap-1">
-                                    Tag: {cliente.segmentos.descricao}
+                                    {cliente.segmentos.descricao} {cliente.cnpj_cpf && `• ${cliente.cnpj_cpf}`}
                                 </span>
                             </div>
                         )}
@@ -258,3 +289,4 @@ export default function ClienteTable({ clientes, onEdit, onRefresh }) {
         </div>
     );
 }
+

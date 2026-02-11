@@ -26,10 +26,25 @@ export default function MobileMenu() {
         { label: "Prospects", to: "/prospects" },
         { label: "Visitas", to: "/visitas" },
         { label: "Clientes", to: "/clientes" },
+        { label: "Comissões", to: "/tabelas/comissoes" },
       ]
     },
-    { icon: <FileText size={18} />, label: "Relatórios", to: "/relatorios" },
+    {
+      icon: <FileText size={18} />,
+      label: "Relatórios",
+      to: "#",
+      subItems: [
+        { label: "Segmentos", to: "/relatorios/segmentos" },
+        { label: "Concorrentes", to: "/relatorios/concorrentes" },
+        { label: "Vendedores", to: "/relatorios/vendedores" },
+        { label: "Prospects", to: "/relatorios/prospects" },
+        { label: "Visitas", to: "/relatorios/visitas" },
+        { label: "Clientes", to: "/relatorios/clientes" },
+        { label: "Comissões", to: "/relatorios/comissoes" },
+      ]
+    },
     { icon: <BarChart3 size={18} />, label: "Estatísticas", to: "/estatisticas" },
+    { icon: <Calendar size={18} />, label: "Agenda", to: "/agenda" },
   ];
 
   const handleLogout = async () => {

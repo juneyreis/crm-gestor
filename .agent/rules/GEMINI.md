@@ -130,6 +130,16 @@ When user's prompt is NOT in English:
 - Skills: `.agent/skills/` (Project)
 - Runtime Scripts: `.agent/skills/<skill>/scripts/`
 
+### 🎨 UI & UX Mandates (Project Specific)
+
+1. **Responsiveness Check (Mobile & Desktop)**
+   - **MANDATORY:** Every single layout change MUST be reviewed on both Mobile and Desktop viewports.
+   - **Constraint:** Ensure no forced horizontal scrolling on mobile (except for data tables).
+
+2. **Standard Confirmation Pattern**
+   - **MANDATORY:** Use `ConfirmationModal` components for ALL user warnings, deletions, and critical actions.
+   - **FORBIDDEN:** Do NOT use native `window.confirm()` or `window.alert()`.
+
 ### 🧠 Read → Understand → Apply
 
 ```

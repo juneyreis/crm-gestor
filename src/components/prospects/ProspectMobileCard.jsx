@@ -8,7 +8,7 @@ const CLASSIFICATION_COLORS = {
     'Hot': 'bg-[#FFCDD2] text-red-800 border-red-200'
 };
 
-export default function ProspectMobileCard({ prospect, onEdit, onDelete, isDeleting }) {
+export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
     return (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.99]">
             {/* Header: Nome + Classificação */}
@@ -111,14 +111,9 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete, isDelet
                 </button>
                 <button
                     onClick={() => onDelete(prospect.id, prospect.nome)}
-                    disabled={isDeleting}
-                    className="flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors disabled:opacity-50"
+                    className="flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
                 >
-                    {isDeleting ? (
-                        <div className="h-4 w-4 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
-                    ) : (
-                        <Trash2 className="h-4 w-4" />
-                    )}
+                    <Trash2 className="h-4 w-4" />
                 </button>
             </div>
         </div>

@@ -40,7 +40,7 @@ const CLASSIFICATION_COLORS = {
     'Hot': 'bg-[#FFCDD2] text-red-800 border-red-200'
 };
 
-export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) {
+export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh, onDelete }) {
     const [sorting, setSorting] = useState([{ id: 'nome', desc: true }]);
     const [columnVisibility, setColumnVisibility] = useState(() => {
         const saved = localStorage.getItem('prospects_table_visibility');
@@ -56,7 +56,6 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
         const saved = localStorage.getItem('prospects_table_order');
         return saved ? JSON.parse(saved) : [];
     });
-    const [deletingId, setDeletingId] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Persistência
@@ -77,18 +76,6 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
         }
     };
 
-    const handleDelete = async (id, nome) => {
-        if (!confirm(`Tem certeza que deseja excluir o prospect "${nome}"?`)) return;
-        setDeletingId(id);
-        try {
-            await prospectsService.remover(id);
-            if (onRefresh) onRefresh();
-        } catch (error) {
-            alert('Erro ao excluir prospect.');
-        } finally {
-            setDeletingId(null);
-        }
-    };
 
     const columns = useMemo(() => [
         // Ações - Movido para primeira coluna (esquerda)
@@ -105,16 +92,11 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
                         <Edit2 className="h-3.5 w-3.5" />
                     </button>
                     <button
-                        onClick={() => handleDelete(info.row.original.id, info.row.original.nome)}
-                        disabled={deletingId === info.row.original.id}
+                        onClick={() => onDelete && onDelete(info.row.original.id, info.row.original.nome)}
                         className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
                         title="Excluir"
                     >
-                        {deletingId === info.row.original.id ? (
-                            <div className="h-3.5 w-3.5 animate-spin border-2 border-red-600 border-t-transparent rounded-full" />
-                        ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                        )}
+                        <Trash2 className="h-3.5 w-3.5" />
                     </button>
                 </div>
             ),
@@ -268,7 +250,7 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
             ),
             size: 150
         }),
-    ], [deletingId, onEdit]);
+    ], [onEdit, onDelete]);
 
     const table = useReactTable({
         data: prospects,
@@ -392,8 +374,7 @@ export default function ProspectAdvancedTable({ prospects, onEdit, onRefresh }) 
                         key={prospect.id}
                         prospect={prospect}
                         onEdit={onEdit}
-                        onDelete={handleDelete}
-                        isDeleting={deletingId === prospect.id}
+                        onDelete={onDelete}
                     />
                 ))}
             </div>

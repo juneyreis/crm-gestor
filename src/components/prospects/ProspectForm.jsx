@@ -235,9 +235,9 @@ export default function ProspectForm({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Nome */}
-                <div className="space-y-2 lg:col-span-2">
+                <div className="space-y-2 col-span-1 lg:col-span-8">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <Building className="h-4 w-4" /> Nome / Empresa *
                     </label>
@@ -254,7 +254,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Vendedor */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-4">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <User className="h-4 w-4" /> Vendedor *
                     </label>
@@ -274,7 +274,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Segmento */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-4">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <Hash className="h-4 w-4" /> Segmento *
                     </label>
@@ -294,7 +294,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Concorrente */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-4">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <Building className="h-4 w-4" /> Concorrente *
                     </label>
@@ -314,7 +314,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Status */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-4">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <FileText className="h-4 w-4" /> Status *
                     </label>
@@ -332,17 +332,17 @@ export default function ProspectForm({
                 </div>
 
                 {/* Classificação */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-12">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <FileText className="h-4 w-4" /> Classificação *
                     </label>
-                    <div className="grid grid-cols-2 md:flex gap-2">
+                    <div className="grid grid-cols-2 lg:flex lg:flex-wrap gap-2">
                         {['Ice', 'Cold', 'Warm', 'Hot'].map(c => (
                             <button
                                 key={c}
                                 type="button"
                                 onClick={() => setForm(prev => ({ ...prev, classificacao: c }))}
-                                className={`flex-1 min-h-[44px] py-3 rounded-lg border text-sm font-medium transition-all ${form.classificacao === c
+                                className={`flex-1 min-h-[44px] py-3 px-4 rounded-lg border text-sm font-medium transition-all ${form.classificacao === c
                                     ? `${CLASSIFICATION_COLORS[c]} ring-2 ring-offset-1 ring-blue-300 dark:ring-offset-slate-800`
                                     : 'bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-600'
                                     }`}
@@ -355,12 +355,12 @@ export default function ProspectForm({
                 </div>
             </div>
 
-            <div className="border-t border-gray-100 my-4"></div>
-            <h3 className="text-sm font-semibold text-gray-500 mb-4">Endereço e Contato</h3>
+            <div className="border-t border-gray-100 dark:border-slate-700 my-4"></div>
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4 px-1">Endereço e Contato</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* CEP */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-3">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <MapPin className="h-4 w-4" /> CEP
                     </label>
@@ -384,7 +384,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Endereço */}
-                <div className="space-y-2 lg:col-span-2">
+                <div className="space-y-2 col-span-1 lg:col-span-6">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Endereço
                     </label>
@@ -399,7 +399,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Bairro */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-3">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Bairro
                     </label>
@@ -414,7 +414,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Cidade */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-9">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <MapPin className="h-4 w-4" /> Cidade *
                     </label>
@@ -431,7 +431,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* UF */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-3">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         UF *
                     </label>
@@ -451,7 +451,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Telefone */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-6">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <Phone className="h-4 w-4" /> Telefone
                     </label>
@@ -466,7 +466,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Celular */}
-                <div className="space-y-2">
+                <div className="space-y-2 col-span-1 lg:col-span-6">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <Phone className="h-4 w-4" /> Celular
                     </label>
@@ -481,7 +481,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Email */}
-                <div className="space-y-2 lg:col-span-2">
+                <div className="space-y-2 col-span-1 lg:col-span-6">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Email
                     </label>
@@ -496,7 +496,7 @@ export default function ProspectForm({
                 </div>
 
                 {/* Contato (Pessoa) */}
-                <div className="space-y-2 lg:col-span-2">
+                <div className="space-y-2 col-span-1 lg:col-span-6">
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <User className="h-4 w-4" /> Contato (Pessoa)
                     </label>

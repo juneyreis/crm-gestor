@@ -6,12 +6,10 @@ import { ptBR } from 'date-fns/locale';
 import useAuth from '../../hooks/useAuth';
 import * as visitasService from '../../services/visitasService';
 
-export default function VisitTable({ visits, onEdit, onRefresh }) {
+export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
   const { user } = useAuth();
   const [sortColumn, setSortColumn] = useState('data');
   const [sortDirection, setSortDirection] = useState('desc');
-  const [deletingId, setDeletingId] = useState(null);
-
   // Formatar data para exibição
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -23,6 +21,7 @@ export default function VisitTable({ visits, onEdit, onRefresh }) {
       return dateString;
     }
   };
+
 
   // Ícones e cores por status
   const getStatusBadge = (status) => {
@@ -95,21 +94,6 @@ export default function VisitTable({ visits, onEdit, onRefresh }) {
     } else {
       setSortColumn(column);
       setSortDirection('asc');
-    }
-  };
-
-  const handleDelete = async (id, prospectName) => {
-    if (!confirm(`Tem certeza que deseja excluir a visita para "${prospectName}"?`)) return;
-
-    setDeletingId(id);
-    try {
-      await visitasService.excluirVisita(id, user.id);
-      if (onRefresh) onRefresh();
-    } catch (error) {
-      console.error('Erro ao excluir visita:', error);
-      alert('Erro ao excluir visita.');
-    } finally {
-      setDeletingId(null);
     }
   };
 
@@ -228,16 +212,11 @@ export default function VisitTable({ visits, onEdit, onRefresh }) {
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(visit.id, visit.prospect_nome || visit.prospect)}
+                      onClick={() => onDelete(visit.id, visit.prospect_nome || visit.prospect)}
                       className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                       title="Excluir"
-                      disabled={deletingId === visit.id}
                     >
-                      {deletingId === visit.id ? (
-                        <div className="h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>
@@ -269,7 +248,7 @@ export default function VisitTable({ visits, onEdit, onRefresh }) {
                 <button onClick={() => onEdit(visit)} className="p-2 text-gray-400 hover:text-blue-600">
                   <Edit2 className="h-5 w-5" />
                 </button>
-                <button onClick={() => handleDelete(visit.id, visit.prospect_nome || visit.prospect)} className="p-2 text-gray-400 hover:text-red-600">
+                <button onClick={() => onDelete(visit.id, visit.prospect_nome || visit.prospect)} className="p-2 text-gray-400 hover:text-red-600">
                   <Trash2 className="h-5 w-5" />
                 </button>
               </div>

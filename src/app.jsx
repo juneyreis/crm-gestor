@@ -8,7 +8,6 @@ import ImportModal from './components/modals/ImportModal';
 import { ImportProvider, ImportContext } from './context/ImportContext';
 import Visitas from './pages/Visitas';
 import Dashboard from './pages/Dashboard';
-import Relatorios from './pages/Relatorios';
 import Estatisticas from './pages/Estatisticas';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
@@ -19,6 +18,15 @@ import NotFound from './pages/NotFound';
 import ComingSoon from './pages/ComingSoon';
 import Prospects from './pages/Prospects';
 import Clientes from './pages/Clientes';
+import Comissoes from './pages/Comissoes';
+import Agenda from './pages/Agenda';
+import SegmentosReport from './pages/relatorios/SegmentosReport';
+import ConcorrentesReport from './pages/relatorios/ConcorrentesReport';
+import VendedoresReport from './pages/relatorios/VendedoresReport';
+import ProspectsReport from './pages/relatorios/ProspectsReport';
+import VisitasReport from './pages/relatorios/VisitasReport';
+import ClientesReport from './pages/relatorios/ClientesReport';
+import ComissoesReport from './pages/relatorios/ComissoesReport';
 import useTheme from './hooks/useTheme';
 import useAuth from './hooks/useAuth';
 
@@ -70,8 +78,16 @@ function AppContent() {
                           <Route path="tabelas/concorrentes" element={<Concorrentes />} />
                           <Route path="prospects" element={<Prospects />} />
                           <Route path="clientes" element={<Clientes />} />
+                          <Route path="tabelas/comissoes" element={<Comissoes />} />
                           <Route path="/visitas" element={<Visitas />} />
-                          <Route path="/relatorios" element={<Relatorios />} />
+                          <Route path="/agenda" element={<Agenda />} />
+                          <Route path="/relatorios/segmentos" element={<SegmentosReport />} />
+                          <Route path="/relatorios/concorrentes" element={<ConcorrentesReport />} />
+                          <Route path="/relatorios/vendedores" element={<VendedoresReport />} />
+                          <Route path="/relatorios/prospects" element={<ProspectsReport />} />
+                          <Route path="/relatorios/visitas" element={<VisitasReport />} />
+                          <Route path="/relatorios/clientes" element={<ClientesReport />} />
+                          <Route path="/relatorios/comissoes" element={<ComissoesReport />} />
                           <Route path="/estatisticas" element={<Estatisticas />} />
                           <Route path="*" element={<Navigate to="/404" />} />
                         </Routes>

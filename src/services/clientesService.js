@@ -23,6 +23,37 @@ export async function listar(userId) {
 }
 
 /**
+ * Verifica se um Prospect ou CNPJ/CPF já está cadastrado como cliente
+ * @param {Object} params - { prospect_id, cnpj_cpf, excludeId }
+ * @returns {Promise<Object|null>} Registro duplicado se encontrado
+ */
+export async function verificarDuplicado({ prospect_id, cnpj_cpf, excludeId }) {
+    if (!prospect_id && !cnpj_cpf) return null;
+
+    let query = supabase.from("clientes").select("id, prospect_id, cnpj_cpf");
+
+    const conditions = [];
+    if (prospect_id) conditions.push(`prospect_id.eq.${prospect_id}`);
+    if (cnpj_cpf) conditions.push(`cnpj_cpf.eq.${cnpj_cpf}`);
+
+    if (conditions.length > 0) {
+        query = query.or(conditions.join(','));
+    }
+
+    if (excludeId) {
+        query = query.neq("id", excludeId);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+        console.error("Erro ao verificar duplicidade:", error);
+        return null;
+    }
+
+    return data && data.length > 0 ? data[0] : null;
+}
+
+/**
  * Cria um novo cliente
  * @param {Object} cliente
  * @param {string} userId

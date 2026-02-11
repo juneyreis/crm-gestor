@@ -32,11 +32,25 @@ export default function Sidebar() {
         { label: "Prospects", to: "/prospects" },
         { label: "Visitas", to: "/visitas" },
         { label: "Clientes", to: "/clientes" },
+        { label: "Comissões", to: "/tabelas/comissoes" },
       ]
     },
-    { icon: <FileText size={20} />, label: "Relatórios", to: "/relatorios" },
+    {
+      icon: <FileText size={20} />,
+      label: "Relatórios",
+      to: "#",
+      subItems: [
+        { label: "Segmentos", to: "/relatorios/segmentos" },
+        { label: "Concorrentes", to: "/relatorios/concorrentes" },
+        { label: "Vendedores", to: "/relatorios/vendedores" },
+        { label: "Prospects", to: "/relatorios/prospects" },
+        { label: "Visitas", to: "/relatorios/visitas" },
+        { label: "Clientes", to: "/relatorios/clientes" },
+        { label: "Comissões", to: "/relatorios/comissoes" },
+      ]
+    },
     { icon: <BarChart3 size={20} />, label: "Estatísticas", to: "/estatisticas" },
-    { icon: <Settings size={20} />, label: "Configurações", to: "#configuracoes" }, // Alterado para rota fictícia para não quebrar
+    { icon: <Calendar size={20} />, label: "Agenda", to: "/agenda" },
   ];
 
   // Verifica se algum subItem está ativo para manter o menu aberto
@@ -67,7 +81,7 @@ export default function Sidebar() {
         {menuItems.map((item, index) => {
           if (item.subItems) {
             const isActive = isMenuActive(item);
-            const isMenuOpen = openMenus[item.label] || (item.label === 'Tabelas' && !openMenus.hasOwnProperty('Tabelas') ? false : openMenus[item.label]);
+            const isMenuOpen = !!openMenus[item.label];
             // Mantém aberto se estiver ativo e o usuário não fechou, ou se usuário abriu
             // Ajuste simples: controla apenas pelo state, mas pode iniciar aberto se ativo na carga (opcional)
 

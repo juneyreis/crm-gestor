@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, CheckCircle, XCircle, AlertCircle, Save, X, RefreshCw, FileText } from 'lucide-react';
 import Button from '../components/Button';
 import * as concorrentesService from '../services/concorrentesService';
+import ConcorrenteTable from '../components/concorrentes/ConcorrenteTable';
 import useAuth from '../hooks/useAuth';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Concorrentes() {
     const [concorrentes, setConcorrentes] = useState([]);
@@ -10,12 +12,22 @@ export default function Concorrentes() {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Estado do Modal
+    // Estado do Modal de Edição/Criação
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentConcorrente, setCurrentConcorrente] = useState(null);
     const [formData, setFormData] = useState({ descricao: '', observacoes: '', plotar: true });
     const [formError, setFormError] = useState('');
     const [saving, setSaving] = useState(false);
+
+    // Estado do Modal de Confirmação
+    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [confirmModalConfig, setConfirmModalConfig] = useState({
+        title: '',
+        message: '',
+        confirmLabel: 'Confirmar',
+        variant: 'warning',
+        onConfirm: () => { }
+    });
 
     const { user } = useAuth();
 
@@ -45,7 +57,7 @@ export default function Concorrentes() {
         (conc.observacoes && conc.observacoes.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    // Handlers do Modal
+    // Handlers do Modal de Edição
     const openModal = (concorrente = null) => {
         setCurrentConcorrente(concorrente);
         setFormData({
@@ -83,15 +95,36 @@ export default function Concorrentes() {
         }
     };
 
-    const handleDelete = async (id, descricao) => {
-        if (!window.confirm(`Tem certeza que deseja excluir o concorrente "${descricao}"?`)) return;
+    // Handler genérico para abrir modal de confirmação
+    const requestConfirmation = ({ title, message, variant, onConfirm, confirmLabel = 'Sim, confirmar' }) => {
+        setConfirmModalConfig({
+            title,
+            message,
+            variant,
+            confirmLabel,
+            onConfirm: async () => {
+                await onConfirm();
+                setConfirmModalOpen(false);
+            }
+        });
+        setConfirmModalOpen(true);
+    };
 
-        try {
-            await concorrentesService.excluirConcorrente(id);
-            await loadConcorrentes();
-        } catch (err) {
-            alert(err.message);
-        }
+    const handleDelete = (id, descricao) => {
+        requestConfirmation({
+            title: 'Excluir Concorrente',
+            message: `Tem certeza que deseja excluir o concorrente "${descricao}"?`,
+            variant: 'danger',
+            confirmLabel: 'Sim, excluir',
+            onConfirm: async () => {
+                try {
+                    await concorrentesService.excluirConcorrente(id);
+                    await loadConcorrentes();
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
+        });
     };
 
     const handleTogglePlotar = async (id, statusAtual) => {
@@ -108,18 +141,24 @@ export default function Concorrentes() {
         }
     };
 
-    const handleBulkAction = async (marcar) => {
-        if (!window.confirm(`Deseja ${marcar ? 'MARCAR' : 'DESMARCAR'} todos para plotar?`)) return;
-
-        setLoading(true);
-        try {
-            await concorrentesService.marcarTodosParaPlotar(marcar, user.id);
-            await loadConcorrentes();
-        } catch (err) {
-            alert('Erro ao atualizar em lote.');
-        } finally {
-            setLoading(false);
-        }
+    const handleBulkAction = (marcar) => {
+        const action = marcar ? 'MARCAR' : 'DESMARCAR';
+        requestConfirmation({
+            title: `${action} Todos`,
+            message: `Deseja ${action.toLowerCase()} todos para plotar?`,
+            variant: 'warning',
+            onConfirm: async () => {
+                setLoading(true);
+                try {
+                    await concorrentesService.marcarTodosParaPlotar(marcar, user.id);
+                    await loadConcorrentes();
+                } catch (err) {
+                    alert('Erro ao atualizar em lote.');
+                } finally {
+                    setLoading(false);
+                }
+            }
+        });
     };
 
     return (
@@ -130,10 +169,20 @@ export default function Concorrentes() {
                     <p className="text-gray-600 dark:text-gray-400 mt-2">Gerencie as empresas e sistemas concorrentes.</p>
                 </div>
 
-                <Button onClick={() => openModal()} className="flex items-center gap-2">
-                    <Plus className="h-4 w-4" />
-                    Novo Concorrente
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="secondary"
+                        onClick={() => window.location.href = '/relatorios/concorrentes'}
+                        className="flex items-center gap-2"
+                    >
+                        <FileText className="h-4 w-4" />
+                        Ver Relatório
+                    </Button>
+                    <Button onClick={() => openModal()} className="flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none shadow-md">
+                        <Plus className="h-4 w-4" />
+                        Novo Concorrente
+                    </Button>
+                </div>
             </div>
 
             {/* Barra de Ferramentas */}
@@ -174,85 +223,20 @@ export default function Concorrentes() {
                 </div>
             </div>
 
-            {/* Tabela */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-                {loading && concorrentes.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">Carregando concorrentes...</div>
-                ) : error ? (
-                    <div className="p-8 text-center text-red-500 bg-red-50 flex flex-col items-center gap-2">
-                        <AlertCircle className="h-8 w-8" />
-                        {error}
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-gray-50 dark:bg-slate-700/50 border-b border-gray-200 dark:border-slate-700 text-xs uppercase text-gray-500 dark:text-gray-400 font-semibold tracking-wider">
-                                    <th className="px-6 py-4 w-20">ID</th>
-                                    <th className="px-6 py-4">Descrição</th>
-                                    <th className="px-6 py-4">Observações</th>
-                                    <th className="px-6 py-4 w-32 text-center">Plotar</th>
-                                    <th className="px-6 py-4 w-32 text-right">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
-                                {filteredConcorrentes.length > 0 ? (
-                                    filteredConcorrentes.map((concorrente) => (
-                                        <tr key={concorrente.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">#{concorrente.id}</td>
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white uppercase">{concorrente.descricao}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 uppercase truncate max-w-xs" title={concorrente.observacoes}>
-                                                {concorrente.observacoes || '-'}
-                                            </td>
-                                            <td className="px-6 py-4 text-center">
-                                                <button
-                                                    onClick={() => handleTogglePlotar(concorrente.id, concorrente.plotar)}
-                                                    className={`inline-flex items-center justify-center p-1.5 rounded-full transition-colors ${concorrente.plotar
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                                                        }`}
-                                                    title={concorrente.plotar ? "Ativo no mapa" : "Oculto no mapa"}
-                                                >
-                                                    {concorrente.plotar ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
-                                                </button>
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => openModal(concorrente)}
-                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Editar"
-                                                    >
-                                                        <Edit2 className="h-4 w-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(concorrente.id, concorrente.descricao)}
-                                                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Excluir"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td colSpan="5" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                                            Nenhum concorrente encontrado.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
+            {/* Tabela / Cards */}
+            <ConcorrenteTable
+                concorrentes={filteredConcorrentes}
+                loading={loading}
+                error={error}
+                onEdit={openModal}
+                onDelete={handleDelete}
+                onTogglePlotar={handleTogglePlotar}
+            />
 
             {/* Modal Criar/Editar */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md my-auto md:my-8 overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center bg-gray-50 dark:bg-slate-700/50">
                             <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                                 {currentConcorrente ? 'Editar Concorrente' : 'Novo Concorrente'}
@@ -265,87 +249,102 @@ export default function Concorrentes() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSave} className="p-6 space-y-4">
-                            {formError && (
-                                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 flex items-center gap-2">
-                                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                                    {formError}
+                        <div className="max-h-[calc(100vh-12rem)] md:max-h-[80vh] overflow-y-auto scrollbar-thin">
+                            <form onSubmit={handleSave} className="p-6 space-y-4">
+                                {formError && (
+                                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 flex items-center gap-2">
+                                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                                        {formError}
+                                    </div>
+                                )}
+
+                                {/* Descrição */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Descrição *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.descricao}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 uppercase text-gray-900 dark:text-white"
+                                        placeholder="EX: SISTEMA X"
+                                        maxLength={40}
+                                        autoFocus
+                                    />
+                                    <p className="text-xs text-gray-500 text-right">
+                                        {formData.descricao.length}/40
+                                    </p>
                                 </div>
-                            )}
 
-                            {/* Descrição */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Descrição *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.descricao}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 uppercase"
-                                    placeholder="EX: SISTEMA X"
-                                    maxLength={40}
-                                    autoFocus
-                                />
-                                <p className="text-xs text-gray-500 text-right">
-                                    {formData.descricao.length}/40
-                                </p>
-                            </div>
+                                {/* Observações */}
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Observações
+                                    </label>
+                                    <textarea
+                                        value={formData.observacoes}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
+                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 uppercase resize-none text-gray-900 dark:text-white"
+                                        placeholder="DETALHES DO SISTEMA (OPCIONAL)"
+                                        rows={3}
+                                    />
+                                </div>
 
-                            {/* Observações */}
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Observações
-                                </label>
-                                <textarea
-                                    value={formData.observacoes}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, observacoes: e.target.value }))}
-                                    className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 uppercase resize-none"
-                                    placeholder="DETALHES DO SISTEMA (OPCIONAL)"
-                                    rows={3}
-                                />
-                            </div>
+                                {/* Checkbox Plotar */}
+                                <div className="flex items-center gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-lg">
+                                    <input
+                                        type="checkbox"
+                                        id="plotar"
+                                        checked={formData.plotar}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, plotar: e.target.checked }))}
+                                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
+                                    />
+                                    <label htmlFor="plotar" className="text-sm text-gray-700 dark:text-gray-300 select-none cursor-pointer flex-1">
+                                        Exibir no mapa (Plotar)
+                                    </label>
+                                </div>
 
-                            {/* Checkbox Plotar */}
-                            <div className="flex items-center gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-lg">
-                                <input
-                                    type="checkbox"
-                                    id="plotar"
-                                    checked={formData.plotar}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, plotar: e.target.checked }))}
-                                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                                />
-                                <label htmlFor="plotar" className="text-sm text-gray-700 dark:text-gray-300 select-none cursor-pointer flex-1">
-                                    Exibir no mapa (Plotar)
-                                </label>
-                            </div>
-
-                            <div className="flex gap-3 pt-2">
-                                <Button
-                                    type="button"
-                                    variant="secondary"
-                                    onClick={closeModal}
-                                    className="flex-1"
-                                >
-                                    Cancelar
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={saving}
-                                    className="flex-1 flex justify-center items-center gap-2"
-                                >
-                                    {saving ? (
-                                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    ) : (
-                                        <Save className="h-4 w-4" />
-                                    )}
-                                    Salvar
-                                </Button>
-                            </div>
-                        </form>
+                                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        onClick={closeModal}
+                                        className="flex-1 order-2 sm:order-1"
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={saving}
+                                        className="flex-1 flex justify-center items-center gap-2 order-1 sm:order-2"
+                                    >
+                                        {saving ? (
+                                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        ) : (
+                                            <div className="flex items-center gap-2">
+                                                <Save className="h-4 w-4" />
+                                                <span>Salvar</span>
+                                            </div>
+                                        )}
+                                    </Button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             )}
+
+            {/* Modal de Confirmação Genérico */}
+            <ConfirmationModal
+                isOpen={confirmModalOpen}
+                title={confirmModalConfig.title}
+                message={confirmModalConfig.message}
+                confirmLabel={confirmModalConfig.confirmLabel}
+                variant={confirmModalConfig.variant}
+                onConfirm={confirmModalConfig.onConfirm}
+                onCancel={() => setConfirmModalOpen(false)}
+            />
         </div>
     );
 }

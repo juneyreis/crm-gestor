@@ -1,6 +1,6 @@
 // src/pages/Prospects.jsx
 import { useState, useEffect } from 'react';
-import { Plus, Users, Search, X, RefreshCw } from 'lucide-react'; // Updated imports
+import { Plus, Users, Search, X, RefreshCw, Target } from 'lucide-react'; // Updated imports
 import Button from '../components/Button'; // Added Button
 import ProspectForm from '../components/prospects/ProspectForm';
 import ProspectFilters from '../components/prospects/ProspectFilters';
@@ -12,6 +12,7 @@ import * as prospectsService from '../services/prospectsService';
 import * as segmentosService from '../services/segmentosService';
 import * as concorrentesService from '../services/concorrentesService';
 import * as vendedoresService from '../services/vendedoresService';
+import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Prospects() {
     const [prospects, setProspects] = useState([]);
@@ -22,8 +23,18 @@ export default function Prospects() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
-    // N.O.V.O: State para controle do Modal
+    // State para controle do Modal de Edição
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // State para controle do Modal de Confirmação
+    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [confirmModalConfig, setConfirmModalConfig] = useState({
+        title: '',
+        message: '',
+        confirmLabel: 'Confirmar',
+        variant: 'warning',
+        onConfirm: () => { }
+    });
 
     const { user } = useAuth();
 
@@ -78,7 +89,7 @@ export default function Prospects() {
         }
     }, [prospects, filters]); // Hook gerencia loop
 
-    // N.O.V.O: Handlers de Modal
+    // Handlers de Modal Edição
     const openModal = (prospect = null) => {
         setEditingProspect(prospect);
         setIsModalOpen(true);
@@ -111,6 +122,39 @@ export default function Prospects() {
 
     const filterStats = getFilterStats(prospects);
 
+    // Handler genérico para abrir modal de confirmação
+    const requestConfirmation = ({ title, message, variant, onConfirm, confirmLabel = 'Sim, confirmar' }) => {
+        setConfirmModalConfig({
+            title,
+            message,
+            variant,
+            confirmLabel,
+            onConfirm: async () => {
+                await onConfirm();
+                setConfirmModalOpen(false);
+            }
+        });
+        setConfirmModalOpen(true);
+    };
+
+    // Nova função handleDelete que usa o modal
+    const handleDelete = (id, nome) => {
+        requestConfirmation({
+            title: 'Excluir Prospect',
+            message: `Tem certeza que deseja excluir o prospect "${nome}"?`,
+            variant: 'danger',
+            confirmLabel: 'Sim, excluir',
+            onConfirm: async () => {
+                try {
+                    await prospectsService.remover(id);
+                    await loadData();
+                } catch (error) {
+                    alert('Erro ao excluir prospect: ' + error.message);
+                }
+            }
+        });
+    };
+
     return (
         <>
             <div className="space-y-6 animate-fade-in">
@@ -121,10 +165,20 @@ export default function Prospects() {
                         <p className="text-gray-600 dark:text-gray-400 mt-2">Gerencie seus potenciais clientes e oportunidades de negócio.</p>
                     </div>
 
-                    <Button onClick={() => openModal()} className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Novo Prospect
-                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="secondary"
+                            onClick={() => window.location.href = '/relatorios/prospects'}
+                            className="flex items-center gap-2"
+                        >
+                            <Target className="h-4 w-4 text-slate-500" />
+                            Ver Relatório
+                        </Button>
+                        <Button onClick={() => openModal()} className="flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none shadow-md">
+                            <Plus className="h-4 w-4" />
+                            Novo Prospect
+                        </Button>
+                    </div>
                 </div>
 
                 {/* BARRA DE FERRAMENTAS - Igual Segmentos */}
@@ -190,6 +244,7 @@ export default function Prospects() {
                                 prospects={filteredProspects}
                                 onEdit={handleEditProspect}
                                 onRefresh={loadData}
+                                onDelete={handleDelete}
                             />
                         )}
                     </div>
@@ -241,6 +296,17 @@ export default function Prospects() {
                     </div>
                 )
             }
+
+            {/* Modal de Confirmação Genérico */}
+            <ConfirmationModal
+                isOpen={confirmModalOpen}
+                title={confirmModalConfig.title}
+                message={confirmModalConfig.message}
+                confirmLabel={confirmModalConfig.confirmLabel}
+                variant={confirmModalConfig.variant}
+                onConfirm={confirmModalConfig.onConfirm}
+                onCancel={() => setConfirmModalOpen(false)}
+            />
         </>
     );
 }

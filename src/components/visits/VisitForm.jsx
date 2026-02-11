@@ -190,6 +190,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
       turno: form.turno,
       status: form.status,
       prioridade: form.prioridade,
+      prospect: form.prospect_nome, // Adicionado para satisfazer a restrição not-null do banco
       prospect_id: form.prospect_id,
       prospect_nome: form.prospect_nome,
       endereco: form.endereco,
