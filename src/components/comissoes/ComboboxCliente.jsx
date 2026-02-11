@@ -62,7 +62,7 @@ export default function ComboboxCliente({
 
     return (
         <div ref={containerRef} className="relative w-full">
-            {/* Campo falso que abre a busca - ALINHAMENTO CORRIGIDO */}
+            {/* CAMPO PREENCHIDO - FONTE NORMAL 14px, ALINHADO À ESQUERDA (IGUAL VENDEDOR) */}
             {!isOpen && selectedCliente ? (
                 <div 
                     onClick={() => setIsOpen(true)}
@@ -70,7 +70,7 @@ export default function ComboboxCliente({
                 >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                         <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm font-medium truncate text-left">
+                        <span className="text-sm text-gray-900 dark:text-white truncate text-left">
                             {getClienteDisplayName(selectedCliente)}
                         </span>
                     </div>
@@ -88,18 +88,21 @@ export default function ComboboxCliente({
                     </div>
                 </div>
             ) : !isOpen && !selectedCliente ? (
+                {/* CAMPO VAZIO - MESMO PADRÃO */}
                 <div 
                     onClick={() => setIsOpen(true)}
                     className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
                 >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                         <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm truncate text-left">{placeholder}</span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate text-left">
+                            {placeholder}
+                        </span>
                     </div>
                     <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
                 </div>
             ) : (
-                /* Painel de busca aberto */
+                /* PAINEL DE BUSCA ABERTO */
                 <div className="w-full border border-gray-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 shadow-lg overflow-hidden">
                     {/* Input de busca */}
                     <div className="relative border-b border-gray-200 dark:border-slate-600">
@@ -122,7 +125,7 @@ export default function ComboboxCliente({
                         )}
                     </div>
 
-                    {/* Lista de resultados - FONTE CORRIGIDA: text-sm normal (14px) */}
+                    {/* Lista de resultados - FONTE NORMAL 14px */}
                     <div className="max-h-72 overflow-y-auto">
                         {filteredClientes.length > 0 ? (
                             filteredClientes.map((cliente) => (

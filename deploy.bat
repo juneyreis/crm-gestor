@@ -28,4 +28,4 @@ call npm run build:vercel
 call vercel --prod
 
 echo === TODOS OS DEPLOYS CONCLUIDOS! ===
-pause
+
