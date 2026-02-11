@@ -1,24 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Save, X, User, Briefcase, Calendar, DollarSign, Percent, FileText, AlertCircle, Lock } from 'lucide-react';
+import { Save, X, Briefcase, Calendar, DollarSign, Percent, Lock } from 'lucide-react';
 import Button from '../Button';
 import useAuth from '../../hooks/useAuth';
 import * as comissoesService from '../../services/comissoesService';
 import ConfirmationModal from '../modals/ConfirmationModal';
-import ComboboxCliente from './ComboboxCliente'; // NOVO COMPONENTE
+import ComboboxCliente from './ComboboxCliente';
 
 const months = [
-    { value: '01', label: 'JAN' },
-    { value: '02', label: 'FEV' },
-    { value: '03', label: 'MAR' },
-    { value: '04', label: 'ABR' },
-    { value: '05', label: 'MAI' },
-    { value: '06', label: 'JUN' },
-    { value: '07', label: 'JUL' },
-    { value: '08', label: 'AGO' },
-    { value: '09', label: 'SET' },
-    { value: '10', label: 'OUT' },
-    { value: '11', label: 'NOV' },
-    { value: '12', label: 'DEZ' }
+    { value: '01', label: 'JAN' }, { value: '02', label: 'FEV' },
+    { value: '03', label: 'MAR' }, { value: '04', label: 'ABR' },
+    { value: '05', label: 'MAI' }, { value: '06', label: 'JUN' },
+    { value: '07', label: 'JUL' }, { value: '08', label: 'AGO' },
+    { value: '09', label: 'SET' }, { value: '10', label: 'OUT' },
+    { value: '11', label: 'NOV' }, { value: '12', label: 'DEZ' }
 ];
 
 const currentYear = new Date().getFullYear();
@@ -37,28 +31,18 @@ const initialForm = {
     observacoes: ''
 };
 
-// Utilitários de Formatação
 const formatCurrency = (value) => {
     if (!value) return '';
     const cleanValue = String(value).replace(/\D/g, '');
-    const options = { minimumFractionDigits: 2 };
-    const result = new Intl.NumberFormat('pt-BR', options).format(
-        parseFloat(cleanValue) / 100
-    );
-    return result;
+    return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(parseFloat(cleanValue) / 100);
 };
 
 const formatPercent = (value) => {
     if (!value) return '';
     const cleanValue = String(value).replace(/\D/g, '');
-    const options = { minimumFractionDigits: 2 };
-    const result = new Intl.NumberFormat('pt-BR', options).format(
-        parseFloat(cleanValue) / 100
-    );
-    return result;
+    return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(parseFloat(cleanValue) / 100);
 };
 
-// Função para formatar a data mantendo o dia selecionado
 const toISOStringLocal = (dateInput) => {
     if (!dateInput) return null;
     const [year, month, day] = dateInput.split('-');
@@ -73,7 +57,6 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [pendingPayload, setPendingPayload] = useState(null);
 
-    // Preencher formulário se estiver editando
     useEffect(() => {
         if (comissao) {
             const [mes, ano] = (comissao.vigencia || '').split('/');
@@ -85,21 +68,14 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 percentual_comissao: comissao.percentual_comissao ? formatPercent(comissao.percentual_comissao * 100) : '',
                 vencimento: comissao.vencimento ? comissao.vencimento.split('T')[0] : ''
             });
-        } else {
-            setForm(initialForm);
         }
     }, [comissao]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         let formattedValue = value;
-
-        if (name === 'valor_contrato') {
-            formattedValue = formatCurrency(value);
-        } else if (name === 'percentual_comissao') {
-            formattedValue = formatPercent(value);
-        }
-
+        if (name === 'valor_contrato') formattedValue = formatCurrency(value);
+        if (name === 'percentual_comissao') formattedValue = formatPercent(value);
         setForm(prev => ({ ...prev, [name]: formattedValue }));
         if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
     };
@@ -107,8 +83,6 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
     const handleClienteChange = (e) => {
         const clienteId = e.target.value;
         setForm(prev => ({ ...prev, cliente_id: clienteId }));
-
-        // Auto-preenchimento do vendedor, valor e percentual
         if (clienteId && clientes) {
             const cliente = clientes.find(c => c.id === parseInt(clienteId));
             if (cliente) {
@@ -120,225 +94,140 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 }));
             }
         }
-        if (errors.cliente_id) setErrors(prev => ({ ...prev, cliente_id: null }));
     };
 
-    // Cálculo automático do valor da comissão
     useEffect(() => {
         const valorContrato = parseFloat(String(form.valor_contrato).replace(/\./g, '').replace(',', '.')) || 0;
         const percentual = parseFloat(String(form.percentual_comissao).replace(/\./g, '').replace(',', '.')) || 0;
-        const valorComissao = (valorContrato * percentual) / 100;
-        setForm(prev => ({ ...prev, valor_comissao: valorComissao }));
+        setForm(prev => ({ ...prev, valor_comissao: (valorContrato * percentual) / 100 }));
     }, [form.valor_contrato, form.percentual_comissao]);
-
-    const validate = () => {
-        const newErrors = {};
-        if (!form.cliente_id) newErrors.cliente_id = 'Cliente é obrigatório';
-        if (!form.vendedor_id) newErrors.vendedor_id = 'Vendedor é obrigatório';
-        if (!form.vencimento) newErrors.vencimento = 'Vencimento é obrigatório';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!validate()) return;
+        const newErrors = {};
+        if (!form.cliente_id) newErrors.cliente_id = 'Obrigatório';
+        if (!form.vendedor_id) newErrors.vendedor_id = 'Obrigatório';
+        if (!form.vencimento) newErrors.vencimento = 'Obrigatório';
+        if (Object.keys(newErrors).length > 0) return setErrors(newErrors);
 
         setIsSubmitting(true);
         const vigencia = `${form.vigencia_mes}/${form.vigencia_ano}`;
+        const payload = {
+            cliente_id: parseInt(form.cliente_id),
+            vendedor_id: parseInt(form.vendedor_id),
+            vigencia,
+            valor_contrato: parseFloat(String(form.valor_contrato).replace(/\./g, '').replace(',', '.')),
+            percentual_comissao: parseFloat(String(form.percentual_comissao).replace(/\./g, '').replace(',', '.')),
+            valor_comissao: form.valor_comissao,
+            status: form.status,
+            vencimento: toISOStringLocal(form.vencimento),
+            observacoes: form.observacoes
+        };
 
         try {
-            const payload = {
-                cliente_id: parseInt(form.cliente_id),
-                vendedor_id: parseInt(form.vendedor_id),
-                vigencia,
-                valor_contrato: parseFloat(String(form.valor_contrato).replace(/\./g, '').replace(',', '.')),
-                percentual_comissao: parseFloat(String(form.percentual_comissao).replace(/\./g, '').replace(',', '.')),
-                valor_comissao: form.valor_comissao,
-                status: form.status,
-                vencimento: toISOStringLocal(form.vencimento),
-                observacoes: form.observacoes
-            };
-
             const isDuplicated = await comissoesService.verificarDuplicado(form.cliente_id, vigencia, comissao?.id);
             if (isDuplicated) {
                 setPendingPayload(payload);
                 setShowConfirmModal(true);
-                setIsSubmitting(false);
-                return;
+            } else {
+                await saveComissao(payload);
             }
-
-            await saveComissao(payload);
         } catch (error) {
-            console.error("Erro ao validar comissão:", error);
             alert("Erro: " + error.message);
+        } finally {
             setIsSubmitting(false);
         }
     };
 
     const saveComissao = async (payload) => {
-        setIsSubmitting(true);
         try {
-            if (comissao) {
-                await comissoesService.atualizarComissao(comissao.id, payload);
-            } else {
-                await comissoesService.criarComissao(payload, user?.id);
-            }
+            comissao ? await comissoesService.atualizarComissao(comissao.id, payload) : await comissoesService.criarComissao(payload, user?.id);
             onSuccess();
         } catch (error) {
-            console.error("Erro ao salvar comissão:", error);
-            alert("Erro ao salvar: " + error.message);
-        } finally {
-            setIsSubmitting(false);
-            setShowConfirmModal(false);
-            setPendingPayload(null);
+            alert("Erro ao salvar");
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Cliente - AGORA USA O COMBOBOX */}
-                <div className="space-y-1 md:col-span-2 lg:col-span-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Cliente <span className="text-red-500">*</span>
-                    </label>
-                    <ComboboxCliente
-                        clientes={clientes}
-                        value={form.cliente_id}
-                        onChange={handleClienteChange}
-                        placeholder="Buscar cliente por nome, email ou telefone"
-                        error={errors.cliente_id}
+                <div className="md:col-span-2 lg:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cliente</label>
+                    <ComboboxCliente 
+                        clientes={clientes} 
+                        value={form.cliente_id} 
+                        onChange={handleClienteChange} 
+                        error={errors.cliente_id} 
                     />
                 </div>
 
-                {/* Vendedor */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Vendedor <span className="text-red-500">*</span>
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vendedor</label>
                     <div className="relative">
-                        <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <select
-                            name="vendedor_id"
-                            value={form.vendedor_id}
-                            onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white appearance-none ${
-                                errors.vendedor_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
-                            }`}
-                        >
+                        <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        <select name="vendedor_id" value={form.vendedor_id} onChange={handleChange}
+                            className={`w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white appearance-none ${errors.vendedor_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}>
                             <option value="">Selecione um vendedor</option>
-                            {vendedores.map(v => (
-                                <option key={v.id} value={v.id}>{v.nome}</option>
-                            ))}
+                            {vendedores.map(v => <option key={v.id} value={v.id}>{v.nome}</option>)}
                         </select>
-                        {errors.vendedor_id && <p className="text-xs text-red-500 mt-1">{errors.vendedor_id}</p>}
                     </div>
                 </div>
 
-                {/* Vigência */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Vigência (Mês/Ano) <span className="text-red-500">*</span>
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                        <select
-                            name="vigencia_mes"
-                            value={form.vigencia_mes}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                        >
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vencimento</label>
+                    <div className="relative">
+                        <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                        <input type="date" name="vencimento" value={form.vencimento} onChange={handleChange}
+                            className={`w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white ${errors.vencimento ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`} />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 md:col-span-1">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mês</label>
+                        <select name="vigencia_mes" value={form.vigencia_mes} onChange={handleChange} className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
                             {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
                         </select>
-                        <select
-                            name="vigencia_ano"
-                            value={form.vigencia_ano}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                        >
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ano</label>
+                        <select name="vigencia_ano" value={form.vigencia_ano} onChange={handleChange} className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
                             {years.map(y => <option key={y} value={y}>{y}</option>)}
                         </select>
                     </div>
                 </div>
 
-                {/* Vencimento */}
-                <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Vencimento <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                        <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <input
-                            type="date"
-                            name="vencimento"
-                            value={form.vencimento}
-                            onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white ${
-                                errors.vencimento ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
-                            }`}
-                        />
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contrato (R$)</label>
+                        <div className="relative">
+                            <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                            <input type="text" name="valor_contrato" value={form.valor_contrato} onChange={handleChange} placeholder="0,00"
+                                className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                        </div>
                     </div>
-                    {errors.vencimento && <p className="text-xs text-red-500 mt-1">{errors.vencimento}</p>}
-                </div>
-
-                {/* Valor Contrato */}
-                <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Valor Contrato (R$)</label>
-                    <div className="relative">
-                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <input
-                            type="text"
-                            name="valor_contrato"
-                            value={form.valor_contrato}
-                            onChange={handleChange}
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-                            placeholder="0,00"
-                        />
+                    <div className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Comissão (%)</label>
+                        <div className="relative">
+                            <Percent className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                            <input type="text" name="percentual_comissao" value={form.percentual_comissao} onChange={handleChange} placeholder="0,00"
+                                className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Percentual Comissão */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Comissão (%)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor da Comissão</label>
                     <div className="relative">
-                        <Percent className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <input
-                            type="text"
-                            name="percentual_comissao"
-                            value={form.percentual_comissao}
-                            onChange={handleChange}
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500"
-                            placeholder="0,00"
-                        />
+                        <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-orange-400" />
+                        <input type="text" value={form.valor_comissao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} readOnly
+                            className="w-full pl-10 pr-4 py-2 text-sm rounded-lg border border-gray-100 bg-gray-50 dark:bg-slate-800/50 dark:border-slate-700 font-bold text-orange-600" />
                     </div>
                 </div>
 
-                {/* Valor Comissão */}
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                        Valor da Comissão
-                        <Lock className="h-3 w-3 text-gray-400" />
-                    </label>
-                    <div className="relative">
-                        <DollarSign className="absolute left-3 top-3 h-4 w-4 text-orange-400" />
-                        <input
-                            type="text"
-                            value={form.valor_comissao.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            readOnly
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-100 bg-gray-50 dark:bg-slate-800/50 dark:border-slate-700 font-bold text-orange-600"
-                        />
-                    </div>
-                </div>
-
-                {/* Status */}
-                <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-                    <select
-                        name="status"
-                        value={form.status}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white"
-                    >
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select name="status" value={form.status} onChange={handleChange} className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
                         <option value="PENDENTE">PENDENTE</option>
                         <option value="PAGA">PAGA</option>
                         <option value="CANCELADA">CANCELADA</option>
@@ -346,53 +235,17 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 </div>
             </div>
 
-            {/* Observações */}
-            <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Observações</label>
-                <textarea
-                    name="observacoes"
-                    value={form.observacoes}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white resize-none"
-                    placeholder="Observações adicionais..."
-                />
-            </div>
-
-            {/* Botões */}
             <div className="flex gap-3 pt-4 border-t border-gray-100 dark:border-slate-700">
-                <Button
-                    type="submit"
-                    isLoading={isSubmitting || parentLoading}
-                    className="flex-1 md:flex-none md:min-w-[150px]"
-                >
+                <Button type="submit" isLoading={isSubmitting || parentLoading} className="flex-1 md:flex-none md:min-w-[150px]">
                     {comissao ? 'Atualizar' : 'Salvar'}
                 </Button>
-                <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={onCancel}
-                    className="flex-1 md:flex-none md:min-w-[150px]"
-                >
-                    Cancelar
-                </Button>
+                <Button type="button" variant="secondary" onClick={onCancel} className="flex-1 md:flex-none md:min-w-[150px]">Cancelar</Button>
             </div>
 
-            {/* Modal de Duplicidade */}
-            <ConfirmationModal
-                isOpen={showConfirmModal}
-                title="Lançamento Duplicado"
-                message={comissao?.id
-                    ? "Já existe uma comissão para este cliente nesta vigência. Deseja alterar este lançamento?"
-                    : "Já existe uma comissão para este cliente nesta vigência. Deseja incluir este novo lançamento?"}
-                confirmLabel={comissao?.id ? "Sim, alterar" : "Sim, incluir"}
-                cancelLabel="Não, cancelar"
-                onConfirm={() => saveComissao(pendingPayload)}
-                onCancel={() => {
-                    setShowConfirmModal(false);
-                    setPendingPayload(null);
-                }}
-            />
+            <ConfirmationModal isOpen={showConfirmModal} title="Lançamento Duplicado"
+                message="Já existe uma comissão para este cliente nesta vigência. Deseja prosseguir?"
+                confirmLabel="Sim, confirmar" cancelLabel="Cancelar"
+                onConfirm={() => saveComissao(pendingPayload)} onCancel={() => setShowConfirmModal(false)} />
         </form>
     );
 }

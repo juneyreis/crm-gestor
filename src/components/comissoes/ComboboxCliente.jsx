@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, User, ChevronDown } from 'lucide-react';
+import { Search, X, ChevronDown } from 'lucide-react';
 
 export default function ComboboxCliente({
     clientes = [],
@@ -62,11 +62,12 @@ export default function ComboboxCliente({
             {!isOpen && selectedCliente ? (
                 <div
                     onClick={() => setIsOpen(true)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                    className={`w-full px-4 py-2 rounded-lg border bg-white dark:bg-slate-700 text-gray-900 dark:text-white flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors ${
+                        error ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
+                    }`}
                 >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-900 dark:text-white truncate text-left">
+                    <div className="flex-1 min-w-0">
+                        <span className="text-sm truncate block text-left">
                             {getClienteDisplayName(selectedCliente)}
                         </span>
                     </div>
@@ -86,11 +87,12 @@ export default function ComboboxCliente({
             ) : !isOpen && !selectedCliente ? (
                 <div
                     onClick={() => setIsOpen(true)}
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+                    className={`w-full px-4 py-2 rounded-lg border bg-white dark:bg-slate-700 flex items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors ${
+                        error ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'
+                    }`}
                 >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate text-left">
+                    <div className="flex-1 min-w-0">
+                        <span className="text-sm text-gray-500 dark:text-gray-400 truncate block text-left">
                             {placeholder}
                         </span>
                     </div>
@@ -104,7 +106,7 @@ export default function ComboboxCliente({
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Buscar cliente por nome..."
+                            placeholder="Buscar cliente..."
                             className="w-full pl-10 pr-9 py-2 text-sm bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-t-lg"
                             autoFocus
                         />
@@ -118,33 +120,27 @@ export default function ComboboxCliente({
                         )}
                     </div>
 
-                    <div className="max-h-72 overflow-y-auto">
+                    <div className="max-h-60 overflow-y-auto">
                         {filteredClientes.length > 0 ? (
                             filteredClientes.map((cliente) => (
                                 <button
                                     key={cliente.id}
                                     onClick={() => handleSelectCliente(cliente)}
-                                    className="w-full px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-slate-600 last:border-0"
+                                    className="w-full px-4 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors border-b border-gray-100 dark:border-slate-600 last:border-0"
                                 >
-                                    <User className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                                    <span className="text-sm text-gray-900 dark:text-white truncate">
+                                    <span className="text-sm text-gray-900 dark:text-white truncate block">
                                         {getClienteDisplayName(cliente)}
                                     </span>
                                 </button>
                             ))
                         ) : (
-                            <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                                {searchTerm ? (
-                                    <p className="text-sm">Nenhum cliente encontrado para "{searchTerm}"</p>
-                                ) : (
-                                    <p className="text-sm">Digite para refinar a busca</p>
-                                )}
+                            <div className="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
+                                <p className="text-xs">Nenhum resultado encontrado</p>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-            
             {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
         </div>
     );
