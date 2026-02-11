@@ -18,8 +18,8 @@ git push origin master
 :: 2. Deploy GitHub Pages
 echo --- Fazendo deploy no GitHub Pages...
 npm run deploy:github
-
-:: 3. Deploy Vercel ( comando anterior: npm run deploy:vercel)
+echo --- Fim do deploy no GitHub Pages...
+pause
 echo --- Fazendo deploy na Vercel...
 npm run build:vercel
 vercel --prod
