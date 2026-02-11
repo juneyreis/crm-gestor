@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Wallet, Search, RefreshCw } from 'lucide-react';
+import { Plus, Wallet, Search, RefreshCw, X } from 'lucide-react';
 import Button from "../components/Button";
 import ComissaoForm from "../components/comissoes/ComissaoForm";
 import ComissaoTable from "../components/comissoes/ComissaoTable";
