@@ -1,6 +1,7 @@
 // src/pages/Prospects.jsx
 import { useState, useEffect } from 'react';
 import { Plus, Users, Search, X, RefreshCw, Target } from 'lucide-react'; // Updated imports
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button'; // Added Button
 import ProspectForm from '../components/prospects/ProspectForm';
 import ProspectFilters from '../components/prospects/ProspectFilters';
@@ -15,6 +16,7 @@ import * as vendedoresService from '../services/vendedoresService';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Prospects() {
+    const navigate = useNavigate();
     const [prospects, setProspects] = useState([]);
     const [segmentos, setSegmentos] = useState([]);
     const [concorrentes, setConcorrentes] = useState([]);
@@ -168,7 +170,7 @@ export default function Prospects() {
                     <div className="flex items-center gap-2">
                         <Button
                             variant="secondary"
-                            onClick={() => window.location.href = '/relatorios/prospects'}
+                            onClick={() => navigate('/relatorios/prospects')}
                             className="flex items-center gap-2"
                         >
                             <Target className="h-4 w-4 text-slate-500" />

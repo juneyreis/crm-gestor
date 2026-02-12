@@ -240,17 +240,21 @@ export default function SegmentosReport() {
             </div>
 
             {/* Print Footer Styles */}
-            <style jsx global>{`
-                @media print {
-                    .no-print { display: none !important; }
-                    /* Force table layout on print even for mobile width simulations */
-                    .md\\:hidden { display: none !important; }
-                    .md\\:block { display: block !important; }
-                    /* Remove shadows and simplified borders for clean print */
-                    .shadow-sm { box-shadow: none !important; }
-                    .border { border-color: #e2e8f0 !important; }
-                }
-            `}</style>
+            <div className="print-styles">
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                        @media print {
+                            .no-print { display: none !important; }
+                            /* Force table layout on print even for mobile width simulations */
+                            .md\\:hidden { display: none !important; }
+                            .md\\:block { display: block !important; }
+                            /* Remove shadows and simplified borders for clean print */
+                            .shadow-sm { box-shadow: none !important; }
+                            .border { border-color: #e2e8f0 !important; }
+                        }
+                    `
+                }} />
+            </div>
         </ReportLayout>
     );
 }

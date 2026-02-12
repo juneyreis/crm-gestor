@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, AlertCircle, Save, X, RefreshCw, User, MapPin, Phone, Building, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import * as vendedoresService from '../services/vendedoresService';
 import VendedorTable from '../components/vendedores/VendedorTable';
@@ -25,6 +26,7 @@ const maskCEP = (value) => {
 };
 
 export default function Vendedores() {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const [vendedores, setVendedores] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -186,7 +188,7 @@ export default function Vendedores() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="secondary"
-                        onClick={() => window.location.href = '/relatorios/vendedores'}
+                        onClick={() => navigate('/relatorios/vendedores')}
                         className="flex items-center gap-2"
                     >
                         <FileText className="h-4 w-4 text-slate-500" />

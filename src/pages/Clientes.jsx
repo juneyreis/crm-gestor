@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Users, Search, RefreshCw, X, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import ClienteForm from '../components/clientes/ClienteForm';
 import ClienteFilters from '../components/clientes/ClienteFilters';
@@ -11,6 +12,7 @@ import * as vendedoresService from '../services/vendedoresService';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Clientes() {
+    const navigate = useNavigate();
     const [clientes, setClientes] = useState([]);
     const [segmentos, setSegmentos] = useState([]);
     const [vendedores, setVendedores] = useState([]);
@@ -190,7 +192,7 @@ export default function Clientes() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="secondary"
-                        onClick={() => window.location.href = '/relatorios/clientes'}
+                        onClick={() => navigate('/relatorios/clientes')}
                         className="flex items-center gap-2"
                     >
                         <TrendingUp className="h-4 w-4 text-slate-500" />

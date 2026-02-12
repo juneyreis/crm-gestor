@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, CheckCircle, XCircle, AlertCircle, Save, X, RefreshCw, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import * as concorrentesService from '../services/concorrentesService';
 import ConcorrenteTable from '../components/concorrentes/ConcorrenteTable';
@@ -7,6 +8,7 @@ import useAuth from '../hooks/useAuth';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Concorrentes() {
+    const navigate = useNavigate();
     const [concorrentes, setConcorrentes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -172,7 +174,7 @@ export default function Concorrentes() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="secondary"
-                        onClick={() => window.location.href = '/relatorios/concorrentes'}
+                        onClick={() => navigate('/relatorios/concorrentes')}
                         className="flex items-center gap-2"
                     >
                         <FileText className="h-4 w-4" />

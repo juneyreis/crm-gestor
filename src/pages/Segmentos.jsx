@@ -12,6 +12,7 @@ export default function Segmentos() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     // Estado do Modal de Edição/Criação
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -171,7 +172,7 @@ export default function Segmentos() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="secondary"
-                        onClick={() => window.location.href = '/relatorios/segmentos'}
+                        onClick={() => navigate('/relatorios/segmentos')}
                         className="flex items-center gap-2"
                     >
                         <FileText className="h-4 w-4" />

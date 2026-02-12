@@ -1,6 +1,7 @@
 // src/pages/Visitas.jsx - PADRONIZADO
 import { useState, useEffect } from "react";
 import { Plus, Filter, X, Search, FileText, CheckCircle, Clock, Upload, Download, RefreshCw, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Button from "../components/Button";
 import VisitForm from "../components/visits/VisitForm";
 import CollapsibleFilters from "../components/visits/CollapsibleFilters";
@@ -13,6 +14,7 @@ import * as visitasService from "../services/visitasService";
 import ConfirmationModal from "../components/modals/ConfirmationModal";
 
 export default function Visitas() {
+  const navigate = useNavigate();
   const [visits, setVisits] = useState([]);
   const [editingVisit, setEditingVisit] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -147,7 +149,7 @@ export default function Visitas() {
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"
-            onClick={() => window.location.href = '/relatorios/visitas'}
+            onClick={() => navigate('/relatorios/visitas')}
             className="flex items-center gap-2"
           >
             <TrendingUp className="h-4 w-4 text-slate-500" />
