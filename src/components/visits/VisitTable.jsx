@@ -240,7 +240,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border mb-2 ${getStatusBadge(visit.status || 'Agendada')}`}>
                   {visit.status || 'AGENDADA'}
                 </span>
-                <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight">
                   {visit.prospect_nome || visit.prospect}
                 </h3>
               </div>
@@ -258,19 +258,21 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
             <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm mb-4">
               <div className="flex items-center gap-2 text-gray-600">
                 <Calendar className="h-4 w-4 text-blue-500" />
-                <span className="font-medium text-gray-900">{formatDate(visit.data)}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{formatDate(visit.data)}</span>
               </div>
 
-              <div className="flex items-center gap-2 text-gray-600">
-                {getTurnoIcon(visit.turno)}
-                <span>{visit.turno || 'N/D'}</span>
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                <div className="text-blue-500 dark:text-blue-400">
+                  {getTurnoIcon(visit.turno)}
+                </div>
+                <span className="dark:text-gray-300">{visit.turno || 'N/D'}</span>
               </div>
 
               <div className="col-span-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <div className="p-1 bg-gray-100 dark:bg-slate-700 rounded text-gray-500 dark:text-gray-400">
                   {getTipoIcon(visit.tipo)}
                 </div>
-                <span className="font-medium text-gray-900">{visit.tipo || 'Tipo não definido'}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{visit.tipo || 'Tipo não definido'}</span>
               </div>
 
               <div className="col-span-2 flex items-start gap-2 text-gray-600">

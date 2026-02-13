@@ -11,9 +11,9 @@ const CLASSIFICATION_COLORS = {
 export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
     return (
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.99]">
-            {/* Header: Nome + Classificação */}
-            <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex-1 min-w-0">
+            {/* Header: Nome + Ações + Classificação */}
+            <div className="flex justify-between items-start mb-3">
+                <div className="flex-1 min-w-0 pr-2">
                     <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight uppercase truncate">
                         {prospect.nome}
                     </h3>
@@ -27,10 +27,26 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
                         </span>
                     </div>
                 </div>
+                <div className="flex gap-1 -mr-2 -mt-2">
+                    <button
+                        onClick={() => onEdit(prospect)}
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                        title="Editar"
+                    >
+                        <Edit2 className="h-5 w-5" />
+                    </button>
+                    <button
+                        onClick={() => onDelete(prospect.id, prospect.nome)}
+                        className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        title="Excluir"
+                    >
+                        <Trash2 className="h-5 w-5" />
+                    </button>
+                </div>
             </div>
 
             {/* Informações de Contato */}
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2 mb-2">
                 {/* Localização */}
                 {(prospect.cidade || prospect.uf) && (
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -53,7 +69,7 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
                 {prospect.telefone && (
                     <a
                         href={`tel:${prospect.telefone.replace(/\D/g, '')}`}
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors w-fit"
                     >
                         <Phone className="h-4 w-4 flex-shrink-0" />
                         <span className="font-mono">{prospect.telefone}</span>
@@ -66,7 +82,7 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
                         href={`https://wa.me/${prospect.celular.replace(/\D/g, '')}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                        className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors w-fit"
                     >
                         <Phone className="h-4 w-4 flex-shrink-0" />
                         <span className="font-mono font-bold">{prospect.celular}</span>
@@ -77,7 +93,7 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
                 {prospect.email && (
                     <a
                         href={`mailto:${prospect.email}`}
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors w-fit max-w-full"
                     >
                         <Mail className="h-4 w-4 flex-shrink-0" />
                         <span className="lowercase truncate">{prospect.email}</span>
@@ -98,23 +114,6 @@ export default function ProspectMobileCard({ prospect, onEdit, onDelete }) {
                         </span>
                     )}
                 </div>
-            </div>
-
-            {/* Ações - Touch-friendly (min 44x44px) */}
-            <div className="flex gap-3 pt-3 border-t border-gray-100 dark:border-slate-700">
-                <button
-                    onClick={() => onEdit(prospect)}
-                    className="flex-1 flex items-center justify-center gap-2 min-h-[44px] px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm"
-                >
-                    <Edit2 className="h-4 w-4" />
-                    Editar
-                </button>
-                <button
-                    onClick={() => onDelete(prospect.id, prospect.nome)}
-                    className="flex items-center justify-center min-h-[44px] min-w-[44px] px-3 py-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-800 transition-colors"
-                >
-                    <Trash2 className="h-4 w-4" />
-                </button>
             </div>
         </div>
     );

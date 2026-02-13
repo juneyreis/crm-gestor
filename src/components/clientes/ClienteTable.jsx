@@ -40,11 +40,11 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
 
     const getContratoBadge = (tipo) => {
         const styles = {
-            'Mensal': 'bg-blue-100 text-blue-800 border-blue-200',
-            'Trimestral': 'bg-indigo-100 text-indigo-800 border-indigo-200',
-            'Semestral': 'bg-purple-100 text-purple-800 border-purple-200',
-            'Anual': 'bg-green-100 text-green-800 border-green-200',
-            'Avulso': 'bg-gray-100 text-gray-800 border-gray-200'
+            'Mensal': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+            'Trimestral': 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+            'Semestral': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 border-purple-200 dark:border-purple-800',
+            'Anual': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800',
+            'Avulso': 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-slate-600'
         };
         return styles[tipo] || styles['Mensal'];
     };
@@ -92,8 +92,8 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
         <div className="overflow-hidden">
             {/* 🖥️ Tabela Desktop */}
             <div className="hidden lg:block">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+                    <thead className="bg-gray-50 dark:bg-slate-700/50">
                         <tr>
                             <th onClick={() => handleSort('nome')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
                                 <div className="flex items-center">Cliente <SortIcon column="nome" /></div>
@@ -118,7 +118,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                         {sortedClientes.map((cliente) => (
                             <tr
                                 key={cliente.id}
@@ -128,7 +128,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                 {/* Nome */}
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                        <span className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {cliente.prospects?.nome || 'Sem Nome'}
                                         </span>
                                         <div className="flex items-center gap-2 mt-0.5">
@@ -138,7 +138,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                                 </span>
                                             )}
                                             {cliente.contato_principal && (
-                                                <span className="text-[10px] text-blue-500 font-medium px-1.5 py-0.5 bg-blue-50 rounded border border-blue-100">
+                                                <span className="text-[10px] text-blue-500 dark:text-blue-400 font-medium px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800">
                                                     👤 {cliente.contato_principal}
                                                 </span>
                                             )}
@@ -163,7 +163,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                 {/* Renovação */}
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex flex-col">
-                                        <span className="text-sm text-gray-900 font-medium">
+                                        <span className="text-sm text-gray-900 dark:text-white font-medium">
                                             {formatDate(cliente.data_renovacao_contrato)}
                                         </span>
                                         <span className="text-[10px] text-gray-400">
@@ -189,8 +189,8 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                 {/* Local */}
                                 <td className="px-6 py-4">
                                     <div className="flex flex-col max-w-[200px]">
-                                        <span className="text-sm text-gray-900 truncate">{cliente.cidade}</span>
-                                        <span className="text-xs text-gray-500 truncate" title={cliente.endereco}>
+                                        <span className="text-sm text-gray-900 dark:text-white truncate">{cliente.cidade}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 truncate" title={cliente.endereco}>
                                             {cliente.uf}
                                         </span>
                                     </div>
@@ -226,7 +226,7 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                 {sortedClientes.map((cliente) => (
                     <div
                         key={cliente.id}
-                        className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm active:scale-[0.99] transition-transform"
+                        className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform"
                         onDoubleClick={() => onEdit(cliente)}
                     >
                         <div className="flex justify-between items-start mb-3">
@@ -234,11 +234,11 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border mb-2 ${getContratoBadge(cliente.tipo_contrato)}`}>
                                     {cliente.tipo_contrato}
                                 </span>
-                                <h3 className="font-bold text-gray-900 text-lg leading-tight">
+                                <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight">
                                     {cliente.prospects?.nome || 'Sem Nome'}
                                 </h3>
                                 {cliente.contato_principal && (
-                                    <p className="text-xs text-blue-600 mt-1 font-medium italic">
+                                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1 font-medium italic">
                                         {cliente.contato_principal}
                                     </p>
                                 )}
@@ -259,27 +259,27 @@ export default function ClienteTable({ clientes, onEdit, onRefresh, onDelete }) 
                                         </span>
                                     )}
                                 </div>
-                                <span className="text-yellow-500 tracking-widest text-sm">{cliente.nivel_satisfacao}</span>
+                                <span className="text-yellow-500 tracking-widest text-sm font-bold">{cliente.nivel_satisfacao}</span>
                             </div>
 
                             <div className="flex items-center gap-2 text-gray-600">
                                 <Calendar className="h-4 w-4 text-blue-500" />
                                 <div className="flex flex-col">
-                                    <span className="font-medium text-gray-900">{formatDate(cliente.data_renovacao_contrato)}</span>
-                                    <span className="text-[10px]">Renovação</span>
+                                    <span className="font-medium text-gray-900 dark:text-white">{formatDate(cliente.data_renovacao_contrato)}</span>
+                                    <span className="text-[10px] dark:text-gray-400">Renovação</span>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 text-gray-600">
+                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                                 <MapPin className="h-4 w-4 text-gray-400" />
-                                <span>{cliente.cidade}/{cliente.uf}</span>
+                                <span className="dark:text-gray-300">{cliente.cidade}/{cliente.uf}</span>
                             </div>
                         </div>
 
                         {cliente.segmentos?.descricao && (
-                            <div className="pt-3 border-t border-gray-100 mt-2">
-                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                    {cliente.segmentos.descricao} {cliente.cnpj_cpf && `• ${cliente.cnpj_cpf}`}
+                            <div className="pt-3 border-t border-gray-100 dark:border-slate-700 mt-2">
+                                <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                    {cliente.segmentos?.descricao} {cliente.cnpj_cpf && `• ${cliente.cnpj_cpf}`}
                                 </span>
                             </div>
                         )}

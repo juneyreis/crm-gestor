@@ -5,7 +5,7 @@ import Button from '../components/Button';
 import * as vendedoresService from '../services/vendedoresService';
 import VendedorTable from '../components/vendedores/VendedorTable';
 import useAuth from '../hooks/useAuth';
-import { cidades } from '../data/cidades';
+import useCEP from '../hooks/useCEP';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 // Máscaras
@@ -59,6 +59,26 @@ export default function Vendedores() {
     const [formData, setFormData] = useState(initialForm);
     const [formError, setFormError] = useState('');
     const [saving, setSaving] = useState(false);
+
+    // Hook de CEP
+    const {
+        address,
+        loading: cepLoading,
+        fetchCEP,
+        formatCEP: formatCEP_hook
+    } = useCEP();
+
+    // Atualizar endereço quando CEP for buscado
+    useEffect(() => {
+        if (address && !currentVendedor) {
+            setFormData(prev => ({
+                ...prev,
+                endereco: prev.endereco || address.logradouro || '',
+                cidade: prev.cidade || (address.cidade || '').toUpperCase(),
+                uf: prev.uf || address.uf || ''
+            }));
+        }
+    }, [address, currentVendedor]);
 
     // Carregar dados
     const loadVendedores = async () => {
@@ -120,6 +140,11 @@ export default function Vendedores() {
             finalValue = maskPhone(value);
         } else if (name === 'cep') {
             finalValue = maskCEP(value);
+            // Buscar CEP se completo
+            const cleanedCEP = finalValue.replace(/\D/g, '');
+            if (cleanedCEP.length === 8) {
+                fetchCEP(cleanedCEP);
+            }
         }
 
         setFormData(prev => ({ ...prev, [name]: finalValue }));
@@ -130,11 +155,20 @@ export default function Vendedores() {
         setFormError('');
         setSaving(true);
 
+        // Uppercase nos dados geográficos
+        const dadosParaSalvar = {
+            ...formData,
+            nome: formData.nome.toUpperCase(),
+            endereco: formData.endereco.toUpperCase(),
+            cidade: formData.cidade.toUpperCase(),
+            uf: formData.uf.toUpperCase()
+        };
+
         try {
             if (currentVendedor) {
-                await vendedoresService.atualizarVendedor(currentVendedor.id, formData, user.id);
+                await vendedoresService.atualizarVendedor(currentVendedor.id, dadosParaSalvar, user.id);
             } else {
-                await vendedoresService.criarVendedor(formData, user.id);
+                await vendedoresService.criarVendedor(dadosParaSalvar, user.id);
             }
             await loadVendedores();
             closeModal();
@@ -334,16 +368,12 @@ export default function Vendedores() {
                                         </label>
                                         <input
                                             type="text"
-                                            list="cidades-list"
                                             name="cidade"
                                             value={formData.cidade}
                                             onChange={handleChange}
                                             className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 uppercase text-gray-900 dark:text-white"
                                             placeholder="CIDADE"
                                         />
-                                        <datalist id="cidades-list">
-                                            {cidades.map(c => <option key={c} value={c} />)}
-                                        </datalist>
                                     </div>
 
                                     {/* UF */}
