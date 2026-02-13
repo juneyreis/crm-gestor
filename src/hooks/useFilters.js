@@ -5,13 +5,13 @@ const initialFilters = {
   dataInicio: '',
   dataFim: '',
   cidade: '',
-  prospectId: '', // Alterado de 'prospect' para 'prospectId'
-  tipo: '',       // Novo
-  turno: '',      // Novo
-  status: '',     // Novo
-  prioridade: '', // Novo
-  concorrenteId: '', // Novo (substitui 'sistema')
-  // Mantemos legacy para compatibilidade se necessário, mas idealmente removemos
+  prospectId: '',
+  prospect: '',   // Novo: busca por texto (nome)
+  tipo: '',
+  turno: '',
+  status: '',
+  prioridade: '',
+  concorrenteId: '',
   endereco: '',
   bairro: ''
 };
@@ -61,6 +61,13 @@ export default function useFilters() {
         if (String(visit.prospect_id) !== String(filters.prospectId)) passes = false;
       }
 
+      // Filtro por Prospect (Texto/Nome) - BUSCA FLUIDA
+      if (filters.prospect) {
+        newActiveFilters.prospect = filters.prospect;
+        const nomeProspect = (visit.prospect_nome || visit.prospect || '').toLowerCase();
+        if (!nomeProspect.includes(filters.prospect.toLowerCase())) passes = false;
+      }
+
       // Filtro por Concorrente (ID)
       if (filters.concorrenteId) {
         newActiveFilters.concorrenteId = filters.concorrenteId;
@@ -68,12 +75,19 @@ export default function useFilters() {
       }
 
       // Novos Filtros (Exact Match)
-      ['tipo', 'turno', 'status', 'prioridade', 'cidade'].forEach(field => {
+      ['tipo', 'turno', 'status', 'prioridade'].forEach(field => {
         if (filters[field]) {
           newActiveFilters[field] = filters[field];
           if (visit[field] !== filters[field]) passes = false;
         }
       });
+
+      // Cidade - Busca fluida (includes)
+      if (filters.cidade) {
+        newActiveFilters.cidade = filters.cidade;
+        const cidade = (visit.cidade || '').toLowerCase();
+        if (!cidade.includes(filters.cidade.toLowerCase())) passes = false;
+      }
 
       // Data Range
       if (filters.dataInicio) {

@@ -107,9 +107,9 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
   return (
     <div className="overflow-hidden">
       {/* 🖥️ Tabela Desktop Modernizada */}
-      <div className="hidden lg:block">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
-          <thead className="bg-gray-50 dark:bg-slate-700/50">
+      <div className="hidden lg:block max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700 border-separate border-spacing-0">
+          <thead className="bg-gray-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
             <tr>
               <th onClick={() => handleSort('status')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Status <SortIcon column="status" /></div>
@@ -129,7 +129,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
               <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Local
               </th>
-              <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
                 Ações
               </th>
             </tr>

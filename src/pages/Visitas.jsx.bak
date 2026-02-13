@@ -19,7 +19,6 @@ export default function Visitas() {
   const [editingVisit, setEditingVisit] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Novo: estado local para busca fluida
 
   // States para Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,24 +74,6 @@ export default function Visitas() {
     }
   }, [visits, filters]); // Reaplicar filtros quando dados ou critérios mudam
 
-  // Efeito de Debounce para Busca
-  useEffect(() => {
-    // Sincroniza o searchQuery local com o filtro inicial se necessário
-    if (filters.prospect && !searchQuery) {
-      setSearchQuery(filters.prospect);
-    }
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery !== filters.prospect) {
-        handleFilterChange('prospect', searchQuery);
-      }
-    }, 400); // 400ms de delay
-
-    return () => clearTimeout(timer);
-  }, [searchQuery, handleFilterChange, filters.prospect]);
-
   // Handlers de Modal
   const openModal = (visit = null) => {
     setEditingVisit(visit);
@@ -115,14 +96,7 @@ export default function Visitas() {
 
   // Busca rápida (filtra pelo nome do prospect)
   const handleSearch = (value) => {
-    setSearchQuery(value);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      // Disparo imediato no Enter
-      handleFilterChange('prospect', searchQuery);
-    }
+    handleFilterChange('prospect', value);
   };
 
   const filterStats = getFilterStats(visits);
@@ -195,9 +169,8 @@ export default function Visitas() {
           <input
             type="text"
             placeholder="Buscar por prospect..."
-            value={searchQuery} // Usando estado local
+            value={filters.prospect || ''} // Conectado ao filtro 'prospect' (texto)
             onChange={(e) => handleSearch(e.target.value)}
-            onKeyDown={handleKeyDown} // Trigger no Enter
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white shadow-sm"
           />
         </div>

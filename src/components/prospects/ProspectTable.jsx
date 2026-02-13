@@ -86,74 +86,74 @@ export default function ProspectTable({ prospects, onEdit, onRefresh }) {
     return (
         <div className="overflow-hidden">
             {/* Tabela Desktop */}
-            <div className="hidden md:block">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="hidden md:block max-h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700 border-separate border-spacing-0">
+                    <thead className="bg-gray-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
                         <tr>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort('nome')}>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 border-b border-gray-200 dark:border-slate-700" onClick={() => handleSort('nome')}>
                                 <div className="flex items-center">
                                     <Building className="h-4 w-4 mr-2" />
                                     Nome
                                     <SortIcon column="nome" />
                                 </div>
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort('classificacao')}>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 border-b border-gray-200 dark:border-slate-700" onClick={() => handleSort('classificacao')}>
                                 <div className="flex items-center">
                                     Classificação
                                     <SortIcon column="classificacao" />
                                 </div>
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100" onClick={() => handleSort('status')}>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 border-b border-gray-200 dark:border-slate-700" onClick={() => handleSort('status')}>
                                 Status
                                 <SortIcon column="status" />
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
                                 Contato
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
                                 Cidade/UF
                             </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                            <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-slate-700">
                                 Ações
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
                         {sortedProspects.map((p) => (
-                            <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
+                            <tr key={p.id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group cursor-pointer" onDoubleClick={() => onEdit(p)}>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-semibold text-gray-900">{p.nome}</div>
-                                    <div className="text-xs text-gray-500">{formatDate(p.data_cadastro)}</div>
+                                    <div className="text-sm font-semibold text-gray-900 dark:text-white uppercase">{p.nome}</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">{formatDate(p.data_cadastro)}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getClassificationColor(p.classificacao)}`}>
+                                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border ${getClassificationColor(p.classificacao)}`}>
                                         {p.classificacao || 'N/A'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                                    <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-slate-600">
                                         {p.status || 'Novo'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex flex-col">
-                                        <span className="text-sm text-gray-900">{p.telefone || p.celular || '-'}</span>
-                                        <span className="text-xs text-gray-500">{p.email}</span>
+                                        <span className="text-sm text-gray-900 dark:text-gray-200">{p.telefone || p.celular || '-'}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">{p.email}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900">{p.cidade}/{p.uf}</div>
-                                    <div className="text-xs text-gray-500">{p.bairro}</div>
+                                    <div className="text-sm text-gray-900 dark:text-gray-200 uppercase">{p.cidade}/{p.uf}</div>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">{p.bairro}</div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => onEdit(p)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button onClick={() => onEdit(p)} className="p-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
                                             <Edit2 className="h-4 w-4" />
                                         </button>
                                         <button
                                             onClick={() => handleDelete(p.id, p.nome)}
                                             disabled={deletingId === p.id}
-                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                            className="p-1.5 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                         >
                                             {deletingId === p.id ? <div className="h-4 w-4 animate-spin border-2 border-red-600 border-t-transparent rounded-full" /> : <Trash2 className="h-4 w-4" />}
                                         </button>
