@@ -10,6 +10,9 @@ import * as concorrentesService from '../services/concorrentesService';
 import * as vendedoresService from '../services/vendedoresService';
 import * as prospectsService from '../services/prospectsService';
 import * as clientesService from '../services/clientesService';
+import * as agendaService from '../services/agendaService';
+import DashboardAgenda from '../components/dashboard/DashboardAgenda';
+import DashboardChart from '../components/dashboard/DashboardChart';
 import {
   Hash,
   ShieldAlert,
@@ -55,6 +58,8 @@ export default function Dashboard() {
     clientesTotal: 0
   });
   const [ultimasVisitas, setUltimasVisitas] = useState([]);
+  const [todasVisitas, setTodasVisitas] = useState([]);
+  const [agendaHoje, setAgendaHoje] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -69,14 +74,16 @@ export default function Dashboard() {
           concorrentes,
           vendedores,
           prospects,
-          clientes
+          clientes,
+          agenda
         ] = await Promise.all([
           visitasService.listarVisitas(user.id),
           segmentosService.listarSegmentos(user.id),
           concorrentesService.listarConcorrentes(user.id),
           vendedoresService.listarVendedores(user.id),
           prospectsService.listar(user.id),
-          clientesService.listar(user.id)
+          clientesService.listar(user.id),
+          agendaService.listarCompromissosHoje(user.id)
         ]);
 
 
@@ -117,6 +124,11 @@ export default function Dashboard() {
           prospectsTotal: prospects?.length || 0,
           clientesTotal: clientes?.length || 0
         });
+
+        // Set todas as visitas para o gráfico
+        setTodasVisitas(visitas || []);
+        // Set agenda de hoje
+        setAgendaHoje(agenda || []);
 
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
@@ -192,28 +204,37 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Últimas Visitas */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-lg">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Últimas Visitas</h2>
-        <div className="space-y-4">
-          {ultimasVisitas.length > 0 ? (
-            ultimasVisitas.map((visita) => (
-              <div key={visita.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+      {/* Seção de Resumo: Últimas Visitas, Agenda e Gráfico */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Card 1: Últimas Visitas */}
+        <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-6 shadow-lg h-full">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Últimas Visitas</h2>
+          <div className="space-y-4">
+            {ultimasVisitas.length > 0 ? (
+              ultimasVisitas.map((visita) => (
+                <div key={visita.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <h3 className="font-medium text-gray-900 dark:text-white truncate" title={visita.prospect}>{visita.prospect}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{formatarDataLocal(visita.data)} • {visita.cidade}</p>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 dark:text-white">{visita.prospect}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{formatarDataLocal(visita.data)} • {visita.cidade} • {visita.sistema}</p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 dark:text-gray-400 text-center py-8">Nenhuma visita registrada</p>
-          )}
+              ))
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center py-8">Nenhuma visita registrada</p>
+            )}
+          </div>
         </div>
+
+        {/* Card 2: Agenda de Hoje */}
+        <DashboardAgenda events={agendaHoje} />
+
+        {/* Card 3: Gráfico de Visitas */}
+        <DashboardChart visits={todasVisitas} />
       </div>
     </div>
   );
