@@ -9,6 +9,7 @@ import useAuth from '../hooks/useAuth';
 import * as clientesService from '../services/clientesService';
 import * as segmentosService from '../services/segmentosService';
 import * as vendedoresService from '../services/vendedoresService';
+import * as prospectsService from '../services/prospectsService';
 import ConfirmationModal from '../components/modals/ConfirmationModal';
 
 export default function Clientes() {
@@ -16,6 +17,7 @@ export default function Clientes() {
     const [clientes, setClientes] = useState([]);
     const [segmentos, setSegmentos] = useState([]);
     const [vendedores, setVendedores] = useState([]);
+    const [prospects, setProspects] = useState([]);
     const [editingCliente, setEditingCliente] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -49,15 +51,17 @@ export default function Clientes() {
     const loadData = async () => {
         setIsLoading(true);
         try {
-            const [clientesData, segmentosData, vendedoresData] = await Promise.all([
+            const [clientesData, segmentosData, vendedoresData, prospectsData] = await Promise.all([
                 clientesService.listar(user?.id),
                 segmentosService.listarSegmentos(user?.id),
-                vendedoresService.listarVendedores(user?.id)
+                vendedoresService.listarVendedores(user?.id),
+                prospectsService.listar(user?.id)
             ]);
 
             setClientes(clientesData || []);
             setSegmentos(segmentosData || []);
             setVendedores(vendedoresData || []);
+            setProspects(prospectsData || []);
             setFilteredClientes(clientesData || []);
         } catch (error) {
             console.error("Erro ao carregar dados:", error);
@@ -302,6 +306,7 @@ export default function Clientes() {
                                 isLoading={isSaving}
                                 segmentos={segmentos}
                                 vendedores={vendedores}
+                                prospects={prospects}
                             />
                         </div>
                     </div>

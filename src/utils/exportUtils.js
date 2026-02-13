@@ -84,7 +84,7 @@ export const filtrarCamposExportacao = (visita) => {
     sistema,
     contato,
     status,
-    obs,
+    observacoes,
     prospects,
     concorrentes
   } = visita;
@@ -98,10 +98,25 @@ export const filtrarCamposExportacao = (visita) => {
     sistema,
     contato,
     status,
-    obs,
+    observacoes,
     dados_relacionais: {
       prospect: prospects || null,
       concorrente: concorrentes || null
     }
   };
+};
+
+/**
+ * Faz o download de um conteúdo de texto como um arquivo
+ * @param {string} content - Conteúdo do arquivo
+ * @param {string} fileName - Nome do arquivo
+ * @param {string} contentType - Tipo de conteúdo
+ */
+export const downloadFile = (content, fileName, contentType = 'text/html') => {
+  const a = document.createElement("a");
+  const file = new Blob([content], { type: contentType });
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(a.href);
 };

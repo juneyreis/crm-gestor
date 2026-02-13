@@ -9,7 +9,8 @@ export default function ReportLayout({
     filters,
     onExportPDF,
     onPrint,
-    loading
+    loading,
+    extraActions
 }) {
     const today = new Date().toLocaleDateString('pt-BR', {
         day: '2-digit',
@@ -38,8 +39,7 @@ export default function ReportLayout({
                             className="rounded-lg border-gray-300 dark:border-slate-600 flex items-center justify-center gap-2 w-full sm:w-auto"
                         >
                             <Printer className="h-4 w-4" />
-                            <span className="hidden sm:inline">Imprimir / HTML</span>
-                            <span className="sm:hidden">Imprimir</span>
+                            <span>Imprimir</span>
                         </Button>
                         <Button
                             variant="primary"
@@ -50,6 +50,7 @@ export default function ReportLayout({
                             <FileDown className="h-4 w-4" />
                             <span>Exportar PDF</span>
                         </Button>
+                        {extraActions}
                     </div>
                 </div>
             </div>

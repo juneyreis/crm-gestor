@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react';
-import { Save, X, Briefcase, Calendar, DollarSign, Percent, Lock } from 'lucide-react';
+import { Save, X, Briefcase, Calendar, DollarSign, Percent, Lock, User, Search } from 'lucide-react';
 import Button from '../Button';
 import useAuth from '../../hooks/useAuth';
 import * as comissoesService from '../../services/comissoesService';
 import ConfirmationModal from '../modals/ConfirmationModal';
-import ComboboxCliente from './ComboboxCliente';
+import ComboboxComissoes from './ComboboxComissoes';
 
 const months = [
-    { value: '01', label: 'JAN' }, { value: '02', label: 'FEV' },
-    { value: '03', label: 'MAR' }, { value: '04', label: 'ABR' },
-    { value: '05', label: 'MAI' }, { value: '06', label: 'JUN' },
-    { value: '07', label: 'JUL' }, { value: '08', label: 'AGO' },
-    { value: '09', label: 'SET' }, { value: '10', label: 'OUT' },
-    { value: '11', label: 'NOV' }, { value: '12', label: 'DEZ' }
+    { id: '01', label: 'JAN' }, { id: '02', label: 'FEV' },
+    { id: '03', label: 'MAR' }, { id: '04', label: 'ABR' },
+    { id: '05', label: 'MAI' }, { id: '06', label: 'JUN' },
+    { id: '07', label: 'JUL' }, { id: '08', label: 'AGO' },
+    { id: '09', label: 'SET' }, { id: '10', label: 'OUT' },
+    { id: '11', label: 'NOV' }, { id: '12', label: 'DEZ' }
 ];
 
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 5 }, (_, i) => String(currentYear - 2 + i));
+const years = Array.from({ length: 5 }, (_, i) => {
+    const year = String(currentYear - 2 + i);
+    return { id: year, label: year };
+});
+
+const statusOptions = [
+    { id: 'PENDENTE', label: 'PENDENTE' },
+    { id: 'PAGA', label: 'PAGA' },
+    { id: 'CANCELADA', label: 'CANCELADA' }
+];
 
 const initialForm = {
     cliente_id: '',
@@ -153,24 +162,29 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cliente</label>
-                    <ComboboxCliente 
-                        clientes={clientes} 
-                        value={form.cliente_id} 
-                        onChange={handleClienteChange} 
-                        error={errors.cliente_id} 
+                    <ComboboxComissoes
+                        options={clientes}
+                        value={form.cliente_id}
+                        onChange={handleClienteChange}
+                        name="cliente_id"
+                        placeholder="Buscar cliente..."
+                        labelPath={(c) => c.prospects?.nome || 'Cliente sem nome'}
+                        error={errors.cliente_id}
                     />
                 </div>
 
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vendedor</label>
-                    <div className="relative">
-                        <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                        <select name="vendedor_id" value={form.vendedor_id} onChange={handleChange}
-                            className={`w-full pl-10 pr-4 py-2 text-sm rounded-lg border focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-white appearance-none ${errors.vendedor_id ? 'border-red-500' : 'border-gray-200 dark:border-slate-600'}`}>
-                            <option value="">Selecione um vendedor</option>
-                            {vendedores.map(v => <option key={v.id} value={v.id}>{v.nome}</option>)}
-                        </select>
-                    </div>
+                    <ComboboxComissoes
+                        options={vendedores}
+                        value={form.vendedor_id}
+                        onChange={handleChange}
+                        name="vendedor_id"
+                        placeholder="Buscar vendedor..."
+                        labelPath={(v) => v.nome}
+                        icon={Briefcase}
+                        error={errors.vendedor_id}
+                    />
                 </div>
 
                 <div className="space-y-1">
@@ -185,15 +199,29 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
                 <div className="grid grid-cols-2 gap-4 md:col-span-1">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mês</label>
-                        <select name="vigencia_mes" value={form.vigencia_mes} onChange={handleChange} className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
-                            {months.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
-                        </select>
+                        <ComboboxComissoes
+                            options={months}
+                            value={form.vigencia_mes}
+                            onChange={handleChange}
+                            name="vigencia_mes"
+                            placeholder="Mês"
+                            labelPath={(m) => m.label}
+                            icon={Calendar}
+                            showSearch={false}
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ano</label>
-                        <select name="vigencia_ano" value={form.vigencia_ano} onChange={handleChange} className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
-                            {years.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
+                        <ComboboxComissoes
+                            options={years}
+                            value={form.vigencia_ano}
+                            onChange={handleChange}
+                            name="vigencia_ano"
+                            placeholder="Ano"
+                            labelPath={(y) => y.label}
+                            icon={Calendar}
+                            showSearch={false}
+                        />
                     </div>
                 </div>
 
@@ -227,11 +255,16 @@ export default function ComissaoForm({ comissao, onSuccess, onCancel, isLoading:
 
                 <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
-                    <select name="status" value={form.status} onChange={handleChange} className="w-full px-4 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white">
-                        <option value="PENDENTE">PENDENTE</option>
-                        <option value="PAGA">PAGA</option>
-                        <option value="CANCELADA">CANCELADA</option>
-                    </select>
+                    <ComboboxComissoes
+                        options={statusOptions}
+                        value={form.status}
+                        onChange={handleChange}
+                        name="status"
+                        placeholder="Status"
+                        labelPath={(s) => s.label}
+                        icon={Search}
+                        showSearch={false}
+                    />
                 </div>
             </div>
 

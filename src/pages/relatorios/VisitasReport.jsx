@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import ReportLayout from '../../components/reports/ReportLayout';
 import * as visitasService from '../../services/visitasService';
 import useAuth from '../../hooks/useAuth';
-import { generatePDF, printReport } from '../../utils/exportUtils';
-import { Search, Filter, ArrowUpDown, FileText, CheckCircle2, Clock, MapPin, Target, TrendingUp, Calendar, AlertCircle } from 'lucide-react';
+import Button from '../../components/Button';
+import { generatePDF, printReport, downloadFile } from '../../utils/exportUtils';
+import { generateVisitsHTML } from '../../utils/reportTemplates';
+import { Search, Filter, ArrowUpDown, FileText, CheckCircle2, Clock, MapPin, Target, TrendingUp, Calendar, AlertCircle, FileCode } from 'lucide-react';
 
 export default function VisitasReport() {
     const [data, setData] = useState([]);
@@ -87,6 +89,12 @@ export default function VisitasReport() {
 
     const handlePrint = () => {
         printReport('report-content');
+    };
+
+    const handleExportHTMLPro = () => {
+        const htmlContent = generateVisitsHTML(filteredData, { dateFrom, dateTo });
+        const fileName = `Relatorio_Visitas_${new Date().toISOString().split('T')[0]}.html`;
+        downloadFile(htmlContent, fileName);
     };
 
     // Cálculos de Resumo (KPIs)
@@ -181,6 +189,18 @@ export default function VisitasReport() {
             onExportPDF={handleExportPDF}
             onPrint={handlePrint}
             loading={loading}
+            extraActions={
+                <Button
+                    variant="primary"
+                    onClick={handleExportHTMLPro}
+                    disabled={loading}
+                    className="rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-700 flex items-center justify-center gap-2 w-full sm:w-auto"
+                    title="Exportar HTML Premium"
+                >
+                    <FileCode className="h-4 w-4" />
+                    <span>Exportar HTML</span>
+                </Button>
+            }
         >
             {/* Summary Stats Header */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -252,17 +272,17 @@ export default function VisitasReport() {
                                     </td>
                                     <td className="py-3 px-4">
                                         <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter border ${item.status === 'Realizada' ? 'bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-emerald-900/20 dark:border-emerald-900/30' :
-                                                item.status === 'Agendada' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-900/30' :
-                                                    item.status === 'Atrasada' ? 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:border-red-900/30' :
-                                                        'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-700/50 dark:border-slate-700'
+                                            item.status === 'Agendada' ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-900/30' :
+                                                item.status === 'Atrasada' ? 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:border-red-900/30' :
+                                                    'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-700/50 dark:border-slate-700'
                                             }`}>
                                             {item.status || 'N/A'}
                                         </span>
                                     </td>
                                     <td className="py-3 px-4">
                                         <span className={`px-2 py-0.5 rounded uppercase text-[9px] font-black ${item.prioridade === 'Alta' ? 'text-orange-600' :
-                                                item.prioridade === 'Média' ? 'text-amber-500' :
-                                                    'text-slate-400'
+                                            item.prioridade === 'Média' ? 'text-amber-500' :
+                                                'text-slate-400'
                                             }`}>
                                             {item.prioridade}
                                         </span>
@@ -287,8 +307,8 @@ export default function VisitasReport() {
                         <div className="flex justify-between items-start mb-3">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.data ? new Date(item.data).toLocaleDateString('pt-BR') : ''}</span>
                             <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase border ${item.status === 'Realizada' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                    item.status === 'Agendada' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                        'bg-slate-50 text-slate-500 border-slate-200'
+                                item.status === 'Agendada' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                    'bg-slate-50 text-slate-500 border-slate-200'
                                 }`}>
                                 {item.status}
                             </span>

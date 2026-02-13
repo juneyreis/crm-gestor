@@ -38,16 +38,16 @@ export default function VisitFilters({
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 p-6 mb-6 shadow-sm">
+    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl border border-blue-100 dark:border-slate-700 p-6 mb-6 shadow-sm">
       {/* Cabeçalho com estatísticas */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 rounded-lg">
-            <Filter className="h-6 w-6 text-blue-600" />
+          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+            <Filter className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">Filtros Avançados</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Filtros Avançados</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {filterStats?.activeCount || 0} filtro(s) ativo(s) •
               Mostrando {filterStats?.filtered || 0} de {filterStats?.total || 0} visitas
             </p>
@@ -65,7 +65,7 @@ export default function VisitFilters({
 
           <button
             onClick={onClear}
-            className="px-5 py-2 bg-gradient-to-r from-gray-200 to-gray-300 text-gray-800 rounded-lg hover:from-gray-300 hover:to-gray-400 flex items-center gap-2 border border-gray-300"
+            className="px-5 py-2 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-slate-700 dark:to-slate-650 text-gray-800 dark:text-gray-200 rounded-lg hover:from-gray-300 hover:to-gray-400 dark:hover:from-slate-650 dark:hover:to-slate-600 flex items-center gap-2 border border-blue-200 dark:border-slate-600 shadow-sm"
           >
             <X className="h-4 w-4" />
             Limpar
@@ -79,10 +79,10 @@ export default function VisitFilters({
           {Object.entries(activeFilters).map(([key, value]) => (
             <div
               key={key}
-              className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-blue-200 text-sm"
+              className="flex items-center gap-2 bg-white dark:bg-slate-700 px-3 py-1.5 rounded-full border border-blue-200 dark:border-slate-600 text-sm shadow-sm"
             >
-              <span className="font-medium text-blue-700 capitalize">{key}:</span>
-              <span className="text-gray-700">{value}</span>
+              <span className="font-medium text-blue-700 dark:text-blue-300 capitalize">{key}:</span>
+              <span className="text-gray-700 dark:text-gray-200">{value}</span>
               <button
                 onClick={() => onFilterChange(key, '')}
                 className="text-gray-400 hover:text-gray-600 ml-1"
@@ -105,7 +105,7 @@ export default function VisitFilters({
           <div className="relative">
             <input
               type="date"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
               value={filters.dataInicio || getDateThirtyDaysAgo()}
               onChange={(e) => handleInputChange('dataInicio', e.target.value)}
             />
@@ -129,7 +129,7 @@ export default function VisitFilters({
           <div className="relative">
             <input
               type="date"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
               value={filters.dataFim || getTodayDate()}
               onChange={(e) => handleInputChange('dataFim', e.target.value)}
             />
@@ -152,7 +152,7 @@ export default function VisitFilters({
           </label>
           <div className="relative">
             <select
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white appearance-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white appearance-none"
               value={filters.cidade}
               onChange={(e) => handleInputChange('cidade', e.target.value)}
             >
@@ -178,7 +178,7 @@ export default function VisitFilters({
           <div className="relative">
             <input
               type="text"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white uppercase"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white uppercase"
               placeholder="FILTRAR POR NOME"
               value={filters.prospect}
               onChange={(e) => handleInputChange('prospect', e.target.value)}
@@ -231,7 +231,7 @@ export default function VisitFilters({
           </label>
           <div className="relative">
             <select
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white appearance-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white appearance-none"
               value={filters.sistema}
               onChange={(e) => handleInputChange('sistema', e.target.value)}
             >
@@ -256,7 +256,7 @@ export default function VisitFilters({
           </label>
           <div className="relative">
             <select
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white appearance-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white appearance-none"
               value={filters.regime}
               onChange={(e) => handleInputChange('regime', e.target.value)}
             >
@@ -275,8 +275,8 @@ export default function VisitFilters({
 
         {/* Campo extra para garantir 3 colunas */}
         <div className="md:col-span-2 lg:col-span-1 flex items-end">
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 w-full">
-            <p className="text-sm text-blue-700 font-medium">
+          <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg p-4 w-full">
+            <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
               <span className="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
               Dica: Use filtros combinados para resultados mais precisos
             </p>
@@ -286,23 +286,23 @@ export default function VisitFilters({
 
       {/* Informações de estatísticas */}
       {filterStats && (
-        <div className="mt-6 pt-4 border-t border-blue-100">
+        <div className="mt-6 pt-4 border-t border-blue-100 dark:border-slate-700">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{filterStats.total || 0}</div>
-              <div className="text-sm text-gray-600">Total de Visitas</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{filterStats.total || 0}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total de Visitas</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{filterStats.filtered || 0}</div>
-              <div className="text-sm text-gray-600">Visitas Filtradas</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{filterStats.filtered || 0}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Visitas Filtradas</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{filterStats.activeCount || 0}</div>
-              <div className="text-sm text-gray-600">Filtros Ativos</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{filterStats.activeCount || 0}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Filtros Ativos</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">{filterStats.percentage || 0}%</div>
-              <div className="text-sm text-gray-600">Resultado do Filtro</div>
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{filterStats.percentage || 0}%</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Resultado do Filtro</div>
             </div>
           </div>
         </div>

@@ -55,19 +55,19 @@ export default function CollapsibleFilters({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
       {/* Header do Acordeão */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        className="w-full p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
       >
         <div className="flex items-center gap-3 active:scale-95 transition-transform">
-          <div className={`p-2 rounded-lg ${hasActiveFilters ? 'bg-blue-100' : 'bg-gray-100'}`}>
-            <Filter className={`h-5 w-5 ${hasActiveFilters ? 'text-blue-600' : 'text-gray-600'}`} />
+          <div className={`p-2 rounded-lg ${hasActiveFilters ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-100 dark:bg-slate-700'}`}>
+            <Filter className={`h-5 w-5 ${hasActiveFilters ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`} />
           </div>
           <div className="text-left">
-            <h3 className="font-semibold text-gray-900">Filtros Avançados</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Filtros Avançados</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               {hasActiveFilters
                 ? `${Object.keys(activeFilters).length} filtro(s) ativo(s)`
                 : 'Clique para expandir e aplicar filtros'
@@ -78,7 +78,7 @@ export default function CollapsibleFilters({
 
         <div className="flex items-center gap-3">
           {hasActiveFilters && (
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800">
               <Filter className="h-3 w-3" />
               {Object.keys(activeFilters).length} ativo(s)
             </div>
@@ -89,18 +89,18 @@ export default function CollapsibleFilters({
 
       {/* Conteúdo Expandido */}
       {isExpanded && (
-        <div className="border-t border-gray-200 p-6 animate-fade-in relative">
+        <div className="border-t border-gray-200 dark:border-slate-700 p-6 animate-fade-in relative">
 
           {/* Grid de Filtros */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 
             {/* Prospect (Combobox) */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <Building className="h-4 w-4" /> Prospect
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.prospectId || ''}
                 onChange={(e) => handleInputChange('prospectId', e.target.value)}
               >
@@ -113,11 +113,11 @@ export default function CollapsibleFilters({
 
             {/* Cidade */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <MapPin className="h-4 w-4" /> Cidade
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.cidade || ''}
                 onChange={(e) => handleInputChange('cidade', e.target.value)}
               >
@@ -130,11 +130,11 @@ export default function CollapsibleFilters({
 
             {/* Status */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <CheckCircle className="h-4 w-4" /> Status
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.status || ''}
                 onChange={(e) => handleInputChange('status', e.target.value)}
               >
@@ -148,11 +148,11 @@ export default function CollapsibleFilters({
 
             {/* Prioridade */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <AlertTriangle className="h-4 w-4" /> Prioridade
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.prioridade || ''}
                 onChange={(e) => handleInputChange('prioridade', e.target.value)}
               >
@@ -165,11 +165,11 @@ export default function CollapsibleFilters({
 
             {/* Tipo */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <FileText className="h-4 w-4" /> Tipo de Visita
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.tipo || ''}
                 onChange={(e) => handleInputChange('tipo', e.target.value)}
               >
@@ -184,11 +184,11 @@ export default function CollapsibleFilters({
 
             {/* Turno */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <Clock className="h-4 w-4" /> Turno
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.turno || ''}
                 onChange={(e) => handleInputChange('turno', e.target.value)}
               >
@@ -201,11 +201,11 @@ export default function CollapsibleFilters({
 
             {/* Concorrente */}
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 <FileText className="h-4 w-4" /> Concorrente
               </label>
               <select
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-slate-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-slate-700 dark:text-white"
                 value={filters.concorrenteId || ''}
                 onChange={(e) => handleInputChange('concorrenteId', e.target.value)}
               >
@@ -254,7 +254,7 @@ export default function CollapsibleFilters({
             <div className="flex gap-3">
               <button
                 onClick={handleClearAll}
-                className="px-5 py-2.5 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg border border-gray-300 transition-colors"
+                className="px-5 py-2.5 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg border border-gray-300 dark:border-slate-600 transition-colors"
               >
                 Limpar Filtros
               </button>

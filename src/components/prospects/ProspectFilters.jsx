@@ -46,8 +46,8 @@ export default function ProspectFilters({
                 className="w-full p-5 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
             >
                 <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${hasActiveFilters ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                        <Filter className={`h-5 w-5 ${hasActiveFilters ? 'text-blue-600' : 'text-gray-600'}`} />
+                    <div className={`p-2 rounded-lg ${hasActiveFilters ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-100 dark:bg-slate-700'}`}>
+                        <Filter className={`h-5 w-5 ${hasActiveFilters ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`} />
                     </div>
                     <div className="text-left">
                         <h3 className="font-semibold text-gray-900 dark:text-white">Filtros Avançados</h3>
@@ -62,7 +62,7 @@ export default function ProspectFilters({
 
                 <div className="flex items-center gap-3">
                     {hasActiveFilters && (
-                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-200 dark:border-blue-800">
                             <Filter className="h-3 w-3" />
                             {Object.keys(activeFilters).length} ativo(s)
                         </div>
@@ -96,7 +96,7 @@ export default function ProspectFilters({
                                 {Object.entries(activeFilters).map(([key, value]) => (
                                     <div
                                         key={key}
-                                        className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 text-sm flex-shrink-0 snap-start"
+                                        className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 text-sm flex-shrink-0 snap-start"
                                     >
                                         <span className="font-medium text-blue-700 dark:text-blue-400 capitalize">{key}:</span>
                                         <span className="text-gray-700 dark:text-gray-300">{value}</span>

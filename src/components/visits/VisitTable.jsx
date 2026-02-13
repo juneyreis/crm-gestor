@@ -26,10 +26,10 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
   // Ícones e cores por status
   const getStatusBadge = (status) => {
     const styles = {
-      'Agendada': 'bg-blue-100 text-blue-800 border-blue-200',
-      'Realizada': 'bg-green-100 text-green-800 border-green-200',
-      'Cancelada': 'bg-gray-100 text-gray-800 border-gray-200',
-      'Atrasada': 'bg-red-100 text-red-800 border-red-200'
+      'Agendada': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      'Realizada': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800',
+      'Cancelada': 'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-slate-600',
+      'Atrasada': 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800'
     };
     return styles[status] || styles['Agendada'];
   };
@@ -37,9 +37,9 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
   // Ícones e cores por prioridade
   const getPrioridadeBadge = (prioridade) => {
     const styles = {
-      'Baixa': 'bg-green-50 text-green-700 border-green-100',
-      'Média': 'bg-yellow-50 text-yellow-700 border-yellow-100',
-      'Alta': 'bg-red-50 text-red-700 border-red-100'
+      'Baixa': 'bg-green-50 dark:bg-green-900/10 text-green-700 dark:text-green-400 border-green-100 dark:border-green-900/30',
+      'Média': 'bg-yellow-50 dark:bg-yellow-900/10 text-yellow-700 dark:text-yellow-400 border-yellow-100 dark:border-yellow-900/30',
+      'Alta': 'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/30'
     };
     return styles[prioridade] || styles['Média'];
   };
@@ -108,8 +108,8 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
     <div className="overflow-hidden">
       {/* 🖥️ Tabela Desktop Modernizada */}
       <div className="hidden lg:block">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+          <thead className="bg-gray-50 dark:bg-slate-700/50">
             <tr>
               <th onClick={() => handleSort('status')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
                 <div className="flex items-center">Status <SortIcon column="status" /></div>
@@ -134,11 +134,11 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-slate-700">
             {sortedVisits.map((visit) => (
               <tr
                 key={visit.id}
-                className="hover:bg-blue-50/30 transition-colors group cursor-pointer"
+                className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group cursor-pointer"
                 onDoubleClick={() => onEdit(visit)}
               >
                 {/* Status */}
@@ -176,8 +176,8 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
 
                 {/* Tipo */}
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1.5 text-sm text-gray-700">
-                    <span className="p-1.5 bg-gray-100 rounded-md text-gray-600">
+                  <div className="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+                    <span className="p-1.5 bg-gray-100 dark:bg-slate-700 rounded-md text-gray-600 dark:text-gray-400">
                       {getTipoIcon(visit.tipo)}
                     </span>
                     {visit.tipo || 'N/D'}
@@ -213,7 +213,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                     </button>
                     <button
                       onClick={() => onDelete(visit.id, visit.prospect_nome || visit.prospect)}
-                      className="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-1.5 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                       title="Excluir"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -231,7 +231,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
         {sortedVisits.map((visit) => (
           <div
             key={visit.id}
-            className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm active:scale-[0.99] transition-transform"
+            className="bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 p-5 shadow-sm active:scale-[0.99] transition-transform"
             onDoubleClick={() => onEdit(visit)}
           >
             {/* Cabeçalho do Card */}
@@ -266,8 +266,8 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 <span>{visit.turno || 'N/D'}</span>
               </div>
 
-              <div className="col-span-2 flex items-center gap-2 text-gray-600">
-                <div className="p-1 bg-gray-100 rounded text-gray-500">
+              <div className="col-span-2 flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                <div className="p-1 bg-gray-100 dark:bg-slate-700 rounded text-gray-500 dark:text-gray-400">
                   {getTipoIcon(visit.tipo)}
                 </div>
                 <span className="font-medium text-gray-900">{visit.tipo || 'Tipo não definido'}</span>
@@ -282,7 +282,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
             </div>
 
             {/* Rodapé do Card */}
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100 mt-2">
+            <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-slate-700 mt-2">
               <span className={`text-xs font-medium px-2 py-1 rounded-full border ${getPrioridadeBadge(visit.prioridade || 'Média')}`}>
                 Prioridade {visit.prioridade || 'Média'}
               </span>

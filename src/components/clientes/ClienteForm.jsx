@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Save, X, User, Briefcase, Calendar, DollarSign, Star, MapPin, Phone, Mail, FileText, Percent, Hash } from 'lucide-react';
+import { Save, X, User, Briefcase, Calendar, DollarSign, Star, MapPin, Phone, Mail, FileText, Percent, Hash, TrendingUp, Target } from 'lucide-react';
 import Button from '../Button';
+import ComboboxClientes from './ComboboxClientes';
 import useCEP from '../../hooks/useCEP';
 import * as prospectsService from '../../services/prospectsService';
 import * as clientesService from '../../services/clientesService';
@@ -301,19 +302,17 @@ export default function ClienteForm({ cliente, onSuccess, onCancel, isLoading, s
                         Prospect de Origem *
                     </label>
                     <div className="relative">
-                        <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                        <select
+                        <ComboboxClientes
                             name="prospect_id"
                             value={formData.prospect_id}
                             onChange={handleProspectChange}
+                            options={prospects}
+                            placeholder="Selecione um Prospect..."
+                            labelPath={(p) => p.nome}
+                            error={errors.prospect_id}
+                            icon={User}
                             disabled={!!cliente}
-                            className={`w-full pl-10 pr-4 py-3 rounded-lg border ${errors.prospect_id ? 'border-red-500' : 'border-gray-300 dark:border-slate-600'} bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 appearance-none`}
-                        >
-                            <option value="">Selecione um Prospect...</option>
-                            {prospects?.map(prospect => (
-                                <option key={prospect.id} value={prospect.id}>{prospect.nome}</option>
-                            ))}
-                        </select>
+                        />
                         {errors.prospect_id && <p className="text-red-500 text-xs mt-1">{errors.prospect_id}</p>}
                     </div>
                 </div>
@@ -422,34 +421,48 @@ export default function ClienteForm({ cliente, onSuccess, onCancel, isLoading, s
 
                 <div className="lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Contrato</label>
-                    <select name="tipo_contrato" value={formData.tipo_contrato} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="Mensal">Mensal</option>
-                        <option value="Trimestral">Trimestral</option>
-                        <option value="Semestral">Semestral</option>
-                        <option value="Anual">Anual</option>
-                        <option value="Avulso">Avulso</option>
-                    </select>
+                    <ComboboxClientes
+                        name="tipo_contrato"
+                        value={formData.tipo_contrato}
+                        onChange={handleChange}
+                        options={['Mensal', 'Trimestral', 'Semestral', 'Anual', 'Avulso']}
+                        placeholder="Tipo de Contrato"
+                        showSearch={false}
+                        icon={FileText}
+                    />
                 </div>
 
                 <div className="lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Periodicidade</label>
-                    <select name="periodicidade_pagamento" value={formData.periodicidade_pagamento} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="Mensal">Mensal</option>
-                        <option value="Trimestral">Trimestral</option>
-                        <option value="Semestral">Semestral</option>
-                        <option value="Anual">Anual</option>
-                    </select>
+                    <ComboboxClientes
+                        name="periodicidade_pagamento"
+                        value={formData.periodicidade_pagamento}
+                        onChange={handleChange}
+                        options={['Mensal', 'Trimestral', 'Semestral', 'Anual']}
+                        placeholder="Periodicidade"
+                        showSearch={false}
+                        icon={Calendar}
+                    />
                 </div>
 
                 <div className="lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Satisfação</label>
-                    <select name="nivel_satisfacao" value={formData.nivel_satisfacao} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 text-yellow-500 font-bold">
-                        <option value="⭐">⭐ (Baixo)</option>
-                        <option value="⭐⭐">⭐⭐ (Regular)</option>
-                        <option value="⭐⭐⭐">⭐⭐⭐ (Bom)</option>
-                        <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ (Muito Bom)</option>
-                        <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ (Excelente)</option>
-                    </select>
+                    <ComboboxClientes
+                        name="nivel_satisfacao"
+                        value={formData.nivel_satisfacao}
+                        onChange={handleChange}
+                        options={[
+                            { value: '⭐', label: '⭐ (Baixo)' },
+                            { value: '⭐⭐', label: '⭐⭐ (Regular)' },
+                            { value: '⭐⭐⭐', label: '⭐⭐⭐ (Bom)' },
+                            { value: '⭐⭐⭐⭐', label: '⭐⭐⭐⭐ (Muito Bom)' },
+                            { value: '⭐⭐⭐⭐⭐', label: '⭐⭐⭐⭐⭐ (Excelente)' }
+                        ]}
+                        labelPath={(opt) => opt.label}
+                        placeholder="Satisfação"
+                        showSearch={false}
+                        icon={Star}
+                    />
                 </div>
             </div>
 
@@ -457,33 +470,39 @@ export default function ClienteForm({ cliente, onSuccess, onCancel, isLoading, s
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className="col-span-1 lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Segmento</label>
-                    <select name="segmento_id" value={formData.segmento_id} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">Selecione...</option>
-                        {segmentos?.map(s => (
-                            <option key={s.id} value={s.id}>{s.descricao}</option>
-                        ))}
-                    </select>
+                    <ComboboxClientes
+                        name="segmento_id"
+                        value={formData.segmento_id}
+                        onChange={handleChange}
+                        options={segmentos}
+                        placeholder="Selecione o Segmento..."
+                        labelPath={(s) => s.descricao}
+                        icon={Target}
+                    />
                 </div>
                 <div className="col-span-1 lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vendedor</label>
-                    <select name="vendedor_id" value={formData.vendedor_id} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="">Selecione...</option>
-                        {vendedores?.map(v => (
-                            <option key={v.id} value={v.id}>{v.nome}</option>
-                        ))}
-                    </select>
+                    <ComboboxClientes
+                        name="vendedor_id"
+                        value={formData.vendedor_id}
+                        onChange={handleChange}
+                        options={vendedores}
+                        placeholder="Selecione o Vendedor..."
+                        labelPath={(v) => v.nome}
+                        icon={User}
+                    />
                 </div>
                 <div className="col-span-1 lg:col-span-4">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fonte de Captação</label>
-                    <select name="fonte_captacao" value={formData.fonte_captacao} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                        <option value="Indicação">Indicação</option>
-                        <option value="Visita">Visita</option>
-                        <option value="Telefone">Telefone</option>
-                        <option value="Email">Email</option>
-                        <option value="Site">Site</option>
-                        <option value="Redes Sociais">Redes Sociais</option>
-                        <option value="Outros">Outros</option>
-                    </select>
+                    <ComboboxClientes
+                        name="fonte_captacao"
+                        value={formData.fonte_captacao}
+                        onChange={handleChange}
+                        options={['Indicação', 'Visita', 'Telefone', 'Email', 'Site', 'Redes Sociais', 'Outros']}
+                        placeholder="Fonte de Captação"
+                        showSearch={false}
+                        icon={TrendingUp}
+                    />
                 </div>
             </div>
 
@@ -507,12 +526,15 @@ export default function ClienteForm({ cliente, onSuccess, onCancel, isLoading, s
                         <input name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white" />
                     </div>
                     <div className="col-span-1 lg:col-span-3">
-                        <select name="uf" value={formData.uf} onChange={handleChange} className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500">
-                            <option value="">UF</option>
-                            {['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'].map(uf => (
-                                <option key={uf} value={uf}>{uf}</option>
-                            ))}
-                        </select>
+                        <ComboboxClientes
+                            name="uf"
+                            value={formData.uf}
+                            onChange={handleChange}
+                            options={['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']}
+                            placeholder="UF"
+                            showSearch={false}
+                            icon={MapPin}
+                        />
                     </div>
                     <div className="col-span-1 lg:col-span-6">
                         <input name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white" />
