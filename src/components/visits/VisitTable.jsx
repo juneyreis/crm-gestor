@@ -111,25 +111,25 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
         <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
           <thead className="bg-gray-50 dark:bg-slate-700/50">
             <tr>
-              <th onClick={() => handleSort('status')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+              <th onClick={() => handleSort('status')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Status <SortIcon column="status" /></div>
               </th>
-              <th onClick={() => handleSort('data')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+              <th onClick={() => handleSort('data')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Data/Turno <SortIcon column="data" /></div>
               </th>
-              <th onClick={() => handleSort('prospect')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+              <th onClick={() => handleSort('prospect')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Prospect <SortIcon column="prospect" /></div>
               </th>
-              <th onClick={() => handleSort('tipo')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+              <th onClick={() => handleSort('tipo')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Tipo <SortIcon column="tipo" /></div>
               </th>
-              <th onClick={() => handleSort('prioridade')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100">
+              <th onClick={() => handleSort('prioridade')} className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                 <div className="flex items-center">Prioridade <SortIcon column="prioridade" /></div>
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Local
               </th>
-              <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Ações
               </th>
             </tr>
@@ -153,8 +153,8 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 {/* Data e Turno */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-900">{formatDate(visit.data)}</span>
-                    <span className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white uppercase">{formatDate(visit.data)}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
                       {getTurnoIcon(visit.turno)} {visit.turno || 'N/D'}
                     </span>
                   </div>
@@ -163,11 +163,11 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 {/* Prospect */}
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <span className="text-sm font-bold text-gray-900 dark:text-white uppercase group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {visit.prospect_nome || visit.prospect}
                     </span>
                     {visit.contato && (
-                      <span className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
                         <User className="h-3 w-3" /> {visit.contato}
                       </span>
                     )}
@@ -194,8 +194,8 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 {/* Local */}
                 <td className="px-6 py-4">
                   <div className="flex flex-col max-w-[200px]">
-                    <span className="text-sm text-gray-900 truncate">{visit.cidade}</span>
-                    <span className="text-xs text-gray-500 truncate" title={visit.endereco}>
+                    <span className="text-sm text-gray-900 dark:text-white uppercase truncate">{visit.cidade}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate" title={visit.endereco}>
                       {visit.bairro ? `${visit.bairro}` : ''}
                     </span>
                   </div>
@@ -206,7 +206,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => onEdit(visit)}
-                      className="p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4" />
@@ -256,9 +256,9 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
 
             {/* Grid de Informações */}
             <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm mb-4">
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Calendar className="h-4 w-4 text-blue-500" />
-                <span className="font-medium text-gray-900 dark:text-white">{formatDate(visit.data)}</span>
+                <span className="font-medium text-gray-900 dark:text-white uppercase">{formatDate(visit.data)}</span>
               </div>
 
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -275,9 +275,9 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
                 <span className="font-medium text-gray-900 dark:text-white">{visit.tipo || 'Tipo não definido'}</span>
               </div>
 
-              <div className="col-span-2 flex items-start gap-2 text-gray-600">
-                <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
-                <span className="line-clamp-1">
+              <div className="col-span-2 flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                <MapPin className="h-4 w-4 text-blue-500 dark:text-blue-400 mt-0.5" />
+                <span className="line-clamp-1 uppercase">
                   {visit.cidade} {visit.bairro && `• ${visit.bairro}`}
                 </span>
               </div>
@@ -290,7 +290,7 @@ export default function VisitTable({ visits, onEdit, onRefresh, onDelete }) {
               </span>
 
               {visit.contato && (
-                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                   <User className="h-3 w-3" />
                   {visit.contato}
                 </div>

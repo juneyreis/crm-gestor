@@ -248,7 +248,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Data */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <Calendar className="h-4 w-4" />
             Data da Visita *
           </label>
@@ -257,8 +257,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="data"
             value={form.data}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.data ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.data ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           />
           {errors.data && (
@@ -271,7 +271,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Prospect (Combobox) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <Building className="h-4 w-4" />
             Prospect/Empresa *
           </label>
@@ -279,8 +279,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="prospect_id"
             value={form.prospect_id || ''}
             onChange={handleProspectChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.prospect_id ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.prospect_id ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
             disabled={loadingProspects}
           >
@@ -301,7 +301,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Tipo */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <FileText className="h-4 w-4" />
             Tipo de Visita *
           </label>
@@ -309,8 +309,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="tipo"
             value={form.tipo}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.tipo ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.tipo ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           >
             <option value="">Selecione o tipo</option>
@@ -330,7 +330,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Turno */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <Clock className="h-4 w-4" />
             Turno *
           </label>
@@ -338,8 +338,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="turno"
             value={form.turno}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.turno ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.turno ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           >
             <option value="">Selecione o turno</option>
@@ -357,7 +357,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Status */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <CheckCircle className="h-4 w-4" />
             Status *
           </label>
@@ -365,8 +365,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="status"
             value={form.status}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.status ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.status ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           >
             <option value="Agendada">Agendada</option>
@@ -384,7 +384,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Prioridade */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <AlertTriangle className="h-4 w-4" />
             Prioridade *
           </label>
@@ -392,8 +392,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="prioridade"
             value={form.prioridade}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.prioridade ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.prioridade ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           >
             <option value="Baixa">Baixa</option>
@@ -410,7 +410,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Endereço (Read-only - Auto-preenchido) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <MapPin className="h-4 w-4" />
             Endereço
             <Lock className="h-3 w-3 text-gray-400" title="Auto-preenchido" />
@@ -419,7 +419,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             type="text"
             name="endereco"
             value={form.endereco}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed text-gray-600"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed text-gray-600 dark:text-gray-400"
             readOnly
             placeholder="Auto-preenchido ao selecionar prospect"
           />
@@ -427,7 +427,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Cidade (Read-only - Auto-preenchido) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <MapPin className="h-4 w-4" />
             Cidade
             <Lock className="h-3 w-3 text-gray-400" title="Auto-preenchido" />
@@ -436,7 +436,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             type="text"
             name="cidade"
             value={form.cidade}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed text-gray-600"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed text-gray-600 dark:text-gray-400"
             readOnly
             placeholder="Auto-preenchido ao selecionar prospect"
           />
@@ -444,7 +444,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Bairro (Read-only - Auto-preenchido) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <MapPin className="h-4 w-4" />
             Bairro
             <Lock className="h-3 w-3 text-gray-400" title="Auto-preenchido" />
@@ -453,7 +453,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             type="text"
             name="bairro"
             value={form.bairro}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed text-gray-600"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed text-gray-600 dark:text-gray-400"
             readOnly
             placeholder="Auto-preenchido ao selecionar prospect"
           />
@@ -461,7 +461,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Contato (Read-only - Auto-preenchido) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <User className="h-4 w-4" />
             Contato
             <Lock className="h-3 w-3 text-gray-400" title="Auto-preenchido" />
@@ -470,7 +470,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             type="text"
             name="contato"
             value={form.contato}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed text-gray-600"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed text-gray-600 dark:text-gray-400"
             readOnly
             placeholder="Auto-preenchido ao selecionar prospect"
           />
@@ -478,7 +478,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Telefone (Read-only - Auto-preenchido) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <Phone className="h-4 w-4" />
             Telefone
             <Lock className="h-3 w-3 text-gray-400" title="Auto-preenchido" />
@@ -487,7 +487,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             type="tel"
             name="telefone"
             value={form.telefone}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 cursor-not-allowed text-gray-600"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800/50 cursor-not-allowed text-gray-600 dark:text-gray-400"
             readOnly
             placeholder="Auto-preenchido ao selecionar prospect"
           />
@@ -495,7 +495,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Concorrente (Editável - Auto-preenchido mas pode ser alterado) */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <FileText className="h-4 w-4" />
             Concorrente Atual
           </label>
@@ -503,7 +503,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="concorrente_id"
             value={form.concorrente_id || ''}
             onChange={handleConcorrenteChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
             <option value="">Selecione o concorrente</option>
             {concorrentes.map(c => (
@@ -514,7 +514,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {/* Regime Fiscal */}
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             <FileText className="h-4 w-4" />
             Regime Fiscal *
           </label>
@@ -522,8 +522,8 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
             name="regime"
             value={form.regime}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-lg border ${errors.regime ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+            className={`w-full px-4 py-3 rounded-lg border ${errors.regime ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-gray-300 dark:border-slate-600'
+              } bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
             required
           >
             <option value="">Selecione o regime</option>
@@ -542,7 +542,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
       {/* Observações (largura total) */}
       <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
           <FileText className="h-4 w-4" />
           Observações
         </label>
@@ -550,7 +550,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
           name="observacoes"
           value={form.observacoes}
           onChange={handleChange}
-          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           rows={3}
           placeholder="Observações adicionais (opcional)"
         />
@@ -589,7 +589,7 @@ export default function VisitForm({ visit, onSuccess, onCancel, isLoading }) {
 
         {visit && (
           <div className="ml-auto flex items-center">
-            <div className="text-sm text-blue-700 bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+            <div className="text-sm text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg border border-blue-200 dark:border-blue-800">
               Editando visita <span className="font-semibold">#{visit.id}</span>
             </div>
           </div>
