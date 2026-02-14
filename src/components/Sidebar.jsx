@@ -59,7 +59,13 @@ export default function Sidebar() {
     menuItems.push({
       icon: <Shield size={20} className="text-blue-600 dark:text-blue-400" />,
       label: "Administração",
-      to: "/admin/usuarios"
+      to: "#",
+      subItems: [
+        { label: "Usuários", to: "/admin/usuarios" },
+        { label: "Planos", to: "/admin/planos" },
+        { label: "Finalizadoras", to: "/admin/finalizadoras" },
+        { label: "Financeiro", to: "/admin/financeiro" },
+      ]
     });
   }
 

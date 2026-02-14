@@ -92,10 +92,34 @@ export function AuthProvider({ children }) {
       }
       console.log(`[Sync] Perfil carregado com sucesso. Status: ${data.status}`);
 
-      // Se usuário está bloqueado
+      // VALIDAÇÃO DE LICENÇA E CARÊNCIA (Grace Period)
+      const now = new Date();
+      const expirationDate = data.license_expires_at ? new Date(data.license_expires_at) : null;
+      const graceDate = data.grace_period_expires_at ? new Date(data.grace_period_expires_at) : null;
+
+      let accessBlocked = false;
+      let blockReason = "";
+
+      // 1. Bloqueio por Status Manual
       if (data.status === 'blocked' || data.status === 'pending') {
-        console.warn(`[Sync] Acesso negado pelo status: ${data.status}`);
-        setError(data.status === 'blocked' ? "Conta bloqueada." : "Acesso aguardando ativação.");
+        accessBlocked = true;
+        blockReason = data.status === 'blocked' ? "Conta bloqueada." : "Acesso aguardando ativação.";
+      }
+      // 2. Verificação de Expiração (Ignorar para Admin)
+      else if (!isAdminEmail && expirationDate && now > expirationDate) {
+        // Se expirou, checa a carência
+        if (graceDate && now < graceDate) {
+          console.log(`[Sync] Licença expirada, mas usuário em PERÍODO DE CARÊNCIA até ${graceDate}`);
+          // Permite acesso, mas podemos marcar o estado de carência aqui
+        } else {
+          accessBlocked = true;
+          blockReason = "Sua licença expirou. Entre em contato com o administrador para renovar.";
+        }
+      }
+
+      if (accessBlocked && !isAdminEmail) {
+        console.warn(`[Sync] Acesso negado: ${blockReason}`);
+        setError(blockReason);
         await logout();
         return;
       }
@@ -106,7 +130,9 @@ export function AuthProvider({ children }) {
         role: data.role || 'user',
         status: data.status || 'active',
         plan: data.plan_type || 'basic',
-        isAdmin: data.role === 'admin' || isAdminEmail
+        isAdmin: data.role === 'admin' || isAdminEmail,
+        expiresAt: data.license_expires_at,
+        isGracePeriod: !isAdminEmail && expirationDate && now > expirationDate && graceDate && now < graceDate
       });
     } catch (err) {
       console.error('[Sync] Erro crítico na sincronização:', err);

@@ -27,7 +27,10 @@ import ProspectsReport from './pages/relatorios/ProspectsReport';
 import VisitasReport from './pages/relatorios/VisitasReport';
 import ClientesReport from './pages/relatorios/ClientesReport';
 import ComissoesReport from './pages/relatorios/ComissoesReport';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminUsuarios from './pages/AdminUsuarios';
+import AdminPlanos from './pages/AdminPlanos';
+import AdminFinalizadoras from './pages/AdminFinalizadoras';
+import AdminFinanceiro from './pages/AdminFinanceiro';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import useTheme from './hooks/useTheme';
 import useAuth from './hooks/useAuth';
@@ -66,6 +69,11 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 text-gray-800 dark:from-slate-950 dark:to-slate-900 dark:text-gray-100">
+                {user?.isGracePeriod && (
+                  <div className="bg-amber-500 text-white text-center py-2 px-4 text-sm font-bold animate-pulse">
+                    ⚠️ Sua licença expirou! Você está em período de carência. Regularize seu acesso para evitar bloqueios.
+                  </div>
+                )}
                 <Header />
                 <div className="flex">
                   <Sidebar />
@@ -95,7 +103,31 @@ function AppContent() {
                             path="/admin/usuarios"
                             element={
                               <ProtectedAdminRoute>
-                                <AdminDashboard />
+                                <AdminUsuarios />
+                              </ProtectedAdminRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/planos"
+                            element={
+                              <ProtectedAdminRoute>
+                                <AdminPlanos />
+                              </ProtectedAdminRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/finalizadoras"
+                            element={
+                              <ProtectedAdminRoute>
+                                <AdminFinalizadoras />
+                              </ProtectedAdminRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/financeiro"
+                            element={
+                              <ProtectedAdminRoute>
+                                <AdminFinanceiro />
                               </ProtectedAdminRoute>
                             }
                           />

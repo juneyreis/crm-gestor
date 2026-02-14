@@ -1,4 +1,4 @@
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
 import Button from '../Button';
 
 export default function ConfirmationModal({
@@ -9,7 +9,8 @@ export default function ConfirmationModal({
     onCancel,
     confirmLabel = "Confirmar",
     cancelLabel = "Cancelar",
-    variant = "warning"
+    variant = "warning",
+    showCancel = true
 }) {
     if (!isOpen) return null;
 
@@ -23,6 +24,11 @@ export default function ConfirmationModal({
             icon: <AlertTriangle className="h-12 w-12 text-red-500" />,
             bg: "bg-red-50 dark:bg-red-900/10",
             button: "danger"
+        },
+        success: {
+            icon: <CheckCircle2 className="h-12 w-12 text-green-500" />,
+            bg: "bg-green-50 dark:bg-green-900/10",
+            button: "success"
         }
     };
 
@@ -48,13 +54,15 @@ export default function ConfirmationModal({
                 </div>
 
                 <div className="p-4 bg-gray-50 dark:bg-slate-800/50 flex flex-col-reverse sm:flex-row gap-3">
-                    <Button
-                        variant="secondary"
-                        onClick={onCancel}
-                        className="flex-1 w-full sm:w-auto justify-center"
-                    >
-                        {cancelLabel}
-                    </Button>
+                    {showCancel && (
+                        <Button
+                            variant="secondary"
+                            onClick={onCancel}
+                            className="flex-1 w-full sm:w-auto justify-center"
+                        >
+                            {cancelLabel}
+                        </Button>
+                    )}
                     <Button
                         variant={currentVariant.button}
                         onClick={onConfirm}
