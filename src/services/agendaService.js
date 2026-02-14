@@ -28,13 +28,17 @@ export function toISOStringLocal(dateInput) {
  * --- CONTATOS ---
  */
 
-export async function listarContatos(userId) {
-    const { data, error } = await supabase
+export async function listarContatos(userId, isAdmin = false) {
+    let query = supabase
         .from("agenda_contatos")
         .select("*")
-        .eq("user_id", userId)
         .order("nome", { ascending: true });
 
+    if (userId && !isAdmin) {
+        query = query.eq("user_id", userId);
+    }
+
+    const { data, error } = await query;
     if (error) throw error;
     return data;
 }

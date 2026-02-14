@@ -55,14 +55,19 @@ export default function Header() {
             )}
           </button>
           {user && (
-            <button
-              onClick={handleLogout}
-              disabled={loggingOut}
-              className="hidden md:flex h-8 w-8 rounded-full bg-red-600 hover:bg-red-700 items-center justify-center transition-colors duration-200 disabled:opacity-50"
-              title="Fazer logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
+            <div className="hidden md:flex items-center gap-2 border-l border-slate-700 pl-3 ml-1">
+              <span className="text-[10px] font-bold text-gray-400 opacity-60 uppercase tracking-widest hidden lg:block">
+                {user.email?.split('@')[0]}
+              </span>
+              <button
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="h-8 w-8 rounded-full bg-red-600 hover:bg-red-700 flex items-center justify-center transition-colors duration-200 disabled:opacity-50"
+                title="Fazer logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
           )}
         </div>
       </div>

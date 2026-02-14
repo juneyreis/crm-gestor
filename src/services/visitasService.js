@@ -1,6 +1,6 @@
 import { supabaseClient as supabase } from "../lib/supabaseClient";
 
-export async function listarVisitas(userId) {
+export async function listarVisitas(userId, isAdmin = false) {
   // Buscar visitas com JOIN de prospects e concorrentes
   let query = supabase
     .from("visitas")
@@ -24,7 +24,9 @@ export async function listarVisitas(userId) {
     `)
     .order("data", { ascending: false });
 
-  if (userId) {
+  // Se NÃO for admin, filtra pelo userId
+  // Se for admin, traz tudo por padrão (visão global)
+  if (userId && !isAdmin) {
     query = query.eq("user_id", userId);
   }
 

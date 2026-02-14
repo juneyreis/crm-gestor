@@ -7,7 +7,7 @@ import { supabaseClient as supabase } from "../lib/supabaseClient";
  * @param {Object} filters - Filtros a serem aplicados
  * @returns {Promise<Array>} Lista de prospects
  */
-export const listar = async (userId, filters = {}) => {
+export const listar = async (userId, filters = {}, isAdmin = false) => {
     try {
         let query = supabase
             .from('prospects')
@@ -16,8 +16,11 @@ export const listar = async (userId, filters = {}) => {
         segmentos:segmento_id (descricao),
         concorrentes:concorrente_id (descricao)
       `)
-            .eq('user_id', userId)
             .order('data_cadastro', { ascending: false });
+
+        if (userId && !isAdmin) {
+            query = query.eq('user_id', userId);
+        }
 
         // Aplicação de filtros (se houver lógica server-side, mas por enquanto faremos client-side ou misto)
         // Se a tabela crescer muito, mover filtros para cá é ideal.

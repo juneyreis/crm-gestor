@@ -47,6 +47,14 @@ export default function MobileMenu() {
     { icon: <Calendar size={18} />, label: "Agenda", to: "/agenda" },
   ];
 
+  if (user?.role === 'admin') {
+    menuItems.push({
+      icon: <Briefcase size={18} className="text-blue-400" />,
+      label: "Administração",
+      to: "/admin/usuarios"
+    });
+  }
+
   const handleLogout = async () => {
     setLoggingOut(true);
     await logout();
@@ -161,7 +169,12 @@ export default function MobileMenu() {
                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-900/30 transition-colors w-full text-left disabled:opacity-50"
               >
                 <LogOut size={18} />
-                {loggingOut ? 'Saindo...' : 'Sair'}
+                <div className="flex flex-col text-left">
+                  <span>{loggingOut ? 'Saindo...' : 'Sair'}</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-bold tracking-widest leading-none mt-0.5">
+                    {user.email?.split('@')[0]}
+                  </span>
+                </div>
               </button>
             )}
           </nav>

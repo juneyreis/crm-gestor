@@ -1,10 +1,12 @@
 // src/components/Sidebar.jsx - ATUALIZADO COM DROPDOWN
 import { useState } from 'react';
-import { Home, Calendar, FileText, Settings, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Database, ChevronDown } from 'lucide-react';
+import { Home, Calendar, FileText, Settings, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Database, ChevronDown, Shield } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import useSidebar from '../hooks/useSidebar';
+import useAuth from '../hooks/useAuth';
 
 export default function Sidebar() {
+  const { user } = useAuth();
   const { isOpen, toggleSidebar } = useSidebar();
   const [openMenus, setOpenMenus] = useState({});
   const location = useLocation();
@@ -53,6 +55,14 @@ export default function Sidebar() {
     { icon: <Calendar size={20} />, label: "Agenda", to: "/agenda" },
   ];
 
+  if (user?.role === 'admin') {
+    menuItems.push({
+      icon: <Shield size={20} className="text-blue-600 dark:text-blue-400" />,
+      label: "Administração",
+      to: "/admin/usuarios"
+    });
+  }
+
   // Verifica se algum subItem está ativo para manter o menu aberto
   const isMenuActive = (item) => {
     if (item.subItems) {
@@ -82,8 +92,6 @@ export default function Sidebar() {
           if (item.subItems) {
             const isActive = isMenuActive(item);
             const isMenuOpen = !!openMenus[item.label];
-            // Mantém aberto se estiver ativo e o usuário não fechou, ou se usuário abriu
-            // Ajuste simples: controla apenas pelo state, mas pode iniciar aberto se ativo na carga (opcional)
 
             return (
               <div key={index}>

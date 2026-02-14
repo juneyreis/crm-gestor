@@ -5,7 +5,7 @@ import { supabaseClient as supabase } from "../lib/supabaseClient";
  * @param {string} userId
  * @returns {Promise<Array>}
  */
-export async function listar(userId) {
+export async function listar(userId, isAdmin = false) {
     let query = supabase
         .from("clientes")
         .select(`
@@ -14,8 +14,11 @@ export async function listar(userId) {
       segmentos:segmento_id (descricao),
       vendedores:vendedor_id (nome)
     `)
-        .eq("user_id", userId)
         .order("data_inicio_contrato", { ascending: false });
+
+    if (userId && !isAdmin) {
+        query = query.eq("user_id", userId);
+    }
 
     const { data, error } = await query;
     if (error) throw error;

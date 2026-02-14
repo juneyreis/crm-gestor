@@ -27,6 +27,8 @@ import ProspectsReport from './pages/relatorios/ProspectsReport';
 import VisitasReport from './pages/relatorios/VisitasReport';
 import ClientesReport from './pages/relatorios/ClientesReport';
 import ComissoesReport from './pages/relatorios/ComissoesReport';
+import AdminDashboard from './pages/AdminDashboard';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import useTheme from './hooks/useTheme';
 import useAuth from './hooks/useAuth';
 
@@ -89,6 +91,14 @@ function AppContent() {
                           <Route path="/relatorios/clientes" element={<ClientesReport />} />
                           <Route path="/relatorios/comissoes" element={<ComissoesReport />} />
                           <Route path="/estatisticas" element={<Estatisticas />} />
+                          <Route
+                            path="/admin/usuarios"
+                            element={
+                              <ProtectedAdminRoute>
+                                <AdminDashboard />
+                              </ProtectedAdminRoute>
+                            }
+                          />
                           <Route path="*" element={<Navigate to="/404" />} />
                         </Routes>
                       </div>
